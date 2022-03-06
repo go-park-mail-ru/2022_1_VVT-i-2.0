@@ -1,0 +1,16 @@
+bindAddr = ":8080"
+readTimeout = 10
+writeTimeout= 10
+
+[logger]
+level = "debug"
+encoding = "json"
+outputPaths = ["../logs","stdout"]
+errorOutputPaths = ["stderr"]
+
+[logger.encoderConfig]
+messageKey = "msg"
+timeKey = "finished"
+levelKey = "lvl"
+encodeLevel = "lowercase"
+encodeTime = "iso8601"
