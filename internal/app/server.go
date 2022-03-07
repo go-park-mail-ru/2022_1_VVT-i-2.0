@@ -47,14 +47,14 @@ var u = []Restaurant{
 func restaurants(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
-	//session, err := r.Cookie("session_id")
-	//loggedIn := err != http.ErrNoCookie
-	//
-	//if loggedIn {
-	//	fmt.Fprintln(w, "Welcome, "+session.Value)
-	//} else {
-	//	fmt.Fprintln(w, "You need to login")
-	//}
+	city, err := r.Cookie("session_id")
+	existCity := err != http.ErrNoCookie
+
+	if existCity {
+		fmt.Fprintln(w, "Welcome, "+city.Value)
+	} else {
+		fmt.Fprintln(w, "You need to login")
+	}
 
 	auth := true
 	if auth {
@@ -65,10 +65,10 @@ func restaurants(w http.ResponseWriter, r *http.Request) {
 
 
 	vars := mux.Vars(r)
-	if city, found  := vars["city"]; found {
+	if cookieCity, found  := vars["city"]; found {
 		cookie := http.Cookie{
 			Name:    "city",
-			Value:   city,
+			Value:   cookieCity,
 			Secure:   true,
 			HttpOnly: true,
 
@@ -76,6 +76,8 @@ func restaurants(w http.ResponseWriter, r *http.Request) {
 		http.SetCookie(w, &cookie)
 		fmt.Fprintf(w, "City: %s\n\n", city)
 	}
+
+
 
 	result, err := json.Marshal(u)
 	if err != nil {
