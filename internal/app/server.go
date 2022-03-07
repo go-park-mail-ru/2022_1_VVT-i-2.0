@@ -1,11 +1,11 @@
 package serv
 
 import (
+	"encoding/json"
 	"fmt"
 	"github.com/gorilla/mux"
 	"go.uber.org/zap"
 	"net/http"
-	// "time"
 )
 
 type server struct {
@@ -26,11 +26,70 @@ func (s *server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	s.router.ServeHTTP(w, r)
 }
 
+type Restaurant struct {
+	ID       	 	int 	`json:"id"`
+	ImagePath	 	string 	`json:"imgPath"`
+	Name  		 	string 	`json:"restName"`
+	TimeToDeliver 	string	`json:"timeToDeliver"`
+	Price 			string 	`json:"price"`
+	Rating 			float64 `json:"rating"`
+}
+
+var u = []Restaurant{
+	{ID: 1, ImagePath: "", Name: "Шоколадница", TimeToDeliver: "20-35 мин", Price: "550₽", Rating: 4.8},
+	{ID: 2, ImagePath: "", Name: "Шоколадница", TimeToDeliver: "20-35 мин", Price: "550₽", Rating: 4.8},
+	{ID: 3, ImagePath: "", Name: "Шоколадница", TimeToDeliver: "20-35 мин", Price: "550₽", Rating: 4.8},
+	{ID: 4, ImagePath: "", Name: "Шоколадница", TimeToDeliver: "20-35 мин", Price: "550₽", Rating: 4.8},
+	{ID: 5, ImagePath: "", Name: "Шоколадница", TimeToDeliver: "20-35 мин", Price: "550₽", Rating: 4.8},
+	{ID: 6, ImagePath: "", Name: "Шоколадница", TimeToDeliver: "20-35 мин", Price: "550₽", Rating: 4.8},
+}
+
+func restaurants(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+
+	//session, err := r.Cookie("session_id")
+	//loggedIn := err != http.ErrNoCookie
+	//
+	//if loggedIn {
+	//	fmt.Fprintln(w, "Welcome, "+session.Value)
+	//} else {
+	//	fmt.Fprintln(w, "You need to login")
+	//}
+
+	auth := true
+	if auth {
+		fmt.Fprintf(w, "auth: %b\n", auth)
+	} else {
+		fmt.Fprintf(w, "auth: %b\n", auth)
+	}
+
+
+	vars := mux.Vars(r)
+	if city, found  := vars["city"]; found {
+		cookie := http.Cookie{
+			Name:    "city",
+			Value:   city,
+			Secure:   true,
+			HttpOnly: true,
+
+		}
+		http.SetCookie(w, &cookie)
+		fmt.Fprintf(w, "City: %s\n\n", city)
+	}
+
+	result, err := json.Marshal(u)
+	if err != nil {
+		panic(err)
+	}
+	w.Write(result)
+}
+
 func (s *server) configureRouter() {
 	// TODO: set prefix "api/v1" anywhere
 
 	noAuthRequiredRouter := s.router.PathPrefix("/").Subrouter()
-	noAuthRequiredRouter.HandleFunc("/restaurants/{city}/{page:[0-9]+}", hello)
+	noAuthRequiredRouter.HandleFunc("/restaurants", restaurants)
+	noAuthRequiredRouter.HandleFunc("/restaurants/{city}", restaurants)
 	// noAuthRequiredRouter.Use(s.AuthMiddleware)
 
 	authRequiredRouter := s.router.PathPrefix("/auth").Subrouter()
