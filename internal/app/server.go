@@ -5,7 +5,6 @@ import (
 	"github.com/gorilla/mux"
 	"go.uber.org/zap"
 	"net/http"
-	// "time"
 )
 
 type server struct {
@@ -30,20 +29,26 @@ func (s *server) configureRouter() {
 	// TODO: set prefix "api/v1" anywhere
 
 	noAuthRequiredRouter := s.router.PathPrefix("/").Subrouter()
-	noAuthRequiredRouter.HandleFunc("/restaurants/{city}/{page:[0-9]+}", hello)
-	// noAuthRequiredRouter.Use(s.AuthMiddleware)
+	noAuthRequiredRouter.HandleFunc("/restaurants/{city}/{page:[0-9]+}", hello).Methods(http.MethodGet)
+	noAuthRequiredRouter.HandleFunc("/login", authHandler).Methods(http.MethodPost)
+	noAuthRequiredRouter.Use(s.authOptMiddleware)
 
 	authRequiredRouter := s.router.PathPrefix("/auth").Subrouter()
 	authRequiredRouter.HandleFunc("/h", hello)
 	// authRequiredRouter.Use(s.RequiredAuthMiddleware)
+	authRequiredRouter.Use(s.authOptMiddleware)
 
 	s.router.Use(s.accessLogMiddleware)
 	s.router.Use(s.panicMiddleware)
 }
 
-func hello(w http.ResponseWriter, req *http.Request) {
-	w.WriteHeader(http.StatusInternalServerError)
-	fmt.Println("hello")
+func hello(w http.ResponseWriter, r *http.Request) {
+	userId := r.Context().Value(keyUserId)
+	if userId != nil {
+		fmt.Println("\nhello, %s", userId)
+		return
+	}
+	fmt.Println("\nhello, incognito")
 }
 
 // s.router.HandleFunc("/restorants/{city}/{page_num}", getRestaurants).Methods(http.MethodGet)
