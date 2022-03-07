@@ -4,7 +4,6 @@ import (
 	"flag"
 	"log"
 
-	"fmt"
 	"github.com/BurntSushi/toml"
 	"serv"
 )
@@ -18,8 +17,6 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-
-	fmt.Println(servConfig)
 
 	if err := serv.Start(servConfig); err != nil {
 		log.Fatal(err)

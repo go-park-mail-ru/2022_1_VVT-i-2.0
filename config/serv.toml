@@ -5,8 +5,8 @@ writeTimeout= 10
 [logger]
 level = "debug"
 encoding = "json"
-outputPaths = ["../logs","stdout"]
-errorOutputPaths = ["stderr"]
+outputPaths = ["../access_log"]
+errorOutputPaths = ["../error_log"]
 
 [logger.encoderConfig]
 messageKey = "msg"
