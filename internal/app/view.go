@@ -39,6 +39,10 @@ var restaurant = []Restaurant{
 //потом в куке
 //москва
 
+func getCityFromDb(userId uint64) string {
+	return string("moscow")
+}
+
 func workWithURL(rest []Restaurant) {
 	domen := "127.0.0.1"
 	port := "8080"
@@ -57,20 +61,20 @@ func restaurants(w http.ResponseWriter, r *http.Request) {
 	var jsonCity City
 	var answer = Answer{}
 
-	user := r.Context().Value(keyUser).(ctxStruct).user
-	var auth = false
-	if user.id != 0 {
-		fmt.Println("\nhello, %s", user)
-		auth = true
-	} else {
-		fmt.Println("\nhello, incognito")
+	fmt.Println("_____________")
+
+	var userId uint64
+	if r.Context().Value(keyUserId) != nil {
+		userId = uint64(r.Context().Value(keyUserId).(ctxUserId))
 	}
+
+	var auth = userId != 0
 	answer.Auth = auth
 
 	err := json.NewDecoder(r.Body).Decode(&jsonCity)
 	if err != nil {
 		if auth {
-			answer.City = user.address
+			answer.City = getCityFromDb(uint64(userId))
 			fmt.Printf("город выставлен по контексту\n")
 		} else {
 			city, err := r.Cookie("city")

@@ -31,7 +31,7 @@ func registerHandler(w http.ResponseWriter, r *http.Request) {
 		Err      string `json:"error,omitempty"`
 	}
 
-	user := r.Context().Value(keyUser)
+	user := r.Context().Value(keyUserId)
 	if user != nil {
 		w.WriteHeader(http.StatusConflict)
 		json.NewEncoder(w).Encode(&registerResponse{Err: "already authorized"})
@@ -53,7 +53,7 @@ func registerHandler(w http.ResponseWriter, r *http.Request) {
 		json.NewEncoder(w).Encode(&LoginResponse{Err: "such user already exists"})
 	}
 
-	token, err := createToken(idIncrement, requestRegisterData.Username)
+	token, err := createToken(idIncrement)
 
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
