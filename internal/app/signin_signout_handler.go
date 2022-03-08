@@ -3,6 +3,7 @@ package serv
 import (
 	"fmt"
 	"net/http"
+	"time"
 
 	"encoding/json"
 
@@ -10,6 +11,7 @@ import (
 )
 
 // TODO: добавить валидацию данных
+// TODO: добавить в jwt инфу про устройстро и страну для безопасности 3 лекция 2:50
 func hasSuchUserPhone(phone string) bool {
 	for dataToAuth, _ := range usersDataBase {
 		if dataToAuth.phone == phone {
@@ -65,4 +67,16 @@ func signinHandler(w http.ResponseWriter, r *http.Request) {
 
 	http.SetCookie(w, cookie)
 	json.NewEncoder(w).Encode(&LoginResponse{Username: newUsername})
+}
+
+func signoutHandler(w http.ResponseWriter, r *http.Request) {
+	token, err := r.Cookie("token")
+	if err != nil {
+		w.WriteHeader(http.StatusUnauthorized)
+		json.NewEncoder(w).Encode(&LoginResponse{Err: "not authorized"})
+	}
+
+	token.Expires = time.Now().AddDate(0, 0, -1)
+
+	http.SetCookie(w, token)
 }

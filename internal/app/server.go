@@ -36,6 +36,7 @@ func (s *server) configureRouter() {
 
 	authRequiredRouter := s.router.PathPrefix("/api/v1/auth").Subrouter()
 	authRequiredRouter.HandleFunc("/h", hello)
+	authRequiredRouter.HandleFunc("/signout", signoutHandler).Methods(http.MethodGet)
 	authRequiredRouter.Use(s.authRequiredMiddleware)
 
 	s.router.Use(s.accessLogMiddleware)
