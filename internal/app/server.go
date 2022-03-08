@@ -30,12 +30,13 @@ func (s *server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 func (s *server) configureRouter() {
 	s.router.Use(handlers.CORS(handlers.AllowedOrigins([]string{"*"})))
 
-  s.router.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("../static"))))
-  
+	s.router.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("../static"))))
+
 	noAuthRequiredRouter := s.router.PathPrefix("/api/v1").Subrouter()
 	noAuthRequiredRouter.HandleFunc("/restaurants", restaurants)
 	noAuthRequiredRouter.HandleFunc("/register", registerHandler).Methods(http.MethodPost)
 	noAuthRequiredRouter.HandleFunc("/login", loginHandler).Methods(http.MethodPost)
+	noAuthRequiredRouter.HandleFunc("/h", hello)
 	noAuthRequiredRouter.Use(s.authOptMiddleware)
 
 	authRequiredRouter := s.router.PathPrefix("/api/v1/auth").Subrouter()
@@ -49,12 +50,13 @@ func (s *server) configureRouter() {
 
 func hello(w http.ResponseWriter, r *http.Request) {
 
-	user := r.Context().Value(keyUser).(ctxStruct).user
-	fmt.Printf("\nuserAddr: %s", user.address)
-	fmt.Printf("\nuserId: %v", user.id)
+	fmt.Print(r.Context().Value(keyUserId))
+	// TODO: чекай, есть авторизация или нет
+	userId := r.Context().Value(keyUserId).(ctxUserId)
+	fmt.Print(r.Context().Value(keyUserId))
 
-	if user.id != 0 {
-		fmt.Println("\nhello, %v", user.id)
+	if userId != 0 {
+		fmt.Printf("\nhello, %v", userId)
 		return
 	}
 	fmt.Println("\nhello, incognito")

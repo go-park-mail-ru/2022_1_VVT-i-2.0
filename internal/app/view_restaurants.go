@@ -6,20 +6,19 @@ import (
 	"net/http"
 )
 
-
 type Restaurant struct {
-	ID       	 	int 	`json:"id"`
-	ImagePath	 	string 	`json:"imgPath"`
-	Name  		 	string 	`json:"restName"`
-	TimeToDeliver 	string	`json:"timeToDeliver"`
-	Price 			string 	`json:"price"`
-	Rating 			float64 `json:"rating"`
+	ID            int     `json:"id"`
+	ImagePath     string  `json:"imgPath"`
+	Name          string  `json:"restName"`
+	TimeToDeliver string  `json:"timeToDeliver"`
+	Price         string  `json:"price"`
+	Rating        float64 `json:"rating"`
 }
 
 type Answer struct {
 	Restaurants []Restaurant `json:"restaurants"`
-	Auth bool `json:"auth"`
-	City string `json:"city"`
+	Auth        bool         `json:"auth"`
+	City        string       `json:"city"`
 }
 
 type City struct {
@@ -40,6 +39,10 @@ var restaurant = []Restaurant{
 //потом в куке
 //москва
 
+func getCityFromDb(userId uint64) string {
+	return string("moscow")
+}
+
 func workWithURL(rest []Restaurant) {
 	domen := "127.0.0.1"
 	port := "8080"
@@ -58,20 +61,20 @@ func restaurants(w http.ResponseWriter, r *http.Request) {
 	var jsonCity City
 	var answer = Answer{}
 
-	user := r.Context().Value(keyUser).(ctxStruct).user
-	var auth = false
-	if user != nil {
-		fmt.Println("\nhello, %s", user)
-		auth = true
-	} else {
-		fmt.Println("\nhello, incognito")
+	fmt.Println("_____________")
+
+	var userId uint64
+	if r.Context().Value(keyUserId) != nil {
+		userId = uint64(r.Context().Value(keyUserId).(ctxUserId))
 	}
+
+	var auth = userId != 0
 	answer.Auth = auth
 
 	err := json.NewDecoder(r.Body).Decode(&jsonCity)
 	if err != nil {
 		if auth {
-			answer.City = user.address
+			answer.City = getCityFromDb(uint64(userId))
 			fmt.Printf("город выставлен по контексту\n")
 		} else {
 			city, err := r.Cookie("city")
@@ -90,8 +93,8 @@ func restaurants(w http.ResponseWriter, r *http.Request) {
 	} else {
 		fmt.Printf("%s\n", "город выставлен по json")
 		cookie := http.Cookie{
-			Name:    "city",
-			Value:   jsonCity.City,
+			Name:     "city",
+			Value:    jsonCity.City,
 			Secure:   true,
 			HttpOnly: true,
 		}
@@ -100,7 +103,6 @@ func restaurants(w http.ResponseWriter, r *http.Request) {
 
 	workWithURL(restaurant)
 	answer.Restaurants = restaurant
-
 
 	result, err := json.Marshal(answer)
 	if err != nil {

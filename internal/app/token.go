@@ -8,9 +8,9 @@ import (
 
 var SECRET = []byte("v4fQVUeQ*4r`@TA15m)*")
 
-func createToken(userId uint64, userAddr string) (string, error) {
+func createToken(userId uint64) (string, error) {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-		"userId": userId, "userAddress": userAddr})
+		"userId": userId})
 
 	return token.SignedString(SECRET)
 }

@@ -39,7 +39,7 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 		Err      string `json:"error,omitempty"`
 	}
 
-	user := r.Context().Value(keyUser)
+	user := r.Context().Value(keyUserId)
 	if user != nil {
 		w.WriteHeader(http.StatusConflict)
 		json.NewEncoder(w).Encode(&loginResponse{Err: "already authorized"})
@@ -62,7 +62,7 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 		json.NewEncoder(w).Encode(&LoginResponse{Err: "no such user"})
 	}
 
-	token, err := createToken(userData.id, userData.address)
+	token, err := createToken(userData.id)
 
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
