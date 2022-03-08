@@ -35,51 +35,85 @@ type Restaurant struct {
 	Rating 			float64 `json:"rating"`
 }
 
-var u = []Restaurant{
-	{ID: 1, ImagePath: "", Name: "Шоколадница", TimeToDeliver: "20-35 мин", Price: "550₽", Rating: 4.8},
+type Answer struct {
+	Restaurants []Restaurant `json:"restaurants"`
+	Auth bool `json:"auth"`
+	City string `json:"city"`
+}
+
+type City struct {
+	City string `json:"city"`
+}
+
+var restaurant = []Restaurant{
+	{ID: 1, ImagePath: "url", Name: "Шоколадница", TimeToDeliver: "20-35 мин", Price: "550₽", Rating: 4.8},
 	{ID: 2, ImagePath: "", Name: "Шоколадница", TimeToDeliver: "20-35 мин", Price: "550₽", Rating: 4.8},
 	{ID: 3, ImagePath: "", Name: "Шоколадница", TimeToDeliver: "20-35 мин", Price: "550₽", Rating: 4.8},
 	{ID: 4, ImagePath: "", Name: "Шоколадница", TimeToDeliver: "20-35 мин", Price: "550₽", Rating: 4.8},
-	{ID: 5, ImagePath: "", Name: "Шоколадница", TimeToDeliver: "20-35 мин", Price: "550₽", Rating: 4.8},
-	{ID: 6, ImagePath: "", Name: "Шоколадница", TimeToDeliver: "20-35 мин", Price: "550₽", Rating: 4.8},
+	//{ID: 5, ImagePath: "", Name: "Шоколадница", TimeToDeliver: "20-35 мин", Price: "550₽", Rating: 4.8},
+	//{ID: 6, ImagePath: "", Name: "Шоколадница", TimeToDeliver: "20-35 мин", Price: "550₽", Rating: 4.8},
 }
+
+var answer = Answer {
+	Restaurants: restaurant,
+}
+
+
+
+//json || по json я ставлю куку
+//мы сначала смотри авторизазацию в контексте
+//потом в куке
+//москва
 
 func restaurants(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
-	city, err := r.Cookie("session_id")
+	var p City
+
+	userId := r.Context().Value("keyUserId")
+	var auth = false
+	if userId != nil {
+		fmt.Println("\nhello, %s", userId)
+		auth = true
+	} else {
+		fmt.Println("\nhello, incognito")
+	}
+	answer.Auth = auth
+
+	err := json.NewDecoder(r.Body).Decode(&p)
+	if err != nil {
+
+	} else {
+		fmt.Fprintf(w, "Person: %+v\n", p)
+	}
+
+
+	city, err := r.Cookie("city")
 	existCity := err != http.ErrNoCookie
 
 	if existCity {
 		fmt.Fprintln(w, "Welcome, "+city.Value)
+		answer.City = city.Value
 	} else {
 		fmt.Fprintln(w, "You need to login")
 	}
 
-	auth := true
-	if auth {
-		fmt.Fprintf(w, "auth: %b\n", auth)
-	} else {
-		fmt.Fprintf(w, "auth: %b\n", auth)
-	}
-
-
 	vars := mux.Vars(r)
 	if cookieCity, found  := vars["city"]; found {
+		fmt.Fprintf(w, "City: %s\n\n", cookieCity)
 		cookie := http.Cookie{
 			Name:    "city",
 			Value:   cookieCity,
 			Secure:   true,
 			HttpOnly: true,
-
 		}
 		http.SetCookie(w, &cookie)
-		fmt.Fprintf(w, "City: %s\n\n", city)
+		fmt.Fprintf(w, "City: %s\n\n", cookieCity)
 	}
 
 
 
-	result, err := json.Marshal(u)
+	result, err := json.Marshal(answer)
 	if err != nil {
 		panic(err)
 	}
@@ -91,7 +125,6 @@ func (s *server) configureRouter() {
 
 	noAuthRequiredRouter := s.router.PathPrefix("/").Subrouter()
 	noAuthRequiredRouter.HandleFunc("/restaurants", restaurants)
-	noAuthRequiredRouter.HandleFunc("/restaurants/{city}", restaurants)
 	// noAuthRequiredRouter.Use(s.AuthMiddleware)
 
 	authRequiredRouter := s.router.PathPrefix("/auth").Subrouter()
