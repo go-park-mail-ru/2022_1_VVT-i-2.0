@@ -3,6 +3,7 @@ package serv
 import (
 	// "github.com/gorilla/mux"
 	// "go.uber.org/zap"
+
 	"fmt"
 	"net/http"
 	"time"
@@ -34,7 +35,8 @@ func (s *server) panicMiddleware(next http.Handler) http.Handler {
 					"remote_addr", r.RemoteAddr,
 					"url", r.URL.Path,
 				)
-				w.WriteHeader(http.StatusInternalServerError)
+				http.Error(w, `{"error":"error on server"}`, http.StatusInternalServerError)
+				fmt.Println(err)
 			}
 		}()
 		next.ServeHTTP(w, r)
