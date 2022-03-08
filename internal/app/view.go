@@ -6,20 +6,19 @@ import (
 	"net/http"
 )
 
-
 type Restaurant struct {
-	ID       	 	int 	`json:"id"`
-	ImagePath	 	string 	`json:"imgPath"`
-	Name  		 	string 	`json:"restName"`
-	TimeToDeliver 	string	`json:"timeToDeliver"`
-	Price 			string 	`json:"price"`
-	Rating 			float64 `json:"rating"`
+	ID            int     `json:"id"`
+	ImagePath     string  `json:"imgPath"`
+	Name          string  `json:"restName"`
+	TimeToDeliver string  `json:"timeToDeliver"`
+	Price         string  `json:"price"`
+	Rating        float64 `json:"rating"`
 }
 
 type Answer struct {
 	Restaurants []Restaurant `json:"restaurants"`
-	Auth bool `json:"auth"`
-	City string `json:"city"`
+	Auth        bool         `json:"auth"`
+	City        string       `json:"city"`
 }
 
 type City struct {
@@ -60,7 +59,7 @@ func restaurants(w http.ResponseWriter, r *http.Request) {
 
 	user := r.Context().Value(keyUser).(ctxStruct).user
 	var auth = false
-	if user != nil {
+	if user.id != 0 {
 		fmt.Println("\nhello, %s", user)
 		auth = true
 	} else {
@@ -90,8 +89,8 @@ func restaurants(w http.ResponseWriter, r *http.Request) {
 	} else {
 		fmt.Printf("%s\n", "город выставлен по json")
 		cookie := http.Cookie{
-			Name:    "city",
-			Value:   jsonCity.City,
+			Name:     "city",
+			Value:    jsonCity.City,
 			Secure:   true,
 			HttpOnly: true,
 		}
@@ -100,7 +99,6 @@ func restaurants(w http.ResponseWriter, r *http.Request) {
 
 	workWithURL(restaurant)
 	answer.Restaurants = restaurant
-
 
 	result, err := json.Marshal(answer)
 	if err != nil {
