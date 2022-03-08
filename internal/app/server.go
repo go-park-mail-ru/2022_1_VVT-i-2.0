@@ -2,9 +2,11 @@ package serv
 
 import (
 	"fmt"
+	"net/http"
+
+	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 	"go.uber.org/zap"
-	"net/http"
 )
 
 type server struct {
@@ -26,27 +28,34 @@ func (s *server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *server) configureRouter() {
-	// TODO: set prefix "api/v1" anywhere
+	s.router.Use(handlers.CORS(handlers.AllowedOrigins([]string{"*"})))
 
-	s.router.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("../static"))))
-
-	noAuthRequiredRouter := s.router.PathPrefix("/").Subrouter()
+  s.router.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("../static"))))
+  
+	noAuthRequiredRouter := s.router.PathPrefix("/api/v1").Subrouter()
 	noAuthRequiredRouter.HandleFunc("/restaurants", restaurants)
-	// noAuthRequiredRouter.Use(s.AuthMiddleware)
+	noAuthRequiredRouter.HandleFunc("/register", registerHandler).Methods(http.MethodPost)
+	noAuthRequiredRouter.HandleFunc("/login", loginHandler).Methods(http.MethodPost)
+	noAuthRequiredRouter.Use(s.authOptMiddleware)
 
-	authRequiredRouter := s.router.PathPrefix("/auth").Subrouter()
+	authRequiredRouter := s.router.PathPrefix("/api/v1/auth").Subrouter()
 	authRequiredRouter.HandleFunc("/h", hello)
-	// authRequiredRouter.Use(s.RequiredAuthMiddleware)
+	authRequiredRouter.HandleFunc("/logout", logoutHandler).Methods(http.MethodGet)
+	authRequiredRouter.Use(s.authRequiredMiddleware)
 
 	s.router.Use(s.accessLogMiddleware)
 	s.router.Use(s.panicMiddleware)
 }
 
-func hello(w http.ResponseWriter, req *http.Request) {
-	w.WriteHeader(http.StatusInternalServerError)
-	fmt.Println("hello")
-}
+func hello(w http.ResponseWriter, r *http.Request) {
 
-// s.router.HandleFunc("/restorants/{city}/{page_num}", getRestaurants).Methods(http.MethodGet)
-// getRestarants нужно вернуть список ресторанов в данном городе, установить куку города
-// инфа обработчика: колво ресторанов на странице
+	user := r.Context().Value(keyUser).(ctxStruct).user
+	fmt.Printf("\nuserAddr: %s", user.address)
+	fmt.Printf("\nuserId: %v", user.id)
+
+	if user.id != 0 {
+		fmt.Println("\nhello, %v", user.id)
+		return
+	}
+	fmt.Println("\nhello, incognito")
+}
