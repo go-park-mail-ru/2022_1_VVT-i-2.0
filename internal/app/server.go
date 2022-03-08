@@ -2,9 +2,10 @@ package serv
 
 import (
 	"fmt"
+	"net/http"
+
 	"github.com/gorilla/mux"
 	"go.uber.org/zap"
-	"net/http"
 )
 
 type server struct {
@@ -26,31 +27,31 @@ func (s *server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *server) configureRouter() {
-	// TODO: set prefix "api/v1" anywhere
 
-	noAuthRequiredRouter := s.router.PathPrefix("/").Subrouter()
+	noAuthRequiredRouter := s.router.PathPrefix("/api/v1").Subrouter()
 	noAuthRequiredRouter.HandleFunc("/restaurants/{city}/{page:[0-9]+}", hello).Methods(http.MethodGet)
-	noAuthRequiredRouter.HandleFunc("/login", authHandler).Methods(http.MethodPost)
+	noAuthRequiredRouter.HandleFunc("/signup", signinHandler).Methods(http.MethodPost)
+	noAuthRequiredRouter.HandleFunc("/signin", signupHandler).Methods(http.MethodPost)
 	noAuthRequiredRouter.Use(s.authOptMiddleware)
 
-	authRequiredRouter := s.router.PathPrefix("/auth").Subrouter()
+	authRequiredRouter := s.router.PathPrefix("/api/v1/auth").Subrouter()
 	authRequiredRouter.HandleFunc("/h", hello)
-	// authRequiredRouter.Use(s.RequiredAuthMiddleware)
-	authRequiredRouter.Use(s.authOptMiddleware)
+	authRequiredRouter.Use(s.authRequiredMiddleware)
 
 	s.router.Use(s.accessLogMiddleware)
 	s.router.Use(s.panicMiddleware)
 }
 
 func hello(w http.ResponseWriter, r *http.Request) {
-	userId := r.Context().Value(keyUserId)
-	if userId != nil {
-		fmt.Println("\nhello, %s", userId)
+
+	user := r.Context().Value(keyUser).(ctxStruct).user
+	fmt.Printf("\nusername: %s", user.name)
+	fmt.Printf("\nuserAddr: %s", user.address)
+	fmt.Printf("\nuserId: %v", user.id)
+
+	if user.id != 0 {
+		fmt.Println("\nhello, %v", user.name)
 		return
 	}
 	fmt.Println("\nhello, incognito")
 }
-
-// s.router.HandleFunc("/restorants/{city}/{page_num}", getRestaurants).Methods(http.MethodGet)
-// getRestarants нужно вернуть список ресторанов в данном городе, установить куку города
-// инфа обработчика: колво ресторанов на странице
