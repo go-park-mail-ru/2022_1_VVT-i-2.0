@@ -104,7 +104,7 @@ func restaurants(w http.ResponseWriter, r *http.Request) {
 
 	result, err := json.Marshal(answer)
 	if err != nil {
-		panic(err)
+		fmt.Printf("Marshal error\n")
 	}
 	w.Write(result)
 }
