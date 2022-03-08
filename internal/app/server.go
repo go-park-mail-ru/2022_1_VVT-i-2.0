@@ -30,8 +30,10 @@ func (s *server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 func (s *server) configureRouter() {
 	s.router.Use(handlers.CORS(handlers.AllowedOrigins([]string{"*"})))
 
+  s.router.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("../static"))))
+  
 	noAuthRequiredRouter := s.router.PathPrefix("/api/v1").Subrouter()
-	noAuthRequiredRouter.HandleFunc("/restaurants/{city}/{page:[0-9]+}", hello).Methods(http.MethodGet)
+	noAuthRequiredRouter.HandleFunc("/restaurants", restaurants)
 	noAuthRequiredRouter.HandleFunc("/register", registerHandler).Methods(http.MethodPost)
 	noAuthRequiredRouter.HandleFunc("/login", loginHandler).Methods(http.MethodPost)
 	noAuthRequiredRouter.Use(s.authOptMiddleware)
