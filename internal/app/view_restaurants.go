@@ -26,10 +26,10 @@ type City struct {
 }
 
 var restaurant = []Restaurant{
-	{ID: 1, ImagePath: "url", Name: "Шоколадница", TimeToDeliver: "20-35 мин", Price: "550₽", Rating: 4.8},
-	{ID: 2, ImagePath: "ulr", Name: "Шоколадница", TimeToDeliver: "20-35 мин", Price: "550₽", Rating: 4.8},
-	{ID: 3, ImagePath: "url", Name: "Шоколадница", TimeToDeliver: "20-35 мин", Price: "550₽", Rating: 4.8},
-	{ID: 4, ImagePath: "url", Name: "Шоколадница", TimeToDeliver: "20-35 мин", Price: "550₽", Rating: 4.8},
+	{ID: 1, ImagePath: "unsplash_HlNcigvUi4Q.png", Name: "Шоколадница", TimeToDeliver: "20-35 мин", Price: "550₽", Rating: 4.8},
+	{ID: 2, ImagePath: "pic.jpg", Name: "Шоколадница", TimeToDeliver: "20-35 мин", Price: "550₽", Rating: 4.8},
+	{ID: 3, ImagePath: "pic.jpg", Name: "Шоколадница", TimeToDeliver: "20-35 мин", Price: "550₽", Rating: 4.8},
+	{ID: 4, ImagePath: "pic.jpg", Name: "Шоколадница", TimeToDeliver: "20-35 мин", Price: "550₽", Rating: 4.8},
 	//{ID: 5, ImagePath: "", Name: "Шоколадница", TimeToDeliver: "20-35 мин", Price: "550₽", Rating: 4.8},
 	//{ID: 6, ImagePath: "", Name: "Шоколадница", TimeToDeliver: "20-35 мин", Price: "550₽", Rating: 4.8},
 }
@@ -43,16 +43,21 @@ func getCityFromDb(userId uint64) string {
 	return string("moscow")
 }
 
-func workWithURL(rest []Restaurant) {
+func workWithURL(rest []Restaurant) []Restaurant{
+	var restaurant []Restaurant
 	domen := "127.0.0.1"
 	port := "8080"
 	directory := "static"
 	buff := ""
+	buffStruct := Restaurant{}
 	for i, _ := range rest {
+		buffStruct = rest[i]
 		buff = rest[i].ImagePath
 		mySuperString := "http://" + domen + ":" + port + "/" + directory + "/" + buff
-		rest[i].ImagePath = mySuperString
+		buffStruct.ImagePath = mySuperString
+		restaurant = append(restaurant, buffStruct)
 	}
+	return restaurant
 }
 
 func restaurants(w http.ResponseWriter, r *http.Request) {
@@ -101,8 +106,7 @@ func restaurants(w http.ResponseWriter, r *http.Request) {
 		http.SetCookie(w, &cookie)
 	}
 
-	workWithURL(restaurant)
-	answer.Restaurants = restaurant
+	answer.Restaurants = workWithURL(restaurant)
 
 	result, err := json.Marshal(answer)
 	if err != nil {
