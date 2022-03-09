@@ -28,7 +28,7 @@ func (s *server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 func (s *server) configureRouter() {
 	s.router.Use(handlers.CORS(
-		handlers.AllowedOrigins([]string{"http://localhost:3000"}),
+		handlers.AllowedOrigins([]string{"http://localhost:3000", "http://178.154.229.61/:8080"}),
 		handlers.AllowedHeaders([]string{
 			"Accept", "Content-Type", "Content-Length",
 			"Accept-Encoding", "X-CSRF-Token", "csrf-token", "Authorization"}),
