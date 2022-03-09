@@ -27,8 +27,8 @@ type City struct {
 
 var restaurant = []Restaurant{
 	{ID: 1, ImagePath: "unsplash_HlNcigvUi4Q.png", Name: "Шоколадница", TimeToDeliver: "20-35 мин", Price: "550₽", Rating: 4.8},
-	{ID: 2, ImagePath: "pic.jpg", Name: "Шоколадница", TimeToDeliver: "20-35 мин", Price: "550₽", Rating: 4.8},
-	{ID: 3, ImagePath: "pic.jpg", Name: "Шоколадница", TimeToDeliver: "20-35 мин", Price: "550₽", Rating: 4.8},
+	{ID: 2, ImagePath: "smekalca_food.png", Name: "Smekalca FooD", TimeToDeliver: "20-35 мин", Price: "550₽", Rating: 4.8},
+	{ID: 3, ImagePath: "subway.png", Name: "Subway", TimeToDeliver: "20-35 мин", Price: "550₽", Rating: 4.8},
 	{ID: 4, ImagePath: "pic.jpg", Name: "Шоколадница", TimeToDeliver: "20-35 мин", Price: "550₽", Rating: 4.8},
 	//{ID: 5, ImagePath: "", Name: "Шоколадница", TimeToDeliver: "20-35 мин", Price: "550₽", Rating: 4.8},
 	//{ID: 6, ImagePath: "", Name: "Шоколадница", TimeToDeliver: "20-35 мин", Price: "550₽", Rating: 4.8},
