@@ -1,11 +1,9 @@
 package serv
 
 import (
+	"encoding/json"
 	"fmt"
 	"net/http"
-	"time"
-
-	"encoding/json"
 )
 
 // TODO: добавить валидацию данных
@@ -37,47 +35,32 @@ func registerHandler(w http.ResponseWriter, r *http.Request) {
 		json.NewEncoder(w).Encode(&registerResponse{Err: "already authorized"})
 	}
 
-	requestRegisterData := &registerData{}
-	if err := json.NewDecoder(r.Body).Decode(requestRegisterData); err != nil {
+	dataToRegister := &registerData{}
+	if err := json.NewDecoder(r.Body).Decode(dataToRegister); err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		json.NewEncoder(w).Encode(&registerResponse{Err: "wrong register data"})
-		fmt.Println(err)
 		return
 	}
 
-	fmt.Print("\nBODY-DATA:\n")
-	fmt.Println(requestRegisterData)
-
-	if hasSuchUserPhone(requestRegisterData.Phone) {
+	if hasSuchUserPhone(dataToRegister.Phone) {
 		w.WriteHeader(http.StatusConflict)
 		json.NewEncoder(w).Encode(&LoginResponse{Err: "such user already exists"})
 	}
 
-	token, err := createToken(idIncrement)
-
-	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		json.NewEncoder(w).Encode(&registerResponse{Err: "failed to create user"})
-		return
-	}
-
-	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		json.NewEncoder(w).Encode(&LoginResponse{Err: "failed to register user"})
-		return
-	}
-
 	idIncrement++
-	usersDataBase[loginData{Phone: requestRegisterData.Phone, Password: requestRegisterData.Password}] = userDataStruct{id: idIncrement, name: requestRegisterData.Username}
+	fmt.Println("----------------")
+	fmt.Println(dataToRegister)
+	usersDataBase[loginData{Phone: dataToRegister.Phone, Password: dataToRegister.Password}] = userDataStruct{id: idIncrement, name: dataToRegister.Username}
+	fmt.Println(usersDataBase[loginData{Phone: dataToRegister.Phone, Password: dataToRegister.Password}])
 
-	cookie := &http.Cookie{
-		Name:     "token",
-		Value:    token,
-		Secure:   true,
-		HttpOnly: true,
-		Expires:  time.Now().AddDate(0, 0, +3),
+	tokenCookie, err := createTokenCookie(idIncrement)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(&LoginResponse{Err: "failed to create user"})
+		return
 	}
 
-	http.SetCookie(w, cookie)
-	json.NewEncoder(w).Encode(&LoginResponse{Username: requestRegisterData.Username})
+	http.SetCookie(w, &tokenCookie)
+
+	json.NewEncoder(w).Encode(&LoginResponse{Username: dataToRegister.Username})
 }

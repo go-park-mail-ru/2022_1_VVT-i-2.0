@@ -36,7 +36,6 @@ func (s *server) panicMiddleware(next http.Handler) http.Handler {
 					"url", r.URL.Path,
 				)
 				http.Error(w, `{"error":"error on server"}`, http.StatusInternalServerError)
-				fmt.Println(err)
 			}
 		}()
 		next.ServeHTTP(w, r)

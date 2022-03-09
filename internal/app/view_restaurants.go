@@ -43,7 +43,7 @@ func getCityFromDb(userId uint64) string {
 	return string("moscow")
 }
 
-func workWithURL(rest []Restaurant) []Restaurant{
+func workWithURL(rest []Restaurant) []Restaurant {
 	var restaurant []Restaurant
 	domen := "127.0.0.1"
 	port := "8080"
@@ -65,8 +65,6 @@ func restaurants(w http.ResponseWriter, r *http.Request) {
 
 	var jsonCity City
 	var answer = Answer{}
-
-	fmt.Println("_____________")
 
 	var userId uint64
 	if r.Context().Value(keyUserId) != nil {

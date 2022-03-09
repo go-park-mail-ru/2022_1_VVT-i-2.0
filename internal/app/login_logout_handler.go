@@ -1,11 +1,12 @@
 package serv
 
+// package serv
+
 import (
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"time"
-
-	"encoding/json"
 )
 
 type loginData struct {
@@ -49,12 +50,8 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 	if err := json.NewDecoder(r.Body).Decode(requestLoginData); err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		json.NewEncoder(w).Encode(&loginResponse{Err: "wrong register data"})
-		fmt.Println(err)
 		return
 	}
-
-	fmt.Print("\nBODY-DATA:\n")
-	fmt.Println(requestLoginData)
 
 	userData, found := usersDataBase[*requestLoginData]
 	if !found {
@@ -62,34 +59,26 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 		json.NewEncoder(w).Encode(&LoginResponse{Err: "no such user"})
 	}
 
-	token, err := createToken(userData.id)
-
+	tokenCookie, err := createTokenCookie(userData.id)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		json.NewEncoder(w).Encode(&LoginResponse{Err: "failed to create user"})
 		return
 	}
 
-	cookie := &http.Cookie{
-		Name:     "token",
-		Value:    token,
-		Secure:   true,
-		HttpOnly: true,
-		Expires:  time.Now().AddDate(0, 0, +3),
-	}
+	http.SetCookie(w, &tokenCookie)
 
-	http.SetCookie(w, cookie)
+	fmt.Println(userData)
+	fmt.Println(userData.name)
+	fmt.Println(userData.address)
 	json.NewEncoder(w).Encode(&LoginResponse{Username: userData.name, UserAddr: userData.address})
 }
 
 func logoutHandler(w http.ResponseWriter, r *http.Request) {
-	token, err := r.Cookie("token")
-	if err != nil {
-		w.WriteHeader(http.StatusUnauthorized)
-		json.NewEncoder(w).Encode(&LoginResponse{Err: "not authorized"})
+	token := &http.Cookie{
+		Name:    "token",
+		Path:    "/",
+		Expires: time.Now().AddDate(0, 0, -3),
 	}
-
-	token.Expires = time.Now().AddDate(0, 0, -1)
-
 	http.SetCookie(w, token)
 }
