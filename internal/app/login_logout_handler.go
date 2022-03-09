@@ -4,7 +4,7 @@ package serv
 
 import (
 	"encoding/json"
-	"fmt"
+	"net"
 	"net/http"
 	"time"
 )
@@ -66,17 +66,22 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	host, _, _ := net.SplitHostPort(r.Host)
+
+	tokenCookie.Domain = host
+	tokenCookie.Path = "/"
+
 	http.SetCookie(w, &tokenCookie)
 
-	fmt.Println(userData)
-	fmt.Println(userData.name)
-	fmt.Println(userData.address)
 	json.NewEncoder(w).Encode(&LoginResponse{Username: userData.name, UserAddr: userData.address})
 }
 
 func logoutHandler(w http.ResponseWriter, r *http.Request) {
+
+	host, _, _ := net.SplitHostPort(r.Host)
 	token := &http.Cookie{
 		Name:    "token",
+		Domain:  host,
 		Path:    "/",
 		Expires: time.Now().AddDate(0, 0, -3),
 	}

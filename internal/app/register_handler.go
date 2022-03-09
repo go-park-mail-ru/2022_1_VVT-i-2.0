@@ -2,7 +2,7 @@ package serv
 
 import (
 	"encoding/json"
-	"fmt"
+	"net"
 	"net/http"
 )
 
@@ -42,16 +42,19 @@ func registerHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if !validatePhone(dataToRegister.Phone) {
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(&registerResponse{Err: "not valid phone"})
+		return
+	}
+
 	if hasSuchUserPhone(dataToRegister.Phone) {
 		w.WriteHeader(http.StatusConflict)
 		json.NewEncoder(w).Encode(&LoginResponse{Err: "such user already exists"})
 	}
 
 	idIncrement++
-	fmt.Println("----------------")
-	fmt.Println(dataToRegister)
 	usersDataBase[loginData{Phone: dataToRegister.Phone, Password: dataToRegister.Password}] = userDataStruct{id: idIncrement, name: dataToRegister.Username}
-	fmt.Println(usersDataBase[loginData{Phone: dataToRegister.Phone, Password: dataToRegister.Password}])
 
 	tokenCookie, err := createTokenCookie(idIncrement)
 	if err != nil {
@@ -59,6 +62,10 @@ func registerHandler(w http.ResponseWriter, r *http.Request) {
 		json.NewEncoder(w).Encode(&LoginResponse{Err: "failed to create user"})
 		return
 	}
+	host, _, _ := net.SplitHostPort(r.Host)
+
+	tokenCookie.Domain = host
+	tokenCookie.Path = "/"
 
 	http.SetCookie(w, &tokenCookie)
 

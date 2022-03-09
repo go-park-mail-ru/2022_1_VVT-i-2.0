@@ -3,7 +3,6 @@ package serv
 import (
 	"net/http"
 
-	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 	"go.uber.org/zap"
 )
@@ -27,16 +26,6 @@ func (s *server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *server) configureRouter() {
-	s.router.Use(handlers.CORS(
-		handlers.AllowedOrigins([]string{"http://tavide.xyz:8080"}),
-		//handlers.AllowedOrigins([]string{"http://localhost:3000", "http://178.154.229.61:8080", "http://tavide.xyz:8080"}),
-		handlers.AllowedHeaders([]string{
-			"Accept", "Content-Type", "Content-Length",
-			"Accept-Encoding", "X-CSRF-Token", "csrf-token", "Authorization"}),
-		handlers.AllowCredentials(),
-		handlers.AllowedMethods([]string{"GET", "HEAD", "POST", "PUT", "OPTIONS"}),
-	))
-
 	s.router.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("../static"))))
 
 	noAuthRequiredRouter := s.router.PathPrefix("/api/v1").Subrouter()
@@ -49,6 +38,7 @@ func (s *server) configureRouter() {
 	authRequiredRouter.HandleFunc("/logout", logoutHandler).Methods(http.MethodPost, http.MethodOptions)
 	authRequiredRouter.Use(s.authRequiredMiddleware)
 
+	s.router.Use(s.corsMiddleware)
 	s.router.Use(s.accessLogMiddleware)
 	s.router.Use(s.panicMiddleware)
 }
