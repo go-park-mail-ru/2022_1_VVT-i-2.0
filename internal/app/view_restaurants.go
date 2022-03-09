@@ -47,13 +47,7 @@ var restaurant = []Restaurant{
 	{ID: 19, ImagePath: "tanuki.png", Name: "Tanuki", TimeToDeliver: "20-40 мин", Price: "770₽", Rating: 4.7},
 	{ID: 20, ImagePath: "chay.png", Name: "Чайона №2", TimeToDeliver: "20-35 мин", Price: "777₽", Rating: 4.6},
 	{ID: 21, ImagePath: "sakura.png", Name: "Sakura", TimeToDeliver: "20-55 мин", Price: "770₽", Rating: 4.8},
-
 }
-
-//json || по json я ставлю куку
-//мы сначала смотри авторизазацию в контексте
-//потом в куке
-//москва
 
 func getCityFromDb(userId uint64) string {
 	return string("moscow")
