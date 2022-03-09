@@ -45,7 +45,7 @@ func getCityFromDb(userId uint64) string {
 
 func workWithURL(rest []Restaurant) []Restaurant {
 	var restaurant []Restaurant
-	domen := "127.0.0.1"
+	domen := "tavide.xyz"
 	port := "8080"
 	directory := "static"
 	buff := ""
