@@ -29,9 +29,17 @@ var restaurant = []Restaurant{
 	{ID: 1, ImagePath: "unsplash_HlNcigvUi4Q.png", Name: "Шоколадница", TimeToDeliver: "20-35 мин", Price: "550₽", Rating: 4.8},
 	{ID: 2, ImagePath: "smekalca_food.png", Name: "Smekalca FooD", TimeToDeliver: "20-35 мин", Price: "550₽", Rating: 4.8},
 	{ID: 3, ImagePath: "subway.png", Name: "Subway", TimeToDeliver: "20-35 мин", Price: "550₽", Rating: 4.8},
-	{ID: 4, ImagePath: "pic.jpg", Name: "Шоколадница", TimeToDeliver: "20-35 мин", Price: "550₽", Rating: 4.8},
-	//{ID: 5, ImagePath: "", Name: "Шоколадница", TimeToDeliver: "20-35 мин", Price: "550₽", Rating: 4.8},
-	//{ID: 6, ImagePath: "", Name: "Шоколадница", TimeToDeliver: "20-35 мин", Price: "550₽", Rating: 4.8},
+	{ID: 4, ImagePath: "shaurma.png", Name: "Шаурма", TimeToDeliver: "20-35 мин", Price: "550₽", Rating: 4.8},
+	{ID: 5, ImagePath: "mac.png", Name: "Макдональдс", TimeToDeliver: "20-35 мин", Price: "550₽", Rating: 4.8},
+	{ID: 6, ImagePath: "KFC.png", Name: "KFC", TimeToDeliver: "20-35 мин", Price: "550₽", Rating: 4.8},
+	{ID: 7, ImagePath: "BK.png", Name: "Burger King", TimeToDeliver: "20-35 мин", Price: "550₽", Rating: 4.8},
+	{ID: 8, ImagePath: "terem.png", Name: "Теремок", TimeToDeliver: "20-35 мин", Price: "550₽", Rating: 4.8},
+	{ID: 9, ImagePath: "zotman.png", Name: "Zotmann Pizza", TimeToDeliver: "20-35 мин", Price: "550₽", Rating: 4.8},
+	{ID: 10, ImagePath: "tuktuk.png", Name: "Tuk Tuk", TimeToDeliver: "20-35 мин", Price: "550₽", Rating: 4.8},
+	{ID: 11, ImagePath: "Bo.png", Name: "BO", TimeToDeliver: "20-35 мин", Price: "550₽", Rating: 4.8},
+	{ID: 12, ImagePath: "paple.png", Name: "Крошка картошка", TimeToDeliver: "20-35 мин", Price: "550₽", Rating: 4.8},
+	{ID: 13, ImagePath: "yaki.png", Name: "Якитория", TimeToDeliver: "20-35 мин", Price: "550₽", Rating: 4.8},
+
 }
 
 //json || по json я ставлю куку
