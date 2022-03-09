@@ -39,13 +39,13 @@ func (s *server) configureRouter() {
 	s.router.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("../static"))))
 
 	noAuthRequiredRouter := s.router.PathPrefix("/api/v1").Subrouter()
-	noAuthRequiredRouter.HandleFunc("/restaurants", restaurants)
-	noAuthRequiredRouter.HandleFunc("/register", registerHandler).Methods(http.MethodPost)
-	noAuthRequiredRouter.HandleFunc("/login", loginHandler).Methods(http.MethodPost)
+	noAuthRequiredRouter.HandleFunc("/restaurants", restaurants).Methods(http.MethodPost, http.MethodOptions)
+	noAuthRequiredRouter.HandleFunc("/register", registerHandler).Methods(http.MethodPost, http.MethodOptions)
+	noAuthRequiredRouter.HandleFunc("/login", loginHandler).Methods(http.MethodPost, http.MethodOptions)
 	noAuthRequiredRouter.Use(s.authOptMiddleware)
 
 	authRequiredRouter := s.router.PathPrefix("/api/v1/auth").Subrouter()
-	authRequiredRouter.HandleFunc("/logout", logoutHandler).Methods(http.MethodPost)
+	authRequiredRouter.HandleFunc("/logout", logoutHandler).Methods(http.MethodPost, http.MethodOptions)
 	authRequiredRouter.Use(s.authRequiredMiddleware)
 
 	s.router.Use(s.accessLogMiddleware)
