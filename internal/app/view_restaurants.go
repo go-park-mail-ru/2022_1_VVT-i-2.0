@@ -39,6 +39,13 @@ var restaurant = []Restaurant{
 	{ID: 11, ImagePath: "Bo.png", Name: "BO", TimeToDeliver: "20-35 мин", Price: "550₽", Rating: 4.8},
 	{ID: 12, ImagePath: "paple.png", Name: "Крошка картошка", TimeToDeliver: "20-35 мин", Price: "550₽", Rating: 4.8},
 	{ID: 13, ImagePath: "yaki.png", Name: "Якитория", TimeToDeliver: "20-35 мин", Price: "550₽", Rating: 4.8},
+	{ID: 14, ImagePath: "dad.png", Name: "Мама джанс", TimeToDeliver: "20-35 мин", Price: "550₽", Rating: 4.8},
+	{ID: 15, ImagePath: "carlamov.png", Name: "Варламов.сесть", TimeToDeliver: "20-35 мин", Price: "550₽", Rating: 4.8},
+	{ID: 16, ImagePath: "allo.png", Name: "Алло!Пицца", TimeToDeliver: "20-35 мин", Price: "550₽", Rating: 4.8},
+	{ID: 17, ImagePath: "fo89.png", Name: "Fo 98", TimeToDeliver: "20-35 мин", Price: "550₽", Rating: 4.8},
+	{ID: 18, ImagePath: "pizzaexp.png", Name: "Pizza Express 25/8", TimeToDeliver: "20-35 мин", Price: "550₽", Rating: 4.8},
+	{ID: 19, ImagePath: "tanuki.png", Name: "Tanuki", TimeToDeliver: "20-35 мин", Price: "550₽", Rating: 4.8},
+	{ID: 20, ImagePath: "chay.png", Name: "Чайона №2", TimeToDeliver: "20-35 мин", Price: "550₽", Rating: 4.8},
 
 }
 
