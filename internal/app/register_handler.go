@@ -42,6 +42,12 @@ func registerHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if !validatePhone(dataToRegister.Phone) {
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(&registerResponse{Err: "not valid phone"})
+		return
+	}
+
 	if hasSuchUserPhone(dataToRegister.Phone) {
 		w.WriteHeader(http.StatusConflict)
 		json.NewEncoder(w).Encode(&LoginResponse{Err: "such user already exists"})

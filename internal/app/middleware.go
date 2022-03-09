@@ -9,6 +9,10 @@ import (
 	"time"
 )
 
+var allowedOrigins = []string{"", "http://localhost:3000", "http://travide.xyz:3000"}
+
+// var allowedOrigins = []string{"", "http://127.0.0.1:8080", "http://127.0.0.1:3000", "https://bmstusssa.herokuapp.com", "https://bmstusa.ru"}
+
 func (s *server) accessLogMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		start := time.Now()
@@ -22,6 +26,35 @@ func (s *server) accessLogMiddleware(next http.Handler) http.Handler {
 			"url", r.URL.Path,
 			"processing_time", time.Since(start).String(),
 		)
+	})
+}
+
+func (s *server) CORS(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		origin := r.Header.Get("Origin")
+		isAllowed := false
+		for _, o := range allowedOrigins {
+			if origin == o {
+				isAllowed = true
+				break
+			}
+		}
+		if !isAllowed {
+			s.logger.Errorf("CORS not allowed origin = ", origin)
+			return
+		}
+		w.Header().Set("Access-Control-Allow-Origin", origin)
+		w.Header().Set("Access-Control-Allow-Credentials", "true")
+		w.Header().Set("Access-Control-Allow-Headers",
+			"Accept,Content-Type,Content-Length,Accept-Encoding,X-CSRF-Token,Authorization")
+		w.Header().Set("Content-Type", "application/json")
+		w.Header().Set("Access-Control-Allow-Methods", "GET,POST,DELETE,PUT,OPTIONS,HEAD")
+		w.Header().Set("Access-Control-Expose-Headers",
+			"Accept,Accept-Encoding,X-CSRF-Token,Authorization")
+		if r.Method == http.MethodOptions {
+			return
+		}
+		next.ServeHTTP(w, r)
 	})
 }
 
