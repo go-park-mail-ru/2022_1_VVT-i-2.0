@@ -25,8 +25,10 @@ func createTokenCookie(userId uint64) (http.Cookie, error) {
 		Value:    tokenStr,
 		Secure:   true,
 		HttpOnly: true,
-		Path:     "/",
-		Expires:  time.Now().AddDate(0, 0, +3),
+		Domain:   "http://tavide.xyz",
+		// Path:     "http://tavide.xyz:3000",
+		// Path:     "/",
+		Expires: time.Now().AddDate(0, 0, +3),
 	}
 	return *tokenCookie, nil
 }

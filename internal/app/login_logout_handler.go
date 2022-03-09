@@ -5,6 +5,7 @@ package serv
 import (
 	"encoding/json"
 	"fmt"
+	"net"
 	"net/http"
 	"time"
 )
@@ -66,6 +67,13 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	host, port, _ := net.SplitHostPort(r.Host)
+	fmt.Println(host)
+	fmt.Println(port)
+
+	tokenCookie.Domain = host
+	tokenCookie.Path = "/"
+
 	http.SetCookie(w, &tokenCookie)
 
 	fmt.Println(userData)
@@ -75,9 +83,14 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func logoutHandler(w http.ResponseWriter, r *http.Request) {
+
+	host, _, _ := net.SplitHostPort(r.Host)
 	token := &http.Cookie{
-		Name:    "token",
-		Path:    "/",
+		Name:   "token",
+		Domain: host,
+		Path:   "/",
+		// Path:    "/",
+		// Path:    "http://tavide.xyz:3000",
 		Expires: time.Now().AddDate(0, 0, -3),
 	}
 	http.SetCookie(w, token)

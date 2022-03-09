@@ -9,7 +9,7 @@ import (
 	"time"
 )
 
-var allowedOrigins = []string{"", "http://localhost:3000", "http://travide.xyz:3000"}
+var allowedOrigins = []string{"", "http://localhost:3000", "http://tavide.xyz:3000"}
 
 // var allowedOrigins = []string{"", "http://127.0.0.1:8080", "http://127.0.0.1:3000", "https://bmstusssa.herokuapp.com", "https://bmstusa.ru"}
 
