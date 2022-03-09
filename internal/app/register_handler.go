@@ -2,7 +2,6 @@ package serv
 
 import (
 	"encoding/json"
-	"fmt"
 	"net"
 	"net/http"
 )
@@ -55,10 +54,7 @@ func registerHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	idIncrement++
-	fmt.Println("----------------")
-	fmt.Println(dataToRegister)
 	usersDataBase[loginData{Phone: dataToRegister.Phone, Password: dataToRegister.Password}] = userDataStruct{id: idIncrement, name: dataToRegister.Username}
-	fmt.Println(usersDataBase[loginData{Phone: dataToRegister.Phone, Password: dataToRegister.Password}])
 
 	tokenCookie, err := createTokenCookie(idIncrement)
 	if err != nil {
@@ -66,18 +62,11 @@ func registerHandler(w http.ResponseWriter, r *http.Request) {
 		json.NewEncoder(w).Encode(&LoginResponse{Err: "failed to create user"})
 		return
 	}
-	fmt.Println(r.RemoteAddr)
-	fmt.Println(r.RemoteAddr)
-	fmt.Println(r.Host)
-	host, port, _ := net.SplitHostPort(r.Host)
-	fmt.Println(host)
-	fmt.Println(port)
+	host, _, _ := net.SplitHostPort(r.Host)
 
 	tokenCookie.Domain = host
 	tokenCookie.Path = "/"
 
-	fmt.Println(tokenCookie.Domain)
-	fmt.Println(tokenCookie.Path)
 	http.SetCookie(w, &tokenCookie)
 
 	json.NewEncoder(w).Encode(&LoginResponse{Username: dataToRegister.Username})

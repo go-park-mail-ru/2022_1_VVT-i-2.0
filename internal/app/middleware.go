@@ -11,8 +11,6 @@ import (
 
 var allowedOrigins = []string{"", "http://localhost:3000", "http://tavide.xyz:3000"}
 
-// var allowedOrigins = []string{"", "http://127.0.0.1:8080", "http://127.0.0.1:3000", "https://bmstusssa.herokuapp.com", "https://bmstusa.ru"}
-
 func (s *server) accessLogMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		start := time.Now()
@@ -29,7 +27,7 @@ func (s *server) accessLogMiddleware(next http.Handler) http.Handler {
 	})
 }
 
-func (s *server) CORS(next http.Handler) http.Handler {
+func (s *server) corsMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		origin := r.Header.Get("Origin")
 		isAllowed := false

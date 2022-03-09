@@ -21,13 +21,10 @@ func createTokenCookie(userId uint64) (http.Cookie, error) {
 	}
 
 	tokenCookie := &http.Cookie{
-		Name:  "token",
-		Value: tokenStr,
-		// Secure:   true,
+		Name:     "token",
+		Value:    tokenStr,
 		HttpOnly: true,
-		// Path:     "http://tavide.xyz:3000",
-		// Path:     "/",
-		Expires: time.Now().AddDate(0, 0, +3),
+		Expires:  time.Now().AddDate(0, 0, +3),
 	}
 	return *tokenCookie, nil
 }
