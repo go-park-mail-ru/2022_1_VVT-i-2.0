@@ -13,8 +13,8 @@ import (
 )
 
 var usersDataBase = map[models.LoginRequest]models.UserDataStruct{
-	{Phone: "89015020456", Password: "qw12qqqq"}:   {Id: 1, Name: "Наташа", Address: "Москва, Петровка 38"},
-	{Phone: "89015030458", Password: "Wq21wwwwww"}: {Id: 2, Name: "Сережа", Address: "Москва, Ленинградский проспект, 39"},
+	{Phone: "+7(900)555-35-35", Password: "qw12qqqq"}:   {Id: 1, Name: "Наташа", Address: "Москва, Петровка 38"},
+	{Phone: "+7(800)555-35-35", Password: "Wq21wwwwww"}: {Id: 2, Name: "Сережа", Address: "Москва, Ленинградский проспект, 39"},
 }
 
 var idIncrement models.UserId = models.UserId(len(usersDataBase))

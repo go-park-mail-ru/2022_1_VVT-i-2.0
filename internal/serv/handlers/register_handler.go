@@ -11,7 +11,6 @@ import (
 	validation "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/serv/validation"
 )
 
-// TODO: добавить валидацию данных
 // TODO: добавить в jwt инфу про устройстро и страну для безопасности 3 лекция 2ч50
 func hasSuchUserPhone(phone string) bool {
 	for dataToLogin := range usersDataBase {
