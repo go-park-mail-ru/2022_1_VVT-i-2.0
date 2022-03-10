@@ -112,6 +112,7 @@ func restaurants(w http.ResponseWriter, r *http.Request) {
 			HttpOnly: true,
 		}
 		http.SetCookie(w, &cookie)
+		answer.City = jsonCity.City
 	}
 
 	answer.Restaurants = workWithURL(restaurant)
