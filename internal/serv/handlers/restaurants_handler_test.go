@@ -8,10 +8,12 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"testing"
+
+	models "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/serv/models"
 )
 
 type TestCase struct {
-	Json       City
+	Json       models.City
 	Response   string
 	StatusCode int
 }
@@ -19,12 +21,12 @@ type TestCase struct {
 func TestRestaurants(t *testing.T) {
 	cases := []TestCase{
 		TestCase{
-			Json:       City{City: ""},
+			Json:       models.City{City: ""},
 			Response:   `{"restaurants":[{"id":1,"imgPath":"http://178.154.229.61:8080/static/unsplash_HlNcigvUi4Q.png","restName":"Шоколадница","timeToDeliver":"20-35 мин","price":"550₽","rating":4.8},{"id":2,"imgPath":"http://178.154.229.61:8080/static/pic.jpg","restName":"Шоколадница","timeToDeliver":"20-35 мин","price":"550₽","rating":4.8},{"id":3,"imgPath":"http://178.154.229.61:8080/static/pic.jpg","restName":"Шоколадница","timeToDeliver":"20-35 мин","price":"550₽","rating":4.8},{"id":4,"imgPath":"http://178.154.229.61:8080/static/pic.jpg","restName":"Шоколадница","timeToDeliver":"20-35 мин","price":"550₽","rating":4.8}],"auth":false,"city":"moscow"}`,
 			StatusCode: http.StatusOK,
 		},
 		TestCase{
-			Json:       City{City: "voronezh"},
+			Json:       models.City{City: "voronezh"},
 			Response:   `{"restaurants":[{"id":1,"imgPath":"http://178.154.229.61:8080/static/unsplash_HlNcigvUi4Q.png","restName":"Шоколадница","timeToDeliver":"20-35 мин","price":"550₽","rating":4.8},{"id":2,"imgPath":"http://178.154.229.61:8080/static/pic.jpg","restName":"Шоколадница","timeToDeliver":"20-35 мин","price":"550₽","rating":4.8},{"id":3,"imgPath":"http://178.154.229.61:8080/static/pic.jpg","restName":"Шоколадница","timeToDeliver":"20-35 мин","price":"550₽","rating":4.8},{"id":4,"imgPath":"http://178.154.229.61:8080/static/pic.jpg","restName":"Шоколадница","timeToDeliver":"20-35 мин","price":"550₽","rating":4.8}],"auth":false,"city":"voronezh"}`,
 			StatusCode: http.StatusOK,
 		},
