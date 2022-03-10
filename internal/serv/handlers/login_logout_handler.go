@@ -9,11 +9,12 @@ import (
 	middleware "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/serv/middleware"
 	models "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/serv/models"
 	token "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/serv/token"
+	validation "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/serv/validation"
 )
 
 var usersDataBase = map[models.LoginRequest]models.UserDataStruct{
-	{"o@o.o", "1"}: {1, "Наташа", "Москва, Петровка 38"},
-	{"t@t.t", "2"}: {2, "Сережа", "Москва, Ленинградский проспект, 39"},
+	{Phone: "89015020456", Password: "qw12qqqq"}:   {Id: 1, Name: "Наташа", Address: "Москва, Петровка 38"},
+	{Phone: "89015030458", Password: "Wq21wwwwww"}: {Id: 2, Name: "Сережа", Address: "Москва, Ленинградский проспект, 39"},
 }
 
 var idIncrement models.UserId = models.UserId(len(usersDataBase))
@@ -30,6 +31,18 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 	if err := json.NewDecoder(r.Body).Decode(requestLoginData); err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		json.NewEncoder(w).Encode(&models.LoginResponse{Err: "wrong register data"})
+		return
+	}
+
+	if !validation.ValidatePhone(requestLoginData.Phone) {
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(&models.RegisterResponse{Err: "not valid phone"})
+		return
+	}
+
+	if !validation.ValidatePassword(requestLoginData.Password) {
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(&models.RegisterResponse{Err: "not valid password"})
 		return
 	}
 

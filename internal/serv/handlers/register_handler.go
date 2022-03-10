@@ -43,6 +43,18 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if !validation.ValidatePassword(dataToRegister.Password) {
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(&models.RegisterResponse{Err: "not valid password"})
+		return
+	}
+
+	if !validation.ValidateUsername(dataToRegister.Username) {
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(&models.RegisterResponse{Err: "not valid username"})
+		return
+	}
+
 	if hasSuchUserPhone(dataToRegister.Phone) {
 		w.WriteHeader(http.StatusConflict)
 		json.NewEncoder(w).Encode(&models.LoginResponse{Err: "such user already exists"})
