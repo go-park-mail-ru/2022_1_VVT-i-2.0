@@ -25,21 +25,25 @@ type LoginRequest struct {
 	Phone    string `json:"phone"`
 	Password string `json:"password"`
 }
+
 type LoginResponse struct {
 	Username string `json:"username,omitempty"`
 	UserAddr string `json:"userAddress,omitempty"`
 	Err      string `json:"error,omitempty"`
 }
+
 type UserDataStruct struct {
 	Id      UserId
 	Name    string
 	Address string
 }
+
 type RegisterRequest struct {
 	Phone    string `json:"phone"`
 	Password string `json:"password"`
 	Username string `json:"name"`
 }
+
 type RegisterResponse struct {
 	Username string `json:"username,omitempty"`
 	UserAddr string `json:"userAddress,omitempty"`
