@@ -4,8 +4,11 @@ import (
 	"flag"
 	"log"
 
+	// "serv"
+
 	"github.com/BurntSushi/toml"
-	"serv"
+
+	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/serv"
 )
 
 func main() {
