@@ -1,31 +1,15 @@
-package serv
+package handlers
 
 import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+
+	middleware "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/serv/middleware"
+	models "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/serv/models"
 )
 
-type Restaurant struct {
-	ID            int     `json:"id"`
-	ImagePath     string  `json:"imgPath"`
-	Name          string  `json:"restName"`
-	TimeToDeliver string  `json:"timeToDeliver"`
-	Price         string  `json:"price"`
-	Rating        float64 `json:"rating"`
-}
-
-type Answer struct {
-	Restaurants []Restaurant `json:"restaurants"`
-	Auth        bool         `json:"auth"`
-	City        string       `json:"city"`
-}
-
-type City struct {
-	City string `json:"city"`
-}
-
-var restaurant = []Restaurant{
+var restaurant = []models.Restaurant{
 	{ID: 1, ImagePath: "unsplash_HlNcigvUi4Q.png", Name: "Шоколадница", TimeToDeliver: "20-45 мин", Price: "650₽", Rating: 4.8},
 	{ID: 2, ImagePath: "smekalca_food.png", Name: "Smekalca FooD", TimeToDeliver: "20-35 мин", Price: "570₽", Rating: 4.7},
 	{ID: 3, ImagePath: "subway.png", Name: "Subway", TimeToDeliver: "20-55 мин", Price: "1050₽", Rating: 4.6},
@@ -49,18 +33,18 @@ var restaurant = []Restaurant{
 	{ID: 21, ImagePath: "sakura.png", Name: "Sakura", TimeToDeliver: "20-55 мин", Price: "770₽", Rating: 4.8},
 }
 
-func getCityFromDb(userId uint64) string {
+func getCityFromDb(userId models.UserId) string {
 	return string("moscow")
 }
 
-func workWithURL(rest []Restaurant) []Restaurant {
-	var restaurant []Restaurant
+func workWithURL(rest []models.Restaurant) []models.Restaurant {
+	var restaurant []models.Restaurant
 	domen := "tavide.xyz"
 	port := "8080"
 	directory := "static"
 	buff := ""
-	buffStruct := Restaurant{}
-	for i, _ := range rest {
+	buffStruct := models.Restaurant{}
+	for i := range rest {
 		buffStruct = rest[i]
 		buff = rest[i].ImagePath
 		mySuperString := "http://" + domen + ":" + port + "/" + directory + "/" + buff
@@ -70,15 +54,15 @@ func workWithURL(rest []Restaurant) []Restaurant {
 	return restaurant
 }
 
-func restaurants(w http.ResponseWriter, r *http.Request) {
+func RestaurantsHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
-	var jsonCity City
-	var answer = Answer{}
+	var jsonCity models.City
+	var answer = models.RestaurantsResponse{}
 
-	var userId uint64
-	if r.Context().Value(keyUserId) != nil {
-		userId = uint64(r.Context().Value(keyUserId).(ctxUserId))
+	var userId models.UserId
+	if r.Context().Value(middleware.KeyUserId) != nil {
+		userId = models.UserId(r.Context().Value(middleware.KeyUserId).(models.UserId))
 	}
 
 	var auth = userId != 0
@@ -87,7 +71,7 @@ func restaurants(w http.ResponseWriter, r *http.Request) {
 	err := json.NewDecoder(r.Body).Decode(&jsonCity)
 	if err != nil {
 		if auth {
-			answer.City = getCityFromDb(uint64(userId))
+			answer.City = getCityFromDb(models.UserId(userId))
 			fmt.Printf("город выставлен по контексту\n")
 		} else {
 			city, err := r.Cookie("city")

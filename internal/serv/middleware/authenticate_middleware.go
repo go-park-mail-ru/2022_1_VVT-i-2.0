@@ -1,19 +1,19 @@
-package serv
+package middleware
 
 import (
 	"context"
 	"net/http"
 
 	jwt "github.com/dgrijalva/jwt-go"
+	models "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/serv/models"
+	token "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/serv/token"
 )
 
-type keyCtx string
+type KeyCtx string
 
-const keyUserId keyCtx = "user"
+const KeyUserId KeyCtx = "user"
 
-type ctxUserId uint64
-
-func (s *server) authOptMiddleware(next http.Handler) http.Handler {
+func AuthOptMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 
 		tokenCookie, err := r.Cookie("token")
@@ -22,7 +22,7 @@ func (s *server) authOptMiddleware(next http.Handler) http.Handler {
 			return
 		}
 
-		token, err := parseToken(tokenCookie.Value)
+		token, err := token.ParseToken(tokenCookie.Value)
 		if err != nil {
 			next.ServeHTTP(w, r)
 			return
@@ -34,13 +34,13 @@ func (s *server) authOptMiddleware(next http.Handler) http.Handler {
 			return
 		}
 
-		ctx := context.WithValue(r.Context(), keyUserId, ctxUserId(uint64((claims["userId"]).(float64))))
+		ctx := context.WithValue(r.Context(), KeyUserId, models.UserId((claims["userId"]).(float64)))
 
 		next.ServeHTTP(w, r.WithContext(ctx))
 	})
 }
 
-func (s *server) authRequiredMiddleware(next http.Handler) http.Handler {
+func AuthRequiredMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		tokenCookie, err := r.Cookie("token")
 		if err != nil {
@@ -48,7 +48,7 @@ func (s *server) authRequiredMiddleware(next http.Handler) http.Handler {
 			return
 		}
 
-		token, err := parseToken(tokenCookie.Value)
+		token, err := token.ParseToken(tokenCookie.Value)
 
 		if err != nil {
 			http.Error(w, `{"error":"auth required"}`, http.StatusUnauthorized)
@@ -61,7 +61,7 @@ func (s *server) authRequiredMiddleware(next http.Handler) http.Handler {
 			return
 		}
 
-		ctx := context.WithValue(r.Context(), keyUserId, ctxUserId(uint64((claims["userId"]).(float64))))
+		ctx := context.WithValue(r.Context(), KeyUserId, models.UserId((claims["userId"]).(float64)))
 
 		next.ServeHTTP(w, r.WithContext(ctx))
 	})

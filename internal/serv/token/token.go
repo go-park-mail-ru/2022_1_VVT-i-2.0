@@ -6,15 +6,16 @@ import (
 	"time"
 
 	jwt "github.com/dgrijalva/jwt-go"
+	models "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/serv/models"
 )
 
-var SECRET = []byte("v4fQVUeQ*4r`@TA15m)*")
+var secret = []byte("v4fQVUeQ*4r`@TA15m)*")
 
-func createTokenCookie(userId uint64) (http.Cookie, error) {
+func CreateTokenCookie(userId models.UserId) (http.Cookie, error) {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"userId": userId})
 
-	tokenStr, err := token.SignedString(SECRET)
+	tokenStr, err := token.SignedString(secret)
 
 	if err != nil {
 		return http.Cookie{}, err
@@ -29,12 +30,12 @@ func createTokenCookie(userId uint64) (http.Cookie, error) {
 	return *tokenCookie, nil
 }
 
-func parseToken(token string) (*jwt.Token, error) {
+func ParseToken(token string) (*jwt.Token, error) {
 	return jwt.Parse(token, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
 		}
 
-		return SECRET, nil
+		return secret, nil
 	})
 }

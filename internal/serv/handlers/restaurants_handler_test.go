@@ -1,4 +1,4 @@
-package serv
+package handlers
 
 import (
 	"bytes"
@@ -11,7 +11,7 @@ import (
 )
 
 type TestCase struct {
-	Json 	   City
+	Json       City
 	Response   string
 	StatusCode int
 }
@@ -19,7 +19,7 @@ type TestCase struct {
 func TestRestaurants(t *testing.T) {
 	cases := []TestCase{
 		TestCase{
-			Json:        City{City: ""},
+			Json:       City{City: ""},
 			Response:   `{"restaurants":[{"id":1,"imgPath":"http://178.154.229.61:8080/static/unsplash_HlNcigvUi4Q.png","restName":"Шоколадница","timeToDeliver":"20-35 мин","price":"550₽","rating":4.8},{"id":2,"imgPath":"http://178.154.229.61:8080/static/pic.jpg","restName":"Шоколадница","timeToDeliver":"20-35 мин","price":"550₽","rating":4.8},{"id":3,"imgPath":"http://178.154.229.61:8080/static/pic.jpg","restName":"Шоколадница","timeToDeliver":"20-35 мин","price":"550₽","rating":4.8},{"id":4,"imgPath":"http://178.154.229.61:8080/static/pic.jpg","restName":"Шоколадница","timeToDeliver":"20-35 мин","price":"550₽","rating":4.8}],"auth":false,"city":"moscow"}`,
 			StatusCode: http.StatusOK,
 		},
@@ -42,7 +42,7 @@ func TestRestaurants(t *testing.T) {
 		req := httptest.NewRequest("GET", url, payloadBuf)
 		w := httptest.NewRecorder()
 
-		restaurants(w, req)
+		RestaurantsHandler(w, req)
 
 		if w.Code != item.StatusCode {
 			t.Errorf("[%d] wrong StatusCode: got %d, expected %d",

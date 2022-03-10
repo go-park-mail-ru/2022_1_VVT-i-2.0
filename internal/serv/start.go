@@ -12,7 +12,7 @@ func Start(config *Config) error {
 	}
 	defer loggerUnsugared.Sync() // TODO: где это должно быть?
 	logger := loggerUnsugared.Sugar()
-	serv := newServer(logger)
+	serv := NewServer(logger)
 
 	httpServ := http.Server{
 		Addr:         config.BindAddr,

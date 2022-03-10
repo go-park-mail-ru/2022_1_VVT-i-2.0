@@ -1,23 +1,26 @@
-package serv
+package middleware
 
 import (
-	// "github.com/gorilla/mux"
-	// "go.uber.org/zap"
+	"go.uber.org/zap"
 
 	"fmt"
 	"net/http"
 	"time"
 )
 
+type Logger struct {
+	Logger *zap.SugaredLogger
+}
+
 var allowedOrigins = []string{"", "http://localhost:3000", "http://tavide.xyz:3000"}
 
-func (s *server) accessLogMiddleware(next http.Handler) http.Handler {
+func (logger Logger) AccessLogMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		start := time.Now()
 
 		next.ServeHTTP(w, r)
 
-		s.logger.Infow(
+		logger.Logger.Infow(
 			"access",
 			"method", r.Method,
 			"remote_addr", r.RemoteAddr,
@@ -27,7 +30,7 @@ func (s *server) accessLogMiddleware(next http.Handler) http.Handler {
 	})
 }
 
-func (s *server) corsMiddleware(next http.Handler) http.Handler {
+func CorsMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		origin := r.Header.Get("Origin")
 		isAllowed := false
@@ -38,7 +41,6 @@ func (s *server) corsMiddleware(next http.Handler) http.Handler {
 			}
 		}
 		if !isAllowed {
-			s.logger.Errorf("CORS not allowed origin = ", origin)
 			return
 		}
 		w.Header().Set("Access-Control-Allow-Origin", origin)
@@ -56,11 +58,11 @@ func (s *server) corsMiddleware(next http.Handler) http.Handler {
 	})
 }
 
-func (s *server) panicMiddleware(next http.Handler) http.Handler {
+func (logger Logger) PanicMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		defer func() {
 			if err := recover(); err != nil {
-				s.logger.Errorw(
+				logger.Logger.Errorw(
 					fmt.Sprint(err),
 					"method", r.Method,
 					"remote_addr", r.RemoteAddr,
