@@ -1,0 +1,6 @@
+.idea
+.vscode
+
+access_log
+error_log
+logs
