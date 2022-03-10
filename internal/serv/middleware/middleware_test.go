@@ -16,6 +16,11 @@ func testHandlerFuncPanic(w http.ResponseWriter, r *http.Request) {
 }
 
 func TestPanicMiddleware(t *testing.T) {
+	defer func() {
+		if r := recover(); r != nil {
+			t.Errorf("the panic was not canceled by middleware")
+		}
+	}()
 
 	logger := zap.NewExample()
 	defer logger.Sync()
