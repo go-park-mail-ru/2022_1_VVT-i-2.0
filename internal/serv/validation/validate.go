@@ -1,6 +1,12 @@
 package validation
 
-import "regexp"
+import (
+	"regexp"
+)
+
+const phoneRegexp = `^[+]{1}7[(]{1}[0-9]{3}[)]{1}[0-9]{3}-[0-9]{2}-[0-9]{2}$`
+const nameRegexp = `^[A-ZА-Я]{1}[a-zа-я]{1,}$`
+const passwordRegexp = `^[A-Za-zА-Яа-я0-9]{8,}$`
 
 var city = map[string]bool {
 	"moscow": true,
@@ -8,7 +14,7 @@ var city = map[string]bool {
 }
 
 func ValidatePhone(str string) bool {
-	isMatch, _ := regexp.MatchString(`^((8|\+7)[\- ]?)?(\(?\d{3}\)?[\- ]?)?[\d\- ]{7,10}$`, str)
+	isMatch, _ := regexp.MatchString(phoneRegexp, str)
 	return isMatch
 }
 
@@ -17,17 +23,12 @@ func ValdateCity(str string) bool {
 	return cityExist
 }
 
-// func ValidateUsername(str string) bool {
-// 	isMatch, _ := regexp.MatchString(`^((8|\+7)[\- ]?)?(\(?\d{3}\)?[\- ]?)?[\d\- ]{7,10}$`, str)
-// 	return isMatch
-// }
+func ValidateUsername(str string) bool {
+	isMatch, _ := regexp.MatchString(nameRegexp, str)
+	return isMatch
+}
 
-// func ValidateCity(str string) bool {
-// 	isMatch, _ := regexp.MatchString(`^([А-Я]{1,100}){1,5}$`, str)
-// 	return isMatch
-// }
-
-// func ValidatePassword(str string) bool {
-// 	isMatch, _ := regexp.MatchString(`/(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])[0-9a-zA-Z!@#$%^&*]{8,}/g`, str)
-// 	return isMatch
-// }
+func ValidatePassword(str string) bool {
+	isMatch, _ := regexp.MatchString(passwordRegexp, str)
+	return isMatch
+}
