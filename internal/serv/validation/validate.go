@@ -2,9 +2,19 @@ package validation
 
 import "regexp"
 
+var city = map[string]bool {
+	"moscow": true,
+	"voronezh": true,
+}
+
 func ValidatePhone(str string) bool {
 	isMatch, _ := regexp.MatchString(`^((8|\+7)[\- ]?)?(\(?\d{3}\)?[\- ]?)?[\d\- ]{7,10}$`, str)
 	return isMatch
+}
+
+func ValdateCity(str string) bool {
+	_, cityExist := city[str]
+	return cityExist
 }
 
 // func ValidateUsername(str string) bool {

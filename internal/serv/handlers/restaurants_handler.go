@@ -7,6 +7,7 @@ import (
 
 	middleware "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/serv/middleware"
 	models "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/serv/models"
+	validation "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/serv/validation"
 )
 
 var restaurant = []models.Restaurant{
@@ -71,32 +72,36 @@ func RestaurantsHandler(w http.ResponseWriter, r *http.Request) {
 	err := json.NewDecoder(r.Body).Decode(&jsonCity)
 	if err != nil {
 		if auth {
-			answer.City = getCityFromDb(models.UserId(userId))
+			// предполоогаем что в бд не может попасть не валидный город
 			fmt.Printf("город выставлен по контексту\n")
+			answer.City = getCityFromDb(models.UserId(userId))
 		} else {
 			city, err := r.Cookie("city")
 			existCity := err != http.ErrNoCookie
 
-			if existCity {
+			if existCity && validation.ValdateCity(city.Value) {
 				fmt.Printf("%s\n", "город выставлен по cookie")
-				fmt.Printf("Welcome %s\n", city.Value)
 				answer.City = city.Value
 			} else {
 				fmt.Printf("%s\n", "город выставлен по умолчанию")
-				fmt.Printf("%s\n", "You need to login")
 				answer.City = "moscow"
 			}
 		}
 	} else {
-		fmt.Printf("%s\n", "город выставлен по json")
-		cookie := http.Cookie{
-			Name:     "city",
-			Value:    jsonCity.City,
-			Secure:   true,
-			HttpOnly: true,
+		if validation.ValdateCity(jsonCity.City) {
+			fmt.Printf("%s\n", "город выставлен по json")
+			cookie := http.Cookie{
+				Name:     "city",
+				Value:    jsonCity.City,
+				Secure:   true,
+				HttpOnly: true,
+			}
+			http.SetCookie(w, &cookie)
+			answer.City = jsonCity.City
+		} else {
+			fmt.Printf("%s\n", "город выставлен по умолчанию")
+			answer.City = "moscow"
 		}
-		http.SetCookie(w, &cookie)
-		answer.City = jsonCity.City
 	}
 
 	answer.Restaurants = workWithURL(restaurant)
