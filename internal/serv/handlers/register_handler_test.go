@@ -136,3 +136,53 @@ func TestLogin(t *testing.T) {
 		}
 	}
 }
+
+func TestLogout(t *testing.T) {
+	type testCase struct {
+		Request          models.LoginRequest
+		Response         string
+		StatusCodeLogin  int
+		StatusCodeLogout int
+		CaseDescription  string
+	}
+
+	testCases := []testCase{
+		{
+			Request:          models.LoginRequest{Phone: "+7(900)555-35-35", Password: "qw12qqqq"},
+			Response:         `{"username":"Наташа","userAddress":"Москва, Петровка 38"}`,
+			StatusCodeLogin:  http.StatusOK,
+			StatusCodeLogout: http.StatusOK,
+			CaseDescription:  "valid",
+		},
+	}
+
+	for _, testCase := range testCases {
+		url := "http://example.com/api/v1/login"
+		payloadBuf, _ := json.Marshal(testCase.Request)
+
+		req := httptest.NewRequest(http.MethodPost, url, strings.NewReader(string(payloadBuf)))
+		w := httptest.NewRecorder()
+
+		LoginHandler(w, req)
+
+		if w.Code != testCase.StatusCodeLogin {
+			t.Errorf("%s wrong StatusCode: got %d, expected %d",
+				testCase.CaseDescription, w.Code, testCase.StatusCodeLogin)
+		}
+
+		reqLogout := httptest.NewRequest(http.MethodPost, url, strings.NewReader(string(payloadBuf)))
+		if w.Code == http.StatusOK {
+			tokenCookie := w.Result().Cookies()[0]
+			reqLogout.AddCookie(tokenCookie)
+		}
+
+		wLogout := httptest.NewRecorder()
+
+		LogoutHandler(wLogout, reqLogout)
+
+		if wLogout.Code != testCase.StatusCodeLogout {
+			t.Errorf("%s wrong StatusCode: got %d, expected %d",
+				testCase.CaseDescription, w.Code, testCase.StatusCodeLogout)
+		}
+	}
+}
