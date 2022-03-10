@@ -16,7 +16,7 @@ type TestCase struct {
 	StatusCode int
 }
 
-func TestGetUser(t *testing.T) {
+func TestRestaurants(t *testing.T) {
 	cases := []TestCase{
 		TestCase{
 			Json:        City{City: ""},
