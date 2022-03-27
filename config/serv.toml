@@ -1,6 +1,7 @@
 bindAddr = ":8080"
 readTimeout = 10
 writeTimeout= 10
+allowOrigins=["", "http://localhost:3000", "http://tavide.xyz:3000"]
 
 [logger]
 level = "debug"
@@ -12,5 +13,18 @@ errorOutputPaths = ["../error_log"]
 messageKey = "msg"
 timeKey = "finished"
 levelKey = "lvl"
+namekey  = "name" 
+CallerKey = "caller"
+FunctionKey = "funclion"
+StacktraceKey = "stack_trace"
+EncodeDuration = "duration"
+		EncodeCaller 
+
 encodeLevel = "lowercase"
 encodeTime = "iso8601"
+
+[database]
+user = "postgres" #установить норм имя
+password = ""
+port = 8000
+connectionMax = 5000
