@@ -3,7 +3,6 @@ package jwtManager
 import (
 	"fmt"
 
-	"github.com/dgrijalva/jwt-go"
 	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/authManager"
 	jwt "github.com/golang-jwt/jwt"
 	"github.com/pkg/errors"
@@ -15,17 +14,17 @@ type JwtManager struct {
 }
 
 type JwtConfig struct {
-	key    string
-	method string
+	Key    string
+	Method string
 }
 
 func NewJwtManager(cfg JwtConfig) *JwtManager {
-	methodObj := jwt.GetSigningMethod(cfg.method)
+	methodObj := jwt.GetSigningMethod(cfg.Method)
 	if methodObj == nil {
 		return nil
 	}
 	return &JwtManager{
-		key:    cfg.key,
+		key:    cfg.Key,
 		method: methodObj,
 	}
 }

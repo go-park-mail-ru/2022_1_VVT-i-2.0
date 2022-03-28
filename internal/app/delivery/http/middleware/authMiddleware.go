@@ -1,66 +1,62 @@
 package middleware
 
 import (
-	"context"
 	"net/http"
 
-	models "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/serv/models"
+	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/delivery/http/errorDescription"
+	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/models"
+	"github.com/labstack/echo/v4"
 )
 
-type KeyCtx string
-
-const KeyUserId KeyCtx = "user"
+const UserCtxKey = "user"
 const TokenKeyCookie = "token"
+
+type UserCtx struct {
+	id models.UserId
+}
 
 func (mw *CommonMiddlewareChain) AuthOptMiddleware(next echo.HandlerFunc) echo.HandlerFunc {
 	return func(ctx echo.Context) error {
-
 		tokenCookie, err := ctx.Request().Cookie(TokenKeyCookie)
+
 		if err != nil {
 			return next(ctx)
 		}
 
-		// token, err :=  token.ParseToken(tokenCookie.Value)
-		token, err :=  mw.AuthManager.ParseToken(tokenCookie)
+		payload, err := mw.AuthManager.ParseToken(tokenCookie.Value)
 		if err != nil {
 			return next(ctx)
 		}
 
-		claims, ok := token.Claims.(jwt.MapClaims)
-		if !ok || !token.Valid {
-			next.ServeHTTP(w, r)
-			return
-		}
-
-		ctx := context.WithValue(r.Context(), KeyUserId, models.UserId((claims["userId"]).(float64)))
-
-		next.ServeHTTP(w, r.WithContext(ctx))
-	})
+		// TODO: validate usetid from payload
+		ctx.Set(UserCtxKey, UserCtx{id: payload.Id})
+		return next(ctx)
+	}
 }
 
-func AuthRequiredMiddleware(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		tokenCookie, err := r.Cookie("token")
-		if err != nil {
-			http.Error(w, `{"error":"auth required"}`, http.StatusUnauthorized)
-			return
-		}
-
-		token, err := token.ParseToken(tokenCookie.Value)
+func (mw *CommonMiddlewareChain) AuthMiddleware(next echo.HandlerFunc) echo.HandlerFunc {
+	return func(ctx echo.Context) error {
+		tokenCookie, err := ctx.Request().Cookie(TokenKeyCookie)
 
 		if err != nil {
-			http.Error(w, `{"error":"auth required"}`, http.StatusUnauthorized)
-			return
+			return echo.NewHTTPError(http.StatusUnauthorized, errorDescription.AUTH_REQUIRED_DESCR)
 		}
 
-		claims, ok := token.Claims.(jwt.MapClaims)
-		if !ok || !token.Valid {
-			http.Error(w, `{"error":"auth required"}`, http.StatusUnauthorized)
-			return
+		payload, err := mw.AuthManager.ParseToken(tokenCookie.Value)
+		if err != nil {
+			return echo.NewHTTPError(http.StatusUnauthorized, errorDescription.BAD_AUTH_TOKEN)
 		}
 
-		ctx := context.WithValue(r.Context(), KeyUserId, models.UserId((claims["userId"]).(float64)))
+		// TODO: validate usetid from payload
+		ctx.Set(UserCtxKey, UserCtx{id: payload.Id})
+		return next(ctx)
+	}
+}
 
-		next.ServeHTTP(w, r.WithContext(ctx))
-	})
+func GetUserFromCtx(ctx echo.Context) *UserCtx {
+	user, ok := ctx.Get(UserCtxKey).(*UserCtx)
+	if !ok {
+		return nil
+	}
+	return user
 }

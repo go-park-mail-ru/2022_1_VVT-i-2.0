@@ -5,7 +5,6 @@ import (
 
 	"github.com/labstack/echo/v4"
 
-	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/delivery/http/middleware"
 	log "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/tools/logger"
 )
 
@@ -13,7 +12,7 @@ import (
 // return echo.NewHTTPError(http.StatusUnauthorized, errors.AUTH_REQUED_MSG)
 func (mw *CommonMiddlewareChain) ErrorHandler(err error, ctx echo.Context) {
 
-	requestId := middleware.GetRequestIdFromCtx(ctx)
+	requestId := GetRequestIdFromCtx(ctx)
 
 	// TODO: чекнуть норм ли ошибка логируется
 	if mw.Logger != nil && requestId > 0 {

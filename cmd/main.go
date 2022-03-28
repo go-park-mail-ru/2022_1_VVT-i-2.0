@@ -25,6 +25,7 @@ import (
 	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/config"
 	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/config/configRouting"
 
+	jwt "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/authManager/jwtManager"
 	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/delivery/http/middleware"
 	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/tools/logger"
 	// userHandler "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/user/delivery"
@@ -59,7 +60,7 @@ func main() {
 	var loggerConfig zap.Config
 	err = config.ReadConfigFile(*configPath, loggerConfig)
 	if err != nil {
-		log.Fatal(errors.Wrap(err, "error reading config"))
+		log.Fatal(errors.Wrap(err, "error reading logger config"))
 	}
 
 	logger, err := logger.NewZapLogger(loggerConfig)
@@ -72,6 +73,17 @@ func main() {
 			log.Fatal("Error occurred in logger sync")
 		}
 	}()
+
+	var jwtManagerConfig jwt.JwtConfig
+	err = config.ReadConfigFile(*configPath, jwtManagerConfig)
+	if err != nil {
+		log.Fatal(errors.Wrap(err, "error reading auth config"))
+	}
+	jwtManager := jwt.NewJwtManager(jwtManagerConfig)
+
+	if jwtManager == nil {
+		log.Fatal(errors.Wrap(err, "error creating jwt-manager object"))
+	}
 
 	// userRepo := userRepo.NewUserRepository(postgresDB.GetDatabase())
 	// // restaurantRepo := restaurantRepo.NewRestaurantRepository(postgresDB.GetDatabase())
@@ -95,7 +107,7 @@ func main() {
 	}
 
 	serverRouting.ConfigureRouting(router)
-	comonMwChain := middleware.NewCommonMiddlewareChain(logger, servConfig.AllowOrigins)
+	comonMwChain := middleware.NewCommonMiddlewareChain(logger, jwtManager, servConfig.AllowOrigins)
 	comonMwChain.ConfigureCommonMiddleware(router)
 
 	httpServ := http.Server{
@@ -105,7 +117,7 @@ func main() {
 		Handler:      router,
 	}
 
-	if err := router.Start(httpServ); err != http.ErrServerClosed {
+	if err := router.StartServer(&httpServ); err != http.ErrServerClosed {
 		log.Fatal(err)
 	}
 }

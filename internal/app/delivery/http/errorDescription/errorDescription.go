@@ -1,4 +1,4 @@
-package error
+package errorDescription
 
 // // ошибки, которые можно показать пользователю [1,+inf]
 // const (
@@ -14,6 +14,7 @@ package error
 
 const (
 	AUTH_REQUIRED_DESCR      = "для этого действия необходимо войти авторизоваться"
+	BAD_AUTH_TOKEN           = "не валидный токен авторизации"
 	NO_SUCH_RESTAURANT_DESCR = "не существует такого ресторана"
 	BAD_REQUEST_BODY_DESCR   = "не правильное тело запроса"
 	SERVER_ERROR_DESCR       = "ошибка на сервера"
@@ -26,7 +27,7 @@ const (
 // 	SERVER_ERROR:       SERVER_ERROR_DESCR,
 // }
 
-// type ErrorT struct {
+// type Error struct {
 // 	Description string
 // 	Code        int
 // }

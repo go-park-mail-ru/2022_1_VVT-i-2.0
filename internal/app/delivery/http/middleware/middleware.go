@@ -20,11 +20,11 @@ func NewCommonMiddlewareChain(logger log.Logger, authManager auth.AuthManager, a
 	}
 }
 
-func (mwChain *CommonMiddlewareChain) ConfigureCommonMiddleware(router *echo.Echo, allowOrigins []string) {
+func (mwChain *CommonMiddlewareChain) ConfigureCommonMiddleware(router *echo.Echo) {
 	router.HTTPErrorHandler = mwChain.ErrorHandler
 	router.Use(mwChain.PanicMiddleware)
 	router.Use(mwChain.RequestIdMiddleware)
 	router.Use(mwChain.AccessLogMiddleware)
-	router.Use(middleware.CORSWithConfig(getCorsConfig(allowOrigins)))
+	router.Use(middleware.CORSWithConfig(getCorsConfig(mwChain.AllowOrigins)))
 	router.Use(mwChain.AuthMiddleware)
 }

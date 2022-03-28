@@ -15,6 +15,7 @@ func NewConfig() *ServConfig {
 	return &ServConfig{}
 }
 
+// TODOмб указатель использовать?
 func ReadConfigFile(path string, dst interface{}) error {
 	config := NewConfig()
 	_, err := toml.DecodeFile(path, config)
