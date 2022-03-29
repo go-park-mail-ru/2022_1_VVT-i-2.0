@@ -20,9 +20,8 @@ import (
 
 	"github.com/labstack/echo/v4"
 	"github.com/pkg/errors"
-	"go.uber.org/zap"
 
-	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/config"
+	conf "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/config"
 	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/config/configRouting"
 
 	jwt "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/authManager/jwtManager"
@@ -43,8 +42,8 @@ func main() {
 	configPath := flag.String("config", "../config/serv.toml", "path to config file")
 	flag.Parse()
 
-	var servConfig config.ServConfig
-	err := config.ReadConfigFile(*configPath, servConfig)
+	config := conf.NewConfig()
+	err := conf.ReadConfigFile(*configPath, config)
 	if err != nil {
 		log.Fatal(errors.Wrap(err, "error reading config"))
 	}
@@ -57,13 +56,7 @@ func main() {
 	// }
 	// defer postgresDB.Close()
 
-	var loggerConfig zap.Config
-	err = config.ReadConfigFile(*configPath, loggerConfig)
-	if err != nil {
-		log.Fatal(errors.Wrap(err, "error reading logger config"))
-	}
-
-	logger, err := logger.NewZapLogger(loggerConfig)
+	logger, err := logger.NewZapLogger(config.LoggerConfig)
 	if err != nil {
 		log.Fatal(errors.Wrap(err, "error creating logger object"))
 	}
@@ -74,12 +67,7 @@ func main() {
 		}
 	}()
 
-	var jwtManagerConfig jwt.JwtConfig
-	err = config.ReadConfigFile(*configPath, jwtManagerConfig)
-	if err != nil {
-		log.Fatal(errors.Wrap(err, "error reading auth config"))
-	}
-	jwtManager := jwt.NewJwtManager(jwtManagerConfig)
+	jwtManager := jwt.NewJwtManager(config.AuthConfig)
 
 	if jwtManager == nil {
 		log.Fatal(errors.Wrap(err, "error creating jwt-manager object"))
@@ -107,13 +95,13 @@ func main() {
 	}
 
 	serverRouting.ConfigureRouting(router)
-	comonMwChain := middleware.NewCommonMiddlewareChain(logger, jwtManager, servConfig.AllowOrigins)
+	comonMwChain := middleware.NewCommonMiddlewareChain(logger, jwtManager, config.ServConfig.AllowOrigins)
 	comonMwChain.ConfigureCommonMiddleware(router)
 
 	httpServ := http.Server{
-		Addr:         servConfig.BindAddr,
-		ReadTimeout:  time.Duration(servConfig.ReadTimeout) * time.Second,
-		WriteTimeout: time.Duration(servConfig.WriteTimeout) * time.Second,
+		Addr:         config.ServConfig.BindAddr,
+		ReadTimeout:  time.Duration(config.ServConfig.ReadTimeout) * time.Second,
+		WriteTimeout: time.Duration(config.ServConfig.WriteTimeout) * time.Second,
 		Handler:      router,
 	}
 
