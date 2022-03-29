@@ -27,4 +27,11 @@ func (mwChain *CommonMiddlewareChain) ConfigureCommonMiddleware(router *echo.Ech
 	router.Use(mwChain.AccessLogMiddleware)
 	router.Use(middleware.CORSWithConfig(getCorsConfig(mwChain.AllowOrigins)))
 	router.Use(mwChain.AuthOptMiddleware)
+	// router.HTTPErrorHandler = ErrorHandler
+
+	// router.HTTPErrorHandler = func(err error, c echo.Context) {
+	// fmt.Println("++++++++error handler++++++++")
+	// }
+
+	// router.HTTPErrorHandler = router.DefaultHTTPErrorHandler
 }

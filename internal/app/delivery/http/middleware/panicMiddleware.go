@@ -21,12 +21,11 @@ func (mw *CommonMiddlewareChain) PanicMiddleware(next echo.HandlerFunc) echo.Han
 					log.UrlTitle, ctx.Request().URL.Path,
 					log.ErrorMsgTitle, fmt.Sprint(err),
 				)
-				// TODO set response 500 error
 				ctx.NoContent(http.StatusInternalServerError)
 				http.Error(ctx.Response(), `{"error":"error on server"}`, http.StatusInternalServerError)
 			}
 		}()
-		next(ctx)
-		return nil
+		return next(ctx)
+
 	}
 }

@@ -95,6 +95,7 @@ func main() {
 	}
 
 	serverRouting.ConfigureRouting(router)
+
 	comonMwChain := middleware.NewCommonMiddlewareChain(logger, jwtManager, config.ServConfig.AllowOrigins)
 	comonMwChain.ConfigureCommonMiddleware(router)
 

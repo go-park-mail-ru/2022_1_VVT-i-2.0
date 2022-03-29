@@ -2,6 +2,7 @@ package configRouting
 
 import (
 	"fmt"
+	"net/http"
 
 	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/delivery/http/middleware"
 	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/models"
@@ -15,7 +16,13 @@ type ServerHandlers struct {
 
 func (sh *ServerHandlers) ConfigureRouting(router *echo.Echo) {
 	// v1Prefix := "api/v1/"
-	router.GET("/", hello)
+	router.GET("/", err)
+	// router.HTTPErrorHandler = func(err error, c echo.Context) {
+	// 	fmt.Println("++++++++error handler++++++++")
+	// }
+	router.HTTPErrorHandler = router.DefaultHTTPErrorHandler
+	router.GET("/h", hello)
+
 	// TODO: set auth-mw and auth-opt-mw to urls
 	// router.POST(v1Prefix+"login", sh.UserHandler.Login)
 	// router.POST(v1Prefix+"logout", sh.UserHandler.Logout)
@@ -23,7 +30,17 @@ func (sh *ServerHandlers) ConfigureRouting(router *echo.Echo) {
 	////...
 }
 
+func GetUser(ctx echo.Context) error {
+	fmt.Println("===========get user handler===========")
+	return echo.NewHTTPError(http.StatusUnauthorized, "Please provide valid credentials")
+}
+
 // TODO: delete this
+func err(ctx echo.Context) error {
+	fmt.Println("=====in err func=====")
+	return echo.NewHTTPError(http.StatusUnauthorized, "Please provide valid credentials")
+}
+
 func hello(ctx echo.Context) error {
 	user := middleware.GetUserFromCtx(ctx)
 	fmt.Println("--user----")
@@ -49,5 +66,9 @@ func hello(ctx echo.Context) error {
 	}{Msg: "hi incognito!"})
 	fmt.Println(ctx.Response())
 
-	return nil
+	err := echo.NewHTTPError(http.StatusUnauthorized, "Please provide valid credentials")
+	fmt.Printf(err.Error())
+	return err
+
+	// return echo.NewHTTPError(http.StatusUnauthorized, errorDescription.AUTH_REQUIRED_DESCR)
 }
