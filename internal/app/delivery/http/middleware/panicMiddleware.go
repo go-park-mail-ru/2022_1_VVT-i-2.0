@@ -10,6 +10,7 @@ import (
 
 func (mw *CommonMiddlewareChain) PanicMiddleware(next echo.HandlerFunc) echo.HandlerFunc {
 	return func(ctx echo.Context) error {
+		fmt.Println("in panic-mw")
 		defer func() {
 			if err := recover(); err != nil {
 				requestId := GetRequestIdFromCtx(ctx)

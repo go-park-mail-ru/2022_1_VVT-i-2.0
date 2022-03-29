@@ -10,7 +10,7 @@ import (
 )
 
 type JwtManager struct {
-	key    string
+	key    []byte
 	method jwt.SigningMethod
 }
 
@@ -25,13 +25,14 @@ func NewJwtManager(cfg conf.AuthManagerConfig) *JwtManager {
 		return nil
 	}
 	return &JwtManager{
-		key:    cfg.Key,
+		key:    []byte(cfg.Key),
 		method: methodObj,
 	}
 }
 
 func (manager *JwtManager) CreateToken(payload authManager.TokenPayload) (string, error) {
 	token := jwt.NewWithClaims(manager.method, jwt.MapClaims(authManager.TokenPayloadToMap(payload)))
+	// return token.SignedString(manager.key)
 	return token.SignedString(manager.key)
 }
 

@@ -1,6 +1,8 @@
 package authManager
 
-import "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/models"
+import (
+	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/models"
+)
 
 type TokenPayload struct {
 	Id models.UserId
@@ -23,6 +25,6 @@ func TokenPayloadToMap(payload TokenPayload) map[string]interface{} {
 
 func MapToTokenPayload(payloadMap map[string]interface{}) TokenPayload {
 	return TokenPayload{
-		Id: payloadMap[idTitle].(models.UserId),
+		Id: models.UserId(payloadMap[idTitle].(float64)),
 	}
 }

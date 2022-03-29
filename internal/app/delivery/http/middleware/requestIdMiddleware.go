@@ -1,6 +1,8 @@
 package middleware
 
 import (
+	"fmt"
+
 	"github.com/labstack/echo/v4"
 )
 
@@ -15,6 +17,7 @@ func nextRecId() uint64 {
 
 func (mw *CommonMiddlewareChain) RequestIdMiddleware(next echo.HandlerFunc) echo.HandlerFunc {
 	return func(ctx echo.Context) error {
+		fmt.Println("in reqid-mw")
 		currReqId := nextRecId()
 		ctx.Set(RequestIdCtxKey, currReqId)
 		return next(ctx)

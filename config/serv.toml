@@ -13,13 +13,12 @@ messageKey = "msg"
 timeKey = "finished"
 levelKey = "lvl"
 namekey  = "name" 
-CallerKey = "caller"
-FunctionKey = "funclion"
-StacktraceKey = "stack_trace"
+functionKey = "funclion"
+stacktraceKey = "stack_trace"
 
 [authManager]
-key="1!#Q23eR*E5#45#$wer4%6&"
-method="RS256"
+key="!@1eqQWERwer$%^YWFgsfghw$%%^E67ws"
+method="HS256"
 
 [database]
 user = "postgres" # TODO установить норм имя

@@ -26,5 +26,5 @@ func (mwChain *CommonMiddlewareChain) ConfigureCommonMiddleware(router *echo.Ech
 	router.Use(mwChain.RequestIdMiddleware)
 	router.Use(mwChain.AccessLogMiddleware)
 	router.Use(middleware.CORSWithConfig(getCorsConfig(mwChain.AllowOrigins)))
-	router.Use(mwChain.AuthMiddleware)
+	router.Use(mwChain.AuthOptMiddleware)
 }
