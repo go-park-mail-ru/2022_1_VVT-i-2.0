@@ -14,6 +14,7 @@ package main
 
 import (
 	"flag"
+	"fmt"
 	"log"
 	"net/http"
 	"time"
@@ -105,6 +106,7 @@ func main() {
 		WriteTimeout: time.Duration(config.ServConfig.WriteTimeout) * time.Second,
 		Handler:      router,
 	}
+	fmt.Println(config.AuthConfig)
 
 	if err := router.StartServer(&httpServ); err != http.ErrServerClosed {
 		log.Fatal(err)

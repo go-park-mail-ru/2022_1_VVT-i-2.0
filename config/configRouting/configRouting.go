@@ -17,9 +17,6 @@ type ServerHandlers struct {
 func (sh *ServerHandlers) ConfigureRouting(router *echo.Echo) {
 	// v1Prefix := "api/v1/"
 	router.GET("/", err)
-	// router.HTTPErrorHandler = func(err error, c echo.Context) {
-	// 	fmt.Println("++++++++error handler++++++++")
-	// }
 	router.HTTPErrorHandler = router.DefaultHTTPErrorHandler
 	router.GET("/h", hello)
 
@@ -66,9 +63,9 @@ func hello(ctx echo.Context) error {
 	}{Msg: "hi incognito!"})
 	fmt.Println(ctx.Response())
 
-	err := echo.NewHTTPError(http.StatusUnauthorized, "Please provide valid credentials")
-	fmt.Printf(err.Error())
-	return err
+	// err := echo.NewHTTPError(http.StatusUnauthorized, "Please provide valid credentials")
+	// fmt.Printf(err.Error())
+	return nil
 
 	// return echo.NewHTTPError(http.StatusUnauthorized, errorDescription.AUTH_REQUIRED_DESCR)
 }

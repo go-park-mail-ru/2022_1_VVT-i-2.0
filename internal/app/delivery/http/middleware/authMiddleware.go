@@ -4,8 +4,10 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/asaskevich/govalidator"
 	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/delivery/http/errorDescription"
 	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/models"
+	_ "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/tools/validator"
 	"github.com/labstack/echo/v4"
 )
 
@@ -28,12 +30,15 @@ func (mw *CommonMiddlewareChain) AuthOptMiddleware(next echo.HandlerFunc) echo.H
 
 		payload, err := mw.AuthManager.ParseToken(tokenCookie.Value)
 		if err != nil {
-			fmt.Println("error:", err)
 			return next(ctx)
 		}
 		fmt.Println(payload)
 
-		// TODO: validate usetid from payload
+		_, err = govalidator.ValidateStruct(payload)
+		if err != nil {
+			return next(ctx)
+		}
+
 		ctx.Set(UserCtxKey, UserCtx{Id: payload.Id})
 		return next(ctx)
 	}
@@ -53,7 +58,11 @@ func (mw *CommonMiddlewareChain) AuthMiddleware(next echo.HandlerFunc) echo.Hand
 			return echo.NewHTTPError(http.StatusUnauthorized, errorDescription.BAD_AUTH_TOKEN)
 		}
 
-		// TODO: validate usetid from payload
+		_, err = govalidator.ValidateStruct(payload)
+		if err != nil {
+			return echo.NewHTTPError(http.StatusUnauthorized, errorDescription.BAD_AUTH_TOKEN)
+		}
+
 		ctx.Set(UserCtxKey, UserCtx{Id: payload.Id})
 		return next(ctx)
 	}

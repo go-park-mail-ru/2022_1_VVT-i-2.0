@@ -19,6 +19,7 @@ stacktraceKey = "stack_trace"
 [authManager]
 key="!@1eqQWERwer$%^YWFgsfghw$%%^E67ws"
 method="HS256"
+expiryTime="168h" #duration tipe
 
 [database]
 user = "postgres" # TODO установить норм имя
