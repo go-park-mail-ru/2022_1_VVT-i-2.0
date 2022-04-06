@@ -1,16 +1,27 @@
+[server]
 bindAddr = ":8080"
 readTimeout = 10
 writeTimeout= 10
+allowOrigins=["", "http://localhost:3000", "http://tavide.xyz:3000"]
 
 [logger]
 level = "debug"
 encoding = "json"
 outputPaths = ["../access_log"]
 errorOutputPaths = ["../error_log"]
-
-[logger.encoderConfig]
 messageKey = "msg"
 timeKey = "finished"
 levelKey = "lvl"
-encodeLevel = "lowercase"
-encodeTime = "iso8601"
+namekey  = "name" 
+functionKey = "funclion"
+stacktraceKey = "stack_trace"
+
+[authManager]
+key="!@1eqQWERwer$%^YWFgsfghw$%%^E67ws"
+method="HS256"
+
+[database]
+user = "postgres" # TODO установить норм имя
+password = ""
+port = 8000
+connectionMax = 5000
