@@ -1,13 +1,17 @@
 package config
 
 import (
+	"time"
+
 	"github.com/BurntSushi/toml"
 )
 
 type Config struct {
-	ServConfig   ServerConfig      `toml:"server"`
-	LoggerConfig LogConfig         `toml:"logger"`
-	AuthConfig   AuthManagerConfig `toml:"authManager"`
+	ServConfig            ServerConfig      `toml:"server"`
+	LoggerConfig          LogConfig         `toml:"logger"`
+	AuthentificatorConfig AuthManagerConfig `toml:"authManager"`
+	NotificatorConfig     NotificatorConfig `toml:"notificator"`
+	CacherConfig          CachConfig        `toml:"cacher"`
 }
 
 type ServerConfig struct {
@@ -31,9 +35,30 @@ type LogConfig struct {
 	StacktraceKey string
 }
 
+type CachConfig struct {
+	Host string
+	Port int
+}
+
 type AuthManagerConfig struct {
-	Key    string
-	Method string
+	Key        string
+	Method     string
+	ExpiryTime duration
+}
+type duration struct {
+	time.Duration
+}
+
+func (d *duration) UnmarshalText(text []byte) error {
+	var err error
+	d.Duration, err = time.ParseDuration(string(text))
+	return err
+}
+
+type NotificatorConfig struct {
+	ApiKey    string
+	ApiSecret string
+	BrandName string
 }
 
 func NewConfig() *Config {

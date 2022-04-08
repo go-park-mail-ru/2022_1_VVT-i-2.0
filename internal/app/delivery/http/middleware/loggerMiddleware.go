@@ -16,9 +16,9 @@ func (mw *CommonMiddlewareChain) AccessLogMiddleware(next echo.HandlerFunc) echo
 		reqId := GetRequestIdFromCtx(ctx)
 		ctx.Set(LoggerCtxKey, mw.Logger)
 		start := time.Now()
-		next(ctx)
+		result := next(ctx)
 		log.AccessLog(&mw.Logger, reqId, ctx.Request().Method, ctx.Request().RemoteAddr, ctx.Request().URL.Path, time.Since(start))
-		return nil
+		return result
 	}
 }
 

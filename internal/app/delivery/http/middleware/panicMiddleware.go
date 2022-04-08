@@ -10,7 +10,6 @@ import (
 
 func (mw *CommonMiddlewareChain) PanicMiddleware(next echo.HandlerFunc) echo.HandlerFunc {
 	return func(ctx echo.Context) error {
-		fmt.Println("in panic-mw")
 		defer func() {
 			if err := recover(); err != nil {
 				requestId := GetRequestIdFromCtx(ctx)
@@ -21,12 +20,12 @@ func (mw *CommonMiddlewareChain) PanicMiddleware(next echo.HandlerFunc) echo.Han
 					log.UrlTitle, ctx.Request().URL.Path,
 					log.ErrorMsgTitle, fmt.Sprint(err),
 				)
-				// TODO set response 500 error
-				ctx.NoContent(http.StatusInternalServerError)
-				http.Error(ctx.Response(), `{"error":"error on server"}`, http.StatusInternalServerError)
+				ctx.JSON(http.StatusInternalServerError, struct {
+					Error string `json:"error"`
+				}{Error: "internal server error"})
 			}
 		}()
-		next(ctx)
-		return nil
+		return next(ctx)
+
 	}
 }
