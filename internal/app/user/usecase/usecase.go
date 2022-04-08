@@ -87,8 +87,6 @@ func (u *UserUsecase) Login(req *models.LoginRequest) (*models.UserDataResp, err
 	}, nil
 }
 
-/*
-
 func (u *UserUsecase) Register(req *models.RegisterRequest) (*models.UserDataResp, error) {
 	isCorrect, err := u.isCodeCorrect(req.Phone, req.Code)
 	if err != nil {
@@ -98,11 +96,9 @@ func (u *UserUsecase) Register(req *models.RegisterRequest) (*models.UserDataRes
 		return nil, servErrors.NewError(servErrors.WRONG_AUTH_CODE, servErrors.WRONG_AUTH_CODE_DESCR)
 	}
 
-	u.UserRepo.
-
-	userData, err := u.UserRepo.GetUserByPhone(req.Phone)
+	userData, err := u.UserRepo.AddUser(&models.UserAddDataStorage{Phone: req.Phone, Email: req.Email, Name: req.Name})
 	if err != nil {
-		return nil, errors.Wrap(err, "error getting user by phone")
+		return nil, errors.Wrap(err, "error adding user to storage")
 	}
 	return &models.UserDataResp{
 		Phone: userData.Phone,
@@ -110,4 +106,3 @@ func (u *UserUsecase) Register(req *models.RegisterRequest) (*models.UserDataRes
 		Email: userData.Email,
 	}, nil
 }
-*/

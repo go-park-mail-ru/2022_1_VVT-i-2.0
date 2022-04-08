@@ -73,7 +73,7 @@ func NewError(eCode int, eDescr string) Error {
 	}
 }
 
-func ErrorCause(e error) *Error {
+func ErrorAs(e error) *Error {
 	var cause Error
 	if ok := errors.As(e, &cause); ok {
 		return &cause

@@ -12,6 +12,12 @@ type UserDataStorage struct {
 	Email string `json:"email"`
 }
 
+type UserAddDataStorage struct {
+	Name  string `json:"name"`
+	Phone string `json:"phone"`
+	Email string `json:"email"`
+}
+
 type UserDataResp struct {
 	Name  string `json:"name"`
 	Phone string `json:"phone"`
@@ -33,7 +39,7 @@ type RegisterRequest struct {
 	Phone string `json:"phone" valid:"phone, required"`
 	Code  string `json:"code" valid:"required"`
 	Name  string `json:"name" valid:"required"`
-	Email string `json:"email" valid:"Email,required"`
+	Email string `json:"email" valid:"email,required"`
 }
 
 type SendCodeReq struct {

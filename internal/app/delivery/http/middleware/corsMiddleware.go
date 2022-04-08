@@ -11,7 +11,7 @@ import (
 		"x-csrf-token", "access-control-expose-headers"},
 */
 
-func getCorsConfig(allowOrigins []string) middleware.CORSConfig {
+func GetCorsConfig(allowOrigins []string) middleware.CORSConfig {
 	// TODO: это все заголовки?
 	fmt.Println("in get-cors-conf")
 	return middleware.CORSConfig{

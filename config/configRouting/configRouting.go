@@ -15,7 +15,8 @@ type ServerHandlers struct {
 }
 
 const (
-	V1Prefix = "/api/v1/"
+	V1Prefix     = "/api/v1/"
+	V1AuthPrefix = "/api/v1/auth/"
 )
 
 func (sh *ServerHandlers) ConfigureRouting(router *echo.Echo) {
@@ -28,7 +29,7 @@ func (sh *ServerHandlers) ConfigureRouting(router *echo.Echo) {
 
 	router.POST(V1Prefix+"login", sh.UserHandler.Login)
 	// router.POST(v1Prefix+"logout", sh.UserHandler.Logout)
-	// router.POST(v1Prefix+"register", sh.UserHandler.Register)
+	router.POST(V1Prefix+"register", sh.UserHandler.Register)
 	////...
 }
 
