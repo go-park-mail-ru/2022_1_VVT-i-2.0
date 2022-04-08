@@ -18,7 +18,6 @@ func (mw *CommonMiddlewareChain) ErrorHandler(err error, ctx echo.Context) {
 	requestId := GetRequestIdFromCtx(ctx)
 
 	// TODO: чекнуть норм ли ошибка логируется
-	// TODO: логировать только в случае отрициательного кода причины ошибки
 	if mw.Logger != nil && requestId > 0 {
 		mw.Logger.Errorw("error happent",
 			log.ReqIdTitle, requestId,
@@ -32,7 +31,6 @@ func (mw *CommonMiddlewareChain) ErrorHandler(err error, ctx echo.Context) {
 			Error string `json:"error"`
 		}{Error: err.Message.(string)})
 	default:
-		// TODO: залогировать неизвестную ошибку
 		ctx.JSON(http.StatusInternalServerError, struct {
 			Error string `json:"error"`
 		}{Error: "internal server error"})

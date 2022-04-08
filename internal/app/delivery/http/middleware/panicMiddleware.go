@@ -8,7 +8,6 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-// TODO: отправить ответ
 func (mw *CommonMiddlewareChain) PanicMiddleware(next echo.HandlerFunc) echo.HandlerFunc {
 	return func(ctx echo.Context) error {
 		defer func() {

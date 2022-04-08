@@ -1,7 +1,6 @@
 package cacher
 
 type Cacher interface {
-	// TODO поправить
 	Set(item *Item) error
 	Get(key string) (*Item, error)
 	Delete(key string) error
