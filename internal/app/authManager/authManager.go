@@ -9,7 +9,7 @@ import (
 
 type TokenPayload struct {
 	Id  models.UserId `valid:"userId, required"`
-	Exp time.Time     `valid:"expired, required"` // дата, после которой протухнет токен
+	Exp time.Time     `valid:"expired, required"`
 }
 
 const (

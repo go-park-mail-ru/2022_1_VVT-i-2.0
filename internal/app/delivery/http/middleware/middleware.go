@@ -1,6 +1,7 @@
 package middleware
 
 import (
+	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/config/configRouting"
 	auth "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/authManager"
 	log "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/tools/logger"
 	"github.com/labstack/echo/v4"
@@ -26,12 +27,7 @@ func (mwChain *CommonMiddlewareChain) ConfigureCommonMiddleware(router *echo.Ech
 	router.Use(mwChain.RequestIdMiddleware)
 	router.Use(mwChain.AccessLogMiddleware)
 	router.Use(middleware.CORSWithConfig(getCorsConfig(mwChain.AllowOrigins)))
-	router.Use(mwChain.AuthOptMiddleware)
-	// router.HTTPErrorHandler = ErrorHandler
 
-	// router.HTTPErrorHandler = func(err error, c echo.Context) {
-	// fmt.Println("++++++++error handler++++++++")
-	// }
-
-	// router.HTTPErrorHandler = router.DefaultHTTPErrorHandler
+	router.Group(configRouting.V1Prefix, mwChain.AuthOptMiddleware)
+	router.Group(configRouting.V1Prefix+"/auth", mwChain.AuthMiddleware)
 }

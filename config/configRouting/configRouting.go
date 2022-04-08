@@ -4,40 +4,54 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/delivery/http/middleware"
-	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/models"
+	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/tools/servErrors"
+	userHandler "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/user/delivery/http"
 	"github.com/labstack/echo/v4"
 )
 
 type ServerHandlers struct {
-	// UserHandler *userHttp.UserHandler
+	UserHandler *userHandler.UserHandler
 	/// ...
 }
 
-func (sh *ServerHandlers) ConfigureRouting(router *echo.Echo) {
-	// v1Prefix := "api/v1/"
-	router.GET("/", err)
-	router.HTTPErrorHandler = router.DefaultHTTPErrorHandler
-	router.GET("/h", hello)
+const (
+	V1Prefix = "/api/v1/"
+)
 
-	// TODO: set auth-mw and auth-opt-mw to urls
-	// router.POST(v1Prefix+"login", sh.UserHandler.Login)
+func (sh *ServerHandlers) ConfigureRouting(router *echo.Echo) {
+	// TODO: удалить
+	router.GET("/", noErr)
+	router.GET("/err", err)
+	router.GET("/panic", panicH)
+	router.HTTPErrorHandler = router.DefaultHTTPErrorHandler
+	// router.GET("/h", hello)
+
+	router.POST(V1Prefix+"login", sh.UserHandler.Login)
 	// router.POST(v1Prefix+"logout", sh.UserHandler.Logout)
 	// router.POST(v1Prefix+"register", sh.UserHandler.Register)
 	////...
 }
 
-func GetUser(ctx echo.Context) error {
-	fmt.Println("===========get user handler===========")
-	return echo.NewHTTPError(http.StatusUnauthorized, "Please provide valid credentials")
-}
-
 // TODO: delete this
 func err(ctx echo.Context) error {
 	fmt.Println("=====in err func=====")
-	return echo.NewHTTPError(http.StatusUnauthorized, "Please provide valid credentials")
+	return echo.NewHTTPError(http.StatusBadRequest, servErrors.BAD_REQUEST_BODY_DESCR)
 }
 
+func noErr(ctx echo.Context) error {
+	fmt.Println("=====in no-err func=====")
+	return ctx.JSON(200, struct {
+		Data string `json:"data-key"`
+	}{Data: "data-val"})
+}
+
+func panicH(ctx echo.Context) error {
+	fmt.Println("=====in panic func=====")
+	panic("I panic")
+	// return echo.NewHTTPError(http.StatusUnauthorized, "Please provide valid credentials")
+}
+
+/*
 func hello(ctx echo.Context) error {
 	user := middleware.GetUserFromCtx(ctx)
 	fmt.Println("--user----")
@@ -69,3 +83,4 @@ func hello(ctx echo.Context) error {
 
 	// return echo.NewHTTPError(http.StatusUnauthorized, errorDescription.AUTH_REQUIRED_DESCR)
 }
+*/

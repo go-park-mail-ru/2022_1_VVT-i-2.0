@@ -21,8 +21,17 @@ key="!@1eqQWERwer$%^YWFgsfghw$%%^E67ws"
 method="HS256"
 expiryTime="168h" #duration tipe
 
+[notificator]
+apiKey="c4624db8"
+apiSecret="1SQlhK6gbfJP43Kz"
+brandName="Foobrinto"	
+
 [database]
 user = "postgres" # TODO установить норм имя
 password = ""
 port = 8000
 connectionMax = 5000
+
+[cacher]
+host = "127.0.0.1"
+port = 11211

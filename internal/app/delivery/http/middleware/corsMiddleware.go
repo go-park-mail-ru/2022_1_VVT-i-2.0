@@ -6,13 +6,19 @@ import (
 	"github.com/labstack/echo/v4/middleware"
 )
 
+/*
+	AllowedHeaders: []string{"access-control-allow-origin", "content-type",
+		"x-csrf-token", "access-control-expose-headers"},
+*/
+
 func getCorsConfig(allowOrigins []string) middleware.CORSConfig {
 	// TODO: это все заголовки?
 	fmt.Println("in get-cors-conf")
 	return middleware.CORSConfig{
 		AllowOrigins:     allowOrigins,
 		AllowCredentials: true,
+		AllowMethods:     []string{"GET", "POST", "OPTIONS", "PUT"},
 		ExposeHeaders:    []string{"authorization", "x-csrf-token"},
-		MaxAge:           10000,
+		MaxAge:           86400,
 	}
 }

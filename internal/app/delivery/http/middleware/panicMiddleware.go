@@ -8,9 +8,9 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
+// TODO: отправить ответ
 func (mw *CommonMiddlewareChain) PanicMiddleware(next echo.HandlerFunc) echo.HandlerFunc {
 	return func(ctx echo.Context) error {
-		fmt.Println("in panic-mw")
 		defer func() {
 			if err := recover(); err != nil {
 				requestId := GetRequestIdFromCtx(ctx)
@@ -21,8 +21,9 @@ func (mw *CommonMiddlewareChain) PanicMiddleware(next echo.HandlerFunc) echo.Han
 					log.UrlTitle, ctx.Request().URL.Path,
 					log.ErrorMsgTitle, fmt.Sprint(err),
 				)
-				ctx.NoContent(http.StatusInternalServerError)
-				http.Error(ctx.Response(), `{"error":"error on server"}`, http.StatusInternalServerError)
+				ctx.JSON(http.StatusInternalServerError, struct {
+					Error string `json:"error"`
+				}{Error: "internal server error"})
 			}
 		}()
 		return next(ctx)

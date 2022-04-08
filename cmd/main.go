@@ -27,10 +27,16 @@ import (
 
 	jwt "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/authManager/jwtManager"
 	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/delivery/http/middleware"
-	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/tools/logger"
-	// userHandler "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/user/delivery"
-	// userRepo "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/user/repository"
-	// userUsecase "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/user/usecase"
+
+	// "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/tools/logger"
+
+	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/tools/cacher/memcacher"
+	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/tools/logger/zaplogger"
+	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/tools/notification/sms"
+
+	userHandler "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/user/delivery/http"
+	userRepo "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/user/repository"
+	userUcase "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/user/usecase"
 	// restaurantHandler "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/restaurant/delivery"
 	// restaurantRepo "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/restaurant/repository"
 	// restaurantUsecase "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/restaurant/usecase"
@@ -57,7 +63,7 @@ func main() {
 	// }
 	// defer postgresDB.Close()
 
-	logger, err := logger.NewZapLogger(config.LoggerConfig)
+	logger, err := zaplogger.NewZapLogger(&config.LoggerConfig)
 	if err != nil {
 		log.Fatal(errors.Wrap(err, "error creating logger object"))
 	}
@@ -68,28 +74,35 @@ func main() {
 		}
 	}()
 
-	jwtManager := jwt.NewJwtManager(config.AuthConfig)
+	jwtManager := jwt.NewJwtManager(config.AuthentificatorConfig)
 
 	if jwtManager == nil {
 		log.Fatal(errors.Wrap(err, "error creating jwt-manager object"))
 	}
 
-	// userRepo := userRepo.NewUserRepository(postgresDB.GetDatabase())
+	memcacher, err := memcacher.NewMemcacher(&config.CacherConfig)
+	if err != nil {
+		log.Fatal(errors.Wrap(err, "error creating memcacher"))
+	}
+
+	smsSender := sms.NewSmsManager(&config.NotificatorConfig)
+
+	userRepo := userRepo.NewUserRepo()
 	// // restaurantRepo := restaurantRepo.NewRestaurantRepository(postgresDB.GetDatabase())
 	// // dishRepo := dishRepo.NewDishRepository(postgresDB.GetDatabase())
 
-	// userUcase := userUsecase.NewUserUsecase(userRepo)
+	userUcase := userUcase.NewUsecase(smsSender, memcacher, userRepo)
 	// // restaurantUcase := restaurantUsecase.NewRestaurantUsecase(restaurantRepo)
 	// // dishUcase := dishUsecase.NewDishUsecase(dishRepo)
 
-	// userHandler := userHandler.NewUserHandler(userUcase)
+	userHandler := userHandler.NewUserHandler(userUcase, jwtManager)
 	// // restaurantHandler := restaurantHandler.NewRestaurantHandler(restaurantUcase)
 	// // dishHandler := dishHandler.NewDishHandler(dishUcase)
 
 	router := echo.New()
 
 	serverRouting := configRouting.ServerHandlers{
-		// UserHandler: userHandler,
+		UserHandler: userHandler,
 		// OrderHandler: orderHandler,
 		// CartHandler:  cartHandler,
 		//...
@@ -106,7 +119,7 @@ func main() {
 		WriteTimeout: time.Duration(config.ServConfig.WriteTimeout) * time.Second,
 		Handler:      router,
 	}
-	fmt.Println(config.AuthConfig)
+	fmt.Println(config.AuthentificatorConfig)
 
 	if err := router.StartServer(&httpServ); err != http.ErrServerClosed {
 		log.Fatal(err)

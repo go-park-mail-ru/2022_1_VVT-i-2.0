@@ -1,7 +1,6 @@
 package jwtManager
 
 import (
-	"fmt"
 	"time"
 
 	conf "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/config"
@@ -29,17 +28,15 @@ func NewJwtManager(cfg conf.AuthManagerConfig) *JwtManager {
 }
 
 func (manager *JwtManager) CreateToken(payload authManager.TokenPayload) (string, error) {
-	// payload.Exp := 1
 	payload.Exp = time.Now().Add(manager.expDuration)
 	token := jwt.NewWithClaims(manager.method, jwt.MapClaims(authManager.TokenPayloadToMap(payload)))
-	// return token.SignedString(manager.key)
 	return token.SignedString(manager.key)
 }
 
 func (manager *JwtManager) ParseToken(token string) (authManager.TokenPayload, error) {
 	jwtToken, err := jwt.Parse(token, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
-			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
+			return nil, errors.Errorf("unexpected signing method: %v", token.Header["alg"])
 		}
 		return manager.key, nil
 	})
