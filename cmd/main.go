@@ -33,7 +33,7 @@ import (
 	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/tools/cacher/memcacher"
 	servLog "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/tools/logger"
 	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/tools/logger/zaplogger"
-	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/tools/notification/sms"
+	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/tools/notification/flashcall"
 
 	userHandler "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/user/delivery/http"
 	userRepo "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/user/repository"
@@ -88,13 +88,13 @@ func main() {
 		log.Fatal(errors.Wrap(err, "error creating memcacher"))
 	}
 
-	smsSender := sms.NewSmsManager(&config.NotificatorConfig)
+	flashcaller := flashcall.NewFlashcaller(&config.NotificatorConfig)
 
 	userRepo := userRepo.NewUserRepo()
 	// // restaurantRepo := restaurantRepo.NewRestaurantRepository(postgresDB.GetDatabase())
 	// // dishRepo := dishRepo.NewDishRepository(postgresDB.GetDatabase())
 
-	userUcase := userUcase.NewUsecase(smsSender, memcacher, userRepo)
+	userUcase := userUcase.NewUsecase(flashcaller, memcacher, userRepo)
 	// // restaurantUcase := restaurantUsecase.NewRestaurantUsecase(restaurantRepo)
 	// // dishUcase := dishUsecase.NewDishUsecase(dishRepo)
 

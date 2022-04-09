@@ -22,9 +22,8 @@ method="HS256"
 expiryTime="168h" #duration type
 
 [notificator]
-apiKey="c4624db8"
-apiSecret="1SQlhK6gbfJP43Kz"
-brandName="Foobrinto"	
+apiKey="PkzvymZDAVs0qasTSsdz1bxhhA"
+email="nat-s.skv@yandex.ru"
 
 [database]
 user = "postgres" # TODO установить норм имя

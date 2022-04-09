@@ -15,6 +15,7 @@ const (
 // ошибки, которые не нужно логировать
 const (
 	CACH_MISS_CODE = iota
+	FLASHCALL_RESPONSE_ERR
 
 	WRONG_AUTH_CODE
 	AUTH_REQUIRED

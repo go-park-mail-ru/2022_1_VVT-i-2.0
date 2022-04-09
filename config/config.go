@@ -56,9 +56,8 @@ func (d *duration) UnmarshalText(text []byte) error {
 }
 
 type NotificatorConfig struct {
-	ApiKey    string
-	ApiSecret string
-	BrandName string
+	ApiKey string
+	Email  string
 }
 
 func NewConfig() *Config {

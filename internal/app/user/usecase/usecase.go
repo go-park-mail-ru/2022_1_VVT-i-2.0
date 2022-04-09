@@ -50,7 +50,7 @@ func (u *UserUsecase) SendCode(req *models.SendCodeReq) (bool, error) {
 		return false, errors.Wrap(err, "error saving [auth code destination]-code item to cach")
 	}
 
-	err = u.Notificator.Send(req.Phone, codeSendMsg+loginCode, msgEncoding)
+	err = u.Notificator.SendCode(req.Phone, loginCode)
 	if err != nil {
 		return false, errors.Wrap(err, "error sending message with code to auth code destination")
 	}
