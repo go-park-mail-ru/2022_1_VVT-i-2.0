@@ -10,15 +10,15 @@ func NewUserRepo() *UserRepo {
 }
 
 func (r *UserRepo) GetUserByPhone(phone string) (*models.UserDataStorage, error) {
-	return &models.UserDataStorage{Phone: "79000000000", Name: "UserByPhone", Email: "natali-skv@mail.ru"}, nil
+	return &models.UserDataStorage{Id: 1, Phone: "79000000000", Name: "UserByPhone", Email: "natali-skv@mail.ru"}, nil
 }
 
 func (r *UserRepo) AddUser(newUser *models.UserAddDataStorage) (*models.UserDataStorage, error) {
-	return &models.UserDataStorage{Phone: newUser.Phone, Name: newUser.Name, Email: newUser.Email}, nil
+	return &models.UserDataStorage{Id: 2, Phone: newUser.Phone, Name: newUser.Name, Email: newUser.Email}, nil
 }
 
 func (r *UserRepo) GetUserById(id models.UserId) (*models.UserDataStorage, error) {
-	return &models.UserDataStorage{Phone: "79000000000", Name: "Kati", Email: "natali-skv@mail.ru"}, nil
+	return &models.UserDataStorage{Id: 2, Phone: "79000000000", Name: "Kati", Email: "natali-skv@mail.ru"}, nil
 }
 
 func (r *UserRepo) UpdateData(newData models.UserDataUpdateReq) error {

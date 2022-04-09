@@ -31,6 +31,7 @@ import (
 	// "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/tools/logger"
 
 	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/tools/cacher/memcacher"
+	servLog "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/tools/logger"
 	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/tools/logger/zaplogger"
 	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/tools/notification/sms"
 
@@ -74,6 +75,8 @@ func main() {
 		}
 	}()
 
+	servLogger := servLog.NewServLogger(logger)
+
 	jwtManager := jwt.NewJwtManager(config.AuthentificatorConfig)
 
 	if jwtManager == nil {
@@ -110,7 +113,7 @@ func main() {
 
 	serverRouting.ConfigureRouting(router)
 
-	comonMwChain := middleware.NewCommonMiddlewareChain(logger, jwtManager, config.ServConfig.AllowOrigins)
+	comonMwChain := middleware.NewCommonMiddlewareChain(servLogger, jwtManager, config.ServConfig.AllowOrigins)
 	configRouting.ConfigureCommonMiddleware(router, &comonMwChain)
 
 	httpServ := http.Server{

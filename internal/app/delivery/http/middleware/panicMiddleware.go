@@ -3,8 +3,8 @@ package middleware
 import (
 	"fmt"
 	"net/http"
+	"time"
 
-	log "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/tools/logger"
 	"github.com/labstack/echo/v4"
 )
 
@@ -13,19 +13,13 @@ func (mw *CommonMiddlewareChain) PanicMiddleware(next echo.HandlerFunc) echo.Han
 		defer func() {
 			if err := recover(); err != nil {
 				requestId := GetRequestIdFromCtx(ctx)
-				mw.Logger.Errorw(
-					"panic recovered",
-					log.ReqIdTitle, requestId,
-					log.RemoteAddrTitle, ctx.Request().RemoteAddr,
-					log.UrlTitle, ctx.Request().URL.Path,
-					log.ErrorMsgTitle, fmt.Sprint(err),
-				)
+				mw.Logger.Error(requestId, "panic recovered: "+fmt.Sprint(err))
+				mw.Logger.Access(requestId, ctx.Request().Method, ctx.Request().RemoteAddr, ctx.Request().URL.Path, time.Duration(0))
 				ctx.JSON(http.StatusInternalServerError, struct {
 					Error string `json:"error"`
 				}{Error: "internal server error"})
 			}
 		}()
 		return next(ctx)
-
 	}
 }

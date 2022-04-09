@@ -11,8 +11,6 @@ func ConfigureCommonMiddleware(router *echo.Echo, mwChain *middleware.CommonMidd
 	router.Use(mwChain.PanicMiddleware)
 	router.Use(mwChain.RequestIdMiddleware)
 	router.Use(mwChain.AccessLogMiddleware)
+	router.Use(mwChain.AuthMiddleware)
 	router.Use(echoMiddleware.CORSWithConfig(middleware.GetCorsConfig(mwChain.AllowOrigins)))
-
-	router.Group(V1Prefix, mwChain.AuthOptMiddleware)
-	router.Group(V1AuthPrefix, mwChain.AuthMiddleware)
 }

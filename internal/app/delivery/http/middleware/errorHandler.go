@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"net/http"
 
-	log "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/tools/logger"
 	"github.com/pkg/errors"
 
 	"github.com/labstack/echo/v4"
@@ -19,10 +18,7 @@ func (mw *CommonMiddlewareChain) ErrorHandler(err error, ctx echo.Context) {
 
 	// TODO: чекнуть норм ли ошибка логируется
 	if mw.Logger != nil && requestId > 0 {
-		mw.Logger.Errorw("error happent",
-			log.ReqIdTitle, requestId,
-			log.ErrorMsgTitle, err.Error(),
-		)
+		mw.Logger.Error(requestId, err.Error())
 	}
 
 	switch err := errors.Cause(err).(type) {

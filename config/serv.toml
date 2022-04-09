@@ -13,13 +13,13 @@ messageKey = "msg"
 timeKey = "finished"
 levelKey = "lvl"
 namekey  = "name" 
-functionKey = "funclion"
-stacktraceKey = "stack_trace"
+# functionKey = "funclion"
+# stacktraceKey = "stack_trace"
 
 [authManager]
 key="!@1eqQWERwer$%^YWFgsfghw$%%^E67ws"
 method="HS256"
-expiryTime="168h" #duration tipe
+expiryTime="168h" #duration type
 
 [notificator]
 apiKey="c4624db8"

@@ -6,16 +6,23 @@ type UserId uint64
 // }
 
 type UserDataStorage struct {
-	Id    UserId `json:"id"`
-	Name  string `json:"name"`
-	Phone string `json:"phone"`
-	Email string `json:"email"`
+	Id    UserId
+	Name  string
+	Phone string
+	Email string
 }
 
 type UserAddDataStorage struct {
-	Name  string `json:"name"`
-	Phone string `json:"phone"`
-	Email string `json:"email"`
+	Name  string
+	Phone string
+	Email string
+}
+
+type UserDataUsecase struct {
+	Id    UserId
+	Name  string
+	Phone string
+	Email string
 }
 
 type UserDataResp struct {
@@ -43,5 +50,9 @@ type RegisterRequest struct {
 }
 
 type SendCodeReq struct {
-	Phone string
+	Phone string `json:"phone" valid:"phone, required"`
+}
+
+type SendCodeResp struct {
+	IsRegistered bool `json:"registered"`
 }

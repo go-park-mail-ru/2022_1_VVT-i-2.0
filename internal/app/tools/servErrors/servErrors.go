@@ -22,7 +22,9 @@ const (
 	BAD_REQUEST_BODY
 	SERVER_ERROR
 	SENDING_AUTH_CODE
-
+	CREATE_TOKEN
+	PARSE_TOKEN
+	WRONG_TOKEN_CLAIMS
 	// невалидные данные от пользователя
 	INVALID_DATA
 )
@@ -59,7 +61,7 @@ func (e Error) Error() string {
 	return fmt.Sprintf("error with code %d description: %s", e.Code, e.Description)
 }
 
-func (e *Error) Cause() error {
+func (e Error) Cause() error {
 	return e
 }
 

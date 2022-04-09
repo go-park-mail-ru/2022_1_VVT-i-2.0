@@ -68,7 +68,7 @@ func (u *UserUsecase) isCodeCorrect(codeDst string, code string) (bool, error) {
 	return true, nil
 }
 
-func (u *UserUsecase) Login(req *models.LoginRequest) (*models.UserDataResp, error) {
+func (u *UserUsecase) Login(req *models.LoginRequest) (*models.UserDataUsecase, error) {
 	isCorrect, err := u.isCodeCorrect(req.Phone, req.Code)
 	if err != nil {
 		return nil, errors.Wrap(err, "code check failed")
@@ -80,14 +80,15 @@ func (u *UserUsecase) Login(req *models.LoginRequest) (*models.UserDataResp, err
 	if err != nil {
 		return nil, errors.Wrap(err, "error getting user by phone")
 	}
-	return &models.UserDataResp{
+	return &models.UserDataUsecase{
+		Id:    userData.Id,
 		Phone: userData.Phone,
 		Name:  userData.Name,
 		Email: userData.Email,
 	}, nil
 }
 
-func (u *UserUsecase) Register(req *models.RegisterRequest) (*models.UserDataResp, error) {
+func (u *UserUsecase) Register(req *models.RegisterRequest) (*models.UserDataUsecase, error) {
 	isCorrect, err := u.isCodeCorrect(req.Phone, req.Code)
 	if err != nil {
 		return nil, errors.Wrap(err, "code check failed")
@@ -100,7 +101,8 @@ func (u *UserUsecase) Register(req *models.RegisterRequest) (*models.UserDataRes
 	if err != nil {
 		return nil, errors.Wrap(err, "error adding user to storage")
 	}
-	return &models.UserDataResp{
+	return &models.UserDataUsecase{
+		Id:    userData.Id,
 		Phone: userData.Phone,
 		Name:  userData.Name,
 		Email: userData.Email,
