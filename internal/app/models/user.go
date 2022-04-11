@@ -42,7 +42,7 @@ type LoginRequest struct {
 	Code  string `json:"code" valid:"required"`
 }
 
-type RegisterRequest struct {
+type RegisterReq struct {
 	Phone string `json:"phone" valid:"phone, required"`
 	Code  string `json:"code" valid:"required"`
 	Name  string `json:"name" valid:"required"`
@@ -55,4 +55,15 @@ type SendCodeReq struct {
 
 type SendCodeResp struct {
 	IsRegistered bool `json:"registered"`
+}
+
+type UpdateUserReq struct {
+	Name  string `json:"name" `
+	Email string `json:"email" valid:"email"`
+}
+
+type UpdateUser struct {
+	Id    UserId
+	Name  string
+	Email string
 }

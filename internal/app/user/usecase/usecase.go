@@ -50,13 +50,16 @@ func (u *UserUsecase) SendCode(req *models.SendCodeReq) (bool, error) {
 		return false, errors.Wrap(err, "error saving [auth code destination]-code item to cach")
 	}
 
-	err = u.Notificator.SendCode(req.Phone, loginCode)
-	if err != nil {
-		return false, errors.Wrap(err, "error sending message with code to auth code destination")
-	}
+	// err = u.Notificator.SendCode(req.Phone, loginCode)
+	// if err != nil {
+	// 	return false, errors.Wrap(err, "error sending message e with code to auth code destination")
+	// }
 
 	hasSuchUser, err := u.UserRepo.HasUserByPhone(req.Phone)
-	return hasSuchUser, errors.Wrap(err, "error trying to find out if there is such a user in the repository")
+	if err != nil {
+		return false, errors.Wrap(err, "error finding out if there is such user in database")
+	}
+	return hasSuchUser, nil
 }
 
 func (u *UserUsecase) isCodeCorrect(codeDst string, code string) (bool, error) {
@@ -88,7 +91,7 @@ func (u *UserUsecase) Login(req *models.LoginRequest) (*models.UserDataUsecase, 
 	}, nil
 }
 
-func (u *UserUsecase) Register(req *models.RegisterRequest) (*models.UserDataUsecase, error) {
+func (u *UserUsecase) Register(req *models.RegisterReq) (*models.UserDataUsecase, error) {
 	isCorrect, err := u.isCodeCorrect(req.Phone, req.Code)
 	if err != nil {
 		return nil, errors.Wrap(err, "code check failed")
@@ -97,14 +100,40 @@ func (u *UserUsecase) Register(req *models.RegisterRequest) (*models.UserDataUse
 		return nil, servErrors.NewError(servErrors.WRONG_AUTH_CODE, servErrors.WRONG_AUTH_CODE_DESCR)
 	}
 
-	userData, err := u.UserRepo.AddUser(&models.UserAddDataStorage{Phone: req.Phone, Email: req.Email, Name: req.Name})
+	id, err := u.UserRepo.AddUser(&models.UserAddDataStorage{Phone: req.Phone, Email: req.Email, Name: req.Name})
 	if err != nil {
 		return nil, errors.Wrap(err, "error adding user to storage")
+	}
+	return &models.UserDataUsecase{
+		Id:    id,
+		Phone: req.Phone,
+		Name:  req.Name,
+		Email: req.Email,
+	}, nil
+}
+
+func (u *UserUsecase) GetUser(id models.UserId) (*models.UserDataUsecase, error) {
+	userData, err := u.UserRepo.GetUserById(id)
+	if err != nil {
+		return nil, errors.Wrapf(err, "error getting user by id %d", id)
 	}
 	return &models.UserDataUsecase{
 		Id:    userData.Id,
 		Phone: userData.Phone,
 		Name:  userData.Name,
 		Email: userData.Email,
+	}, nil
+}
+
+func (u *UserUsecase) UpdateUser(updates *models.UpdateUser) (*models.UserDataUsecase, error) {
+	updUser, err := u.UserRepo.UpdateUser(updates)
+	if err != nil {
+		return nil, errors.Wrap(err, "error updating user")
+	}
+	return &models.UserDataUsecase{
+		Id:    updUser.Id,
+		Phone: updUser.Phone,
+		Name:  updUser.Name,
+		Email: updUser.Email,
 	}, nil
 }

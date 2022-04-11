@@ -27,9 +27,11 @@ email="nat-s.skv@yandex.ru"
 
 [database]
 user = "postgres" # TODO установить норм имя
-password = ""
-port = 8000
-connectionMax = 5000
+password = "1"
+port = 5432
+host = "127.0.0.1"
+connectionMax = 500
+dbname = "foobrinto"
 
 [cacher]
 host = "127.0.0.1"

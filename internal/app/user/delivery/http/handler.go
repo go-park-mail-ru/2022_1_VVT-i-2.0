@@ -1,7 +1,6 @@
 package userHandler
 
 import (
-	"fmt"
 	"net"
 	"net/http"
 	"time"
@@ -62,10 +61,19 @@ func (h UserHandler) Login(ctx echo.Context) error {
 	userDataUcase, err := h.Usecase.Login(&loginReq)
 	if err != nil {
 		cause := servErrors.ErrorAs(err)
-		if cause != nil && cause.Code == servErrors.CACH_MISS_CODE {
-			return echo.NewHTTPError(http.StatusNotFound, httpErrDescr.NO_SUCH_CODE_INFO)
+		if cause == nil {
+			logger.Error(requestId, err.Error())
+			return echo.NewHTTPError(http.StatusInternalServerError, httpErrDescr.SERVER_ERROR)
 		}
-		return echo.NewHTTPError(http.StatusForbidden, httpErrDescr.WRONG_AUTH_CODE)
+		switch cause.Code {
+		case servErrors.WRONG_AUTH_CODE:
+			return echo.NewHTTPError(http.StatusForbidden, httpErrDescr.WRONG_AUTH_CODE)
+		case servErrors.CACH_MISS_CODE, servErrors.NO_SUCH_ENTITY_IN_DB:
+			return echo.NewHTTPError(http.StatusNotFound, httpErrDescr.NO_SUCH_CODE_INFO)
+		default:
+			logger.Error(requestId, err.Error())
+			return echo.NewHTTPError(http.StatusInternalServerError, httpErrDescr.SERVER_ERROR)
+		}
 	}
 
 	if userDataUcase == nil {
@@ -94,24 +102,32 @@ func (h UserHandler) Register(ctx echo.Context) error {
 	logger := middleware.GetLoggerFromCtx(ctx)
 	requestId := middleware.GetRequestIdFromCtx(ctx)
 
-	var registerReq models.RegisterRequest
+	var registerReq models.RegisterReq
 	if err := ctx.Bind(&registerReq); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, httpErrDescr.BAD_REQUEST_BODY)
 	}
-	fmt.Println(registerReq)
 	if _, err := govalidator.ValidateStruct(registerReq); err != nil {
-		fmt.Println(err)
 		return echo.NewHTTPError(http.StatusBadRequest, httpErrDescr.INVALID_DATA)
 	}
 
 	userDataUcase, err := h.Usecase.Register(&registerReq)
 	if err != nil {
 		cause := servErrors.ErrorAs(err)
-		if cause != nil && cause.Code == servErrors.CACH_MISS_CODE {
-			return echo.NewHTTPError(http.StatusNotFound, httpErrDescr.NO_SUCH_CODE_INFO)
+		if cause == nil {
+			logger.Error(requestId, err.Error())
+			return echo.NewHTTPError(http.StatusInternalServerError, httpErrDescr.SERVER_ERROR)
 		}
-		logger.Error(requestId, err.Error())
-		return echo.NewHTTPError(http.StatusForbidden, httpErrDescr.WRONG_AUTH_CODE)
+		switch cause.Code {
+		case servErrors.WRONG_AUTH_CODE:
+			return echo.NewHTTPError(http.StatusForbidden, httpErrDescr.WRONG_AUTH_CODE)
+		case servErrors.CACH_MISS_CODE:
+			return echo.NewHTTPError(http.StatusNotFound, httpErrDescr.NO_SUCH_CODE_INFO)
+		case servErrors.DB_INSERT:
+			return echo.NewHTTPError(http.StatusConflict, httpErrDescr.SUCH_USER_ALREADY_EXISTS)
+		default:
+			logger.Error(requestId, err.Error())
+			return echo.NewHTTPError(http.StatusInternalServerError, httpErrDescr.SERVER_ERROR)
+		}
 	}
 	if userDataUcase == nil {
 		logger.Error(requestId, "from user-usecase-register returned userData==nil and err==nil, unknown error")
@@ -154,9 +170,7 @@ func (h UserHandler) SendCode(ctx echo.Context) error {
 	if err := ctx.Bind(&sendCodeReq); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, httpErrDescr.BAD_REQUEST_BODY)
 	}
-	fmt.Println(sendCodeReq)
 	if _, err := govalidator.ValidateStruct(sendCodeReq); err != nil {
-		fmt.Println(err)
 		return echo.NewHTTPError(http.StatusBadRequest, httpErrDescr.INVALID_DATA)
 	}
 	isRegistered, err := h.Usecase.SendCode(&sendCodeReq)
@@ -165,4 +179,68 @@ func (h UserHandler) SendCode(ctx echo.Context) error {
 		return echo.NewHTTPError(http.StatusInternalServerError, httpErrDescr.SERVER_ERROR)
 	}
 	return ctx.JSON(http.StatusOK, models.SendCodeResp{IsRegistered: isRegistered})
+}
+
+func (h UserHandler) GetUser(ctx echo.Context) error {
+	user := middleware.GetUserFromCtx(ctx)
+	if user == nil {
+		return echo.NewHTTPError(http.StatusUnauthorized, httpErrDescr.AUTH_REQUIRED)
+	}
+
+	logger := middleware.GetLoggerFromCtx(ctx)
+	requestId := middleware.GetRequestIdFromCtx(ctx)
+
+	userDataUcase, err := h.Usecase.GetUser(user.Id)
+
+	if err != nil {
+		cause := servErrors.ErrorAs(err)
+		if cause != nil && cause.Code == servErrors.NO_SUCH_ENTITY_IN_DB {
+			return echo.NewHTTPError(http.StatusForbidden, httpErrDescr.NO_SUCH_USER)
+		}
+		logger.Error(requestId, err.Error())
+		return echo.NewHTTPError(http.StatusInternalServerError, httpErrDescr.SERVER_ERROR)
+	}
+
+	if userDataUcase == nil {
+		logger.Error(requestId, "from user-usecase-get-user returned userData==nil and err==nil, unknown error")
+		return echo.NewHTTPError(http.StatusInternalServerError, httpErrDescr.SERVER_ERROR)
+	}
+
+	return ctx.JSON(http.StatusOK, models.UserDataResp{Phone: userDataUcase.Phone, Email: userDataUcase.Email, Name: userDataUcase.Name})
+}
+
+func (h UserHandler) UpdateUser(ctx echo.Context) error {
+	user := middleware.GetUserFromCtx(ctx)
+	if user == nil {
+		return echo.NewHTTPError(http.StatusUnauthorized, httpErrDescr.AUTH_REQUIRED)
+	}
+
+	logger := middleware.GetLoggerFromCtx(ctx)
+	requestId := middleware.GetRequestIdFromCtx(ctx)
+
+	var updateReq models.UpdateUserReq
+	if err := ctx.Bind(&updateReq); err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, httpErrDescr.BAD_REQUEST_BODY)
+	}
+	if _, err := govalidator.ValidateStruct(updateReq); err != nil || (updateReq.Email == "" && updateReq.Name == "") {
+		return echo.NewHTTPError(http.StatusBadRequest, httpErrDescr.INVALID_DATA)
+	}
+
+	userDataUcase, err := h.Usecase.UpdateUser(&models.UpdateUser{Id: user.Id, Email: updateReq.Email, Name: updateReq.Name})
+
+	if err != nil {
+		cause := servErrors.ErrorAs(err)
+		if cause != nil && cause.Code == servErrors.DB_UPDATE {
+			return echo.NewHTTPError(http.StatusConflict, httpErrDescr.SUCH_USER_ALREADY_EXISTS)
+		}
+		logger.Error(requestId, err.Error())
+		return echo.NewHTTPError(http.StatusInternalServerError, httpErrDescr.SERVER_ERROR)
+	}
+
+	if userDataUcase == nil {
+		logger.Error(requestId, "from user-usecase-get-user returned userData==nil and err==nil, unknown error")
+		return echo.NewHTTPError(http.StatusInternalServerError, httpErrDescr.SERVER_ERROR)
+	}
+
+	return ctx.JSON(http.StatusOK, models.UserDataResp{Phone: userDataUcase.Phone, Email: userDataUcase.Email, Name: userDataUcase.Name})
 }

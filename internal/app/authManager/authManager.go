@@ -1,7 +1,6 @@
 package authManager
 
 import (
-	"fmt"
 	"time"
 
 	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/models"
@@ -41,9 +40,7 @@ func MapToTokenPayload(payloadMap map[string]interface{}) *TokenPayload {
 	if !ok {
 		return nil
 	}
-	fmt.Println(expStr)
 	exp, _ := time.Parse(time.RFC3339, expStr)
-	fmt.Println(exp)
 	return &TokenPayload{
 		Id:  models.UserId(payloadMap[idTitle].(float64)),
 		Exp: exp,

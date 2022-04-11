@@ -52,21 +52,13 @@ func (f Flashcaller) SendCode(phone string, code string) error {
 
 	client := http.Client{Timeout: 3 * time.Second}
 
-	fmt.Println(fmt.Sprintf(flasgcallUrlFmt, f.email, f.apiKey, phone, code))
 	response, err := client.Get(fmt.Sprintf(flasgcallUrlFmt, f.email, f.apiKey, phone, code))
-	fmt.Println("-----response----")
-	fmt.Print(response)
-	fmt.Println("-----end-response----")
 	if err != nil {
 		return servErrors.NewError(servErrors.FLASHCALL_RESPONSE_ERR, "error getting response from flashcall server: "+err.Error())
 	}
 
 	bodyBuf, err := ioutil.ReadAll(response.Body)
 	response.Body.Close()
-
-	fmt.Println("-----body response----")
-	fmt.Print(bodyBuf)
-	fmt.Println("-----body end-response----")
 
 	if err != nil {
 		return servErrors.NewError(servErrors.FLASHCALL_RESPONSE_ERR, "error reading response body from flashcall server: "+err.Error())

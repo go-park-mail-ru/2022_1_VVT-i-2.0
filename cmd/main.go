@@ -14,7 +14,6 @@ package main
 
 import (
 	"flag"
-	"fmt"
 	"log"
 	"net/http"
 	"time"
@@ -34,6 +33,7 @@ import (
 	servLog "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/tools/logger"
 	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/tools/logger/zaplogger"
 	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/tools/notification/flashcall"
+	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/tools/postgresqlx"
 
 	userHandler "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/user/delivery/http"
 	userRepo "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/user/repository"
@@ -56,13 +56,11 @@ func main() {
 		log.Fatal(errors.Wrap(err, "error reading config"))
 	}
 
-	// var postgresConfig config.ServConfig
-	// err := config.ReadConfigFile(*configPath, servConfig)
-	// postgresDB, err := database.NewPostgres(servConfig.GetPostgresConfig())
-	// if err != nil {
-	// 	log.Fatal(errors.Wrap(error, "error creating postgres agent"))
-	// }
-	// defer postgresDB.Close()
+	pgxManager, err := postgresqlx.NewPostgresqlX(&config.DatabaseCongig)
+	if err != nil {
+		log.Fatal(errors.Wrap(err, "error creating postgres agent"))
+	}
+	defer pgxManager.Close()
 
 	logger, err := zaplogger.NewZapLogger(&config.LoggerConfig)
 	if err != nil {
@@ -90,7 +88,7 @@ func main() {
 
 	flashcaller := flashcall.NewFlashcaller(&config.NotificatorConfig)
 
-	userRepo := userRepo.NewUserRepo()
+	userRepo := userRepo.NewUserRepo(pgxManager)
 	// // restaurantRepo := restaurantRepo.NewRestaurantRepository(postgresDB.GetDatabase())
 	// // dishRepo := dishRepo.NewDishRepository(postgresDB.GetDatabase())
 
@@ -122,7 +120,6 @@ func main() {
 		WriteTimeout: time.Duration(config.ServConfig.WriteTimeout) * time.Second,
 		Handler:      router,
 	}
-	fmt.Println(config.AuthentificatorConfig)
 
 	if err := router.StartServer(&httpServ); err != http.ErrServerClosed {
 		log.Fatal(err)

@@ -1,7 +1,6 @@
 package middleware
 
 import (
-	"fmt"
 	"net/http"
 
 	"github.com/pkg/errors"
@@ -12,8 +11,6 @@ import (
 // from handlers return this:
 // return echo.NewHTTPError(http.StatusUnauthorized, errors.AUTH_REQUED_MSG)
 func (mw *CommonMiddlewareChain) ErrorHandler(err error, ctx echo.Context) {
-	fmt.Println("======in error handler=====")
-
 	requestId := GetRequestIdFromCtx(ctx)
 
 	// TODO: чекнуть норм ли ошибка логируется

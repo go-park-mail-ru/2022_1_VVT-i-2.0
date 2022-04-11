@@ -1,7 +1,6 @@
 package validator
 
 import (
-	"fmt"
 	"regexp"
 	"time"
 
@@ -10,14 +9,13 @@ import (
 )
 
 const (
-	phoneRegexp = `^7[0-9]{10}$`
+	phoneRegexp = `^79[0-9]{9}$`
 )
 
 func init() {
 	govalidator.CustomTypeTagMap.Set(
 		"phone",
 		govalidator.CustomTypeValidator(func(i interface{}, o interface{}) bool {
-			fmt.Println("==+=+===userid validate==+=+==")
 			phone, ok := i.(string)
 			if !ok {
 				return false
@@ -31,7 +29,6 @@ func init() {
 	govalidator.CustomTypeTagMap.Set(
 		"userId",
 		govalidator.CustomTypeValidator(func(i interface{}, o interface{}) bool {
-			fmt.Println("==+=+===userid validate==+=+==")
 			id, ok := i.(models.UserId)
 			if !ok {
 				return false
@@ -46,7 +43,6 @@ func init() {
 	govalidator.CustomTypeTagMap.Set(
 		"expired",
 		govalidator.CustomTypeValidator(func(i interface{}, o interface{}) bool {
-			fmt.Println("-------------expires validate------------")
 			exp, ok := i.(time.Time)
 			if !ok {
 				return false
