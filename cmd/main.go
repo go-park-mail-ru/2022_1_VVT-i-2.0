@@ -111,8 +111,8 @@ func main() {
 
 	serverRouting.ConfigureRouting(router)
 
-	comonMwChain := middleware.NewCommonMiddlewareChain(servLogger, jwtManager, config.ServConfig.AllowOrigins)
-	configRouting.ConfigureCommonMiddleware(router, &comonMwChain)
+	comonMwChain := middleware.NewCommonMiddlewareChain(servLogger, jwtManager)
+	configRouting.ConfigureCommonMiddleware(router, &comonMwChain, &config.CorsConfig, &config.CsrfConfig)
 
 	httpServ := http.Server{
 		Addr:         config.ServConfig.BindAddr,

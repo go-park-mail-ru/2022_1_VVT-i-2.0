@@ -6,14 +6,12 @@ import (
 )
 
 type CommonMiddlewareChain struct {
-	AllowOrigins []string
-	Logger       *log.ServLogger
-	AuthManager  auth.AuthManager
+	Logger      *log.ServLogger
+	AuthManager auth.AuthManager
 }
 
-func NewCommonMiddlewareChain(logger *log.ServLogger, authManager auth.AuthManager, allowOrigins []string) CommonMiddlewareChain {
+func NewCommonMiddlewareChain(logger *log.ServLogger, authManager auth.AuthManager) CommonMiddlewareChain {
 	return CommonMiddlewareChain{Logger: logger,
-		AllowOrigins: allowOrigins,
-		AuthManager:  authManager,
+		AuthManager: authManager,
 	}
 }
