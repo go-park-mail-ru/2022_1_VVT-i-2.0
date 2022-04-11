@@ -1,7 +1,6 @@
 package authManager
 
 import (
-	"fmt"
 	"time"
 
 	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/models"
@@ -19,14 +18,14 @@ const (
 
 func NewTokenPayload(id models.UserId) *TokenPayload {
 	return &TokenPayload{
-		Id:  id,
-		Exp: time.Now(),
+		Id: id,
 	}
 }
 
 type AuthManager interface {
 	CreateToken(payload TokenPayload) (string, error)
-	ParseToken(token string) (TokenPayload, error)
+	ParseToken(token string) (*TokenPayload, error)
+	GetEpiryTime() time.Duration
 }
 
 func TokenPayloadToMap(payload TokenPayload) map[string]interface{} {
@@ -36,15 +35,13 @@ func TokenPayloadToMap(payload TokenPayload) map[string]interface{} {
 	}
 }
 
-func MapToTokenPayload(payloadMap map[string]interface{}) TokenPayload {
+func MapToTokenPayload(payloadMap map[string]interface{}) *TokenPayload {
 	expStr, ok := payloadMap[expiresTitle].(string)
 	if !ok {
-		return TokenPayload{}
+		return nil
 	}
-	fmt.Println(expStr)
 	exp, _ := time.Parse(time.RFC3339, expStr)
-	fmt.Println(exp)
-	return TokenPayload{
+	return &TokenPayload{
 		Id:  models.UserId(payloadMap[idTitle].(float64)),
 		Exp: exp,
 	}

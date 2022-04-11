@@ -15,39 +15,41 @@ const (
 // ошибки, которые не нужно логировать
 const (
 	CACH_MISS_CODE = iota
+	FLASHCALL_RESPONSE_ERR
 
 	WRONG_AUTH_CODE
-	AUTH_REQUIRED
 	NO_SUCH_RESTAURANT
-	BAD_REQUEST_BODY
-	SERVER_ERROR
+	NO_SUCH_USER
 	SENDING_AUTH_CODE
-
+	CREATE_TOKEN
+	PARSE_TOKEN
+	WRONG_TOKEN_CLAIMS
 	// невалидные данные от пользователя
+	NO_SUCH_ENTITY_IN_DB
 	INVALID_DATA
+	DB_ERROR
+	DB_INSERT
+	DB_UPDATE
 )
 
 const (
-	CACH_MISS_DESCR          = "в кэше отсутствует элемент по данному ключу"
-	AUTH_REQUIRED_DESCR      = "для этого действия необходимо авторизоваться"
-	BAD_AUTH_TOKEN_DESCR     = "не валидный токен авторизации"
-	NO_SUCH_RESTAURANT_DESCR = "не существует такого ресторана"
-	NO_SUCH_AUTH_DATA_DESCR  = "не найдены данные для авторизации пользователя"
-	BAD_REQUEST_BODY_DESCR   = "не правильное тело запроса"
-	SERVER_ERROR_DESCR       = "ошибка на сервера"
-	WRONG_AUTH_CODE_DESCR    = "не верный код для входа"
-
+	DB_ERROR_DESCR             = "ошибка при работе с базой данных"
+	CACH_MISS_DESCR            = "в кэше отсутствует элемент по данному ключу"
+	BAD_AUTH_TOKEN_DESCR       = "не валидный токен авторизации"
+	NO_SUCH_RESTAURANT_DESCR   = "не существует такого ресторана"
+	NO_SUCH_AUTH_DATA_DESCR    = "не найдены данные для авторизации пользователя"
+	BAD_REQUEST_BODY_DESCR     = "не правильное тело запроса"
+	WRONG_AUTH_CODE_DESCR      = "не верный код для входа"
+	NO_SUCH_ENTITY_IN_DB_DESCR = "нет такой сущности в базе данных"
+	NO_SUCH_USER_DESCR         = "не существует такого пользователя"
 	// невалидные данные от пользователя
-	INVALID_DATA_DESCR = "переданы не валидные данные"
+	DB_INSERT_DESCR = "неуспешная вставка в базу данных"
 )
 
 var codeDescr = map[int]string{
-	AUTH_REQUIRED:      AUTH_REQUIRED_DESCR,
 	NO_SUCH_RESTAURANT: NO_SUCH_RESTAURANT_DESCR,
-	BAD_REQUEST_BODY:   BAD_REQUEST_BODY_DESCR,
-	SERVER_ERROR:       SERVER_ERROR_DESCR,
 	CACH_MISS_CODE:     CACH_MISS_DESCR,
-	INVALID_DATA:       INVALID_DATA_DESCR,
+	NO_SUCH_USER:       NO_SUCH_USER_DESCR,
 }
 
 type Error struct {
@@ -59,7 +61,7 @@ func (e Error) Error() string {
 	return fmt.Sprintf("error with code %d description: %s", e.Code, e.Description)
 }
 
-func (e *Error) Cause() error {
+func (e Error) Cause() error {
 	return e
 }
 
@@ -73,10 +75,12 @@ func NewError(eCode int, eDescr string) Error {
 	}
 }
 
-func ErrorCause(e error) *Error {
+func ErrorAs(e error) *Error {
 	var cause Error
 	if ok := errors.As(e, &cause); ok {
 		return &cause
 	}
 	return nil
 }
+
+// TODO потестить норм ли работает ас

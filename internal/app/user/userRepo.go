@@ -3,10 +3,9 @@ package user
 import "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/models"
 
 type Repository interface {
-	// AddUser(*models.UserDataStorage) (*models.UserDataStorage, error)
-	// TODO  не знаю как назвать модели правильно
+	AddUser(*models.UserAddDataStorage) (models.UserId, error)
 	GetUserByPhone(phone string) (*models.UserDataStorage, error)
 	GetUserById(id models.UserId) (*models.UserDataStorage, error)
-	UpdateData(newData models.UserDataUpdateReq) error
+	UpdateUser(updUser *models.UpdateUser) (*models.UserDataStorage, error)
 	HasUserByPhone(phone string) (bool, error)
 }

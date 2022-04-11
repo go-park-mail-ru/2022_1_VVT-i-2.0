@@ -13,24 +13,25 @@ messageKey = "msg"
 timeKey = "finished"
 levelKey = "lvl"
 namekey  = "name" 
-functionKey = "funclion"
-stacktraceKey = "stack_trace"
+# functionKey = "funclion"
+# stacktraceKey = "stack_trace"
 
 [authManager]
 key="!@1eqQWERwer$%^YWFgsfghw$%%^E67ws"
 method="HS256"
-expiryTime="168h" #duration tipe
+expiryTime="168h" #duration type
 
 [notificator]
-apiKey="c4624db8"
-apiSecret="1SQlhK6gbfJP43Kz"
-brandName="Foobrinto"	
+apiKey="PkzvymZDAVs0qasTSsdz1bxhhA"
+email="nat-s.skv@yandex.ru"
 
 [database]
-user = "postgres" # TODO установить норм имя
-password = ""
-port = 8000
-connectionMax = 5000
+user = "yutfut" # TODO установить норм имя
+password = "example"
+port = 5432
+host = "127.0.0.1"
+connectionMax = 500
+dbname = "vvti"
 
 [cacher]
 host = "127.0.0.1"

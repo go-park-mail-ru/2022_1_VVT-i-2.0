@@ -12,6 +12,7 @@ type Config struct {
 	AuthentificatorConfig AuthManagerConfig `toml:"authManager"`
 	NotificatorConfig     NotificatorConfig `toml:"notificator"`
 	CacherConfig          CachConfig        `toml:"cacher"`
+	DatabaseCongig        DatabaseConfig    `toml:"database"`
 }
 
 type ServerConfig struct {
@@ -56,9 +57,17 @@ func (d *duration) UnmarshalText(text []byte) error {
 }
 
 type NotificatorConfig struct {
-	ApiKey    string
-	ApiSecret string
-	BrandName string
+	ApiKey string
+	Email  string
+}
+
+type DatabaseConfig struct {
+	DbName        string
+	User          string
+	Password      string
+	Port          int
+	Host          string
+	ConnectionMax int
 }
 
 func NewConfig() *Config {
