@@ -13,13 +13,14 @@ type Config struct {
 	NotificatorConfig     NotificatorConfig `toml:"notificator"`
 	CacherConfig          CachConfig        `toml:"cacher"`
 	DatabaseCongig        DatabaseConfig    `toml:"database"`
+	CorsConfig            CorsConfig        `toml:"cors"`
+	CsrfConfig            CsrfConfig        `toml:"csrf"`
 }
 
 type ServerConfig struct {
-	BindAddr     string   `toml:"bindAddr"`
-	ReadTimeout  int      `toml:"readTimeout"`
-	WriteTimeout int      `toml:"writeTimeout"`
-	AllowOrigins []string `toml:"allowOrigins"`
+	BindAddr     string `toml:"bindAddr"`
+	ReadTimeout  int    `toml:"readTimeout"`
+	WriteTimeout int    `toml:"writeTimeout"`
 }
 
 type LogConfig struct {
@@ -68,6 +69,15 @@ type DatabaseConfig struct {
 	Port          int
 	Host          string
 	ConnectionMax int
+}
+
+type CorsConfig struct {
+	AllowOrigins []string `toml:"allowOrigins"`
+	MaxAge       int      `toml:"maxAge"`
+}
+
+type CsrfConfig struct {
+	MaxAge int `toml:"maxAge"`
 }
 
 func NewConfig() *Config {

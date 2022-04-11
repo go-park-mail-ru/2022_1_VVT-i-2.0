@@ -2,7 +2,14 @@
 bindAddr = ":8080"
 readTimeout = 10
 writeTimeout= 10
+
+[cors]
 allowOrigins=["", "http://localhost:3000", "http://tavide.xyz:3000"]
+maxAge=86400
+
+[csrf]
+maxAge=604800 # 7 суток, как и токен авторизации
+
 
 [logger]
 level = "debug"
