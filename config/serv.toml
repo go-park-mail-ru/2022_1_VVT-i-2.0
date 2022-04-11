@@ -26,12 +26,12 @@ apiKey="PkzvymZDAVs0qasTSsdz1bxhhA"
 email="nat-s.skv@yandex.ru"
 
 [database]
-user = "postgres" # TODO установить норм имя
-password = "1"
+user = "yutfut" # TODO установить норм имя
+password = "example"
 port = 5432
 host = "127.0.0.1"
 connectionMax = 500
-dbname = "foobrinto"
+dbname = "vvti"
 
 [cacher]
 host = "127.0.0.1"

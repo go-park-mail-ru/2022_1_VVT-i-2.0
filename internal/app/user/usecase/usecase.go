@@ -2,6 +2,7 @@ package usecase
 
 import (
 	"crypto/rand"
+	"fmt"
 	"math/big"
 	"strconv"
 
@@ -45,6 +46,7 @@ func generateLoginCode() string {
 func (u *UserUsecase) SendCode(req *models.SendCodeReq) (bool, error) {
 	loginCode := generateLoginCode()
 	LOGIN_CODE = loginCode //TODO: удалить
+	fmt.Printf("~~~~~~~code: %s ~~~~~~~~\n", loginCode)
 	err := u.Cacher.Set(cacher.NewItem(req.Phone, []byte(loginCode), codeExpiration))
 	if err != nil {
 		return false, errors.Wrap(err, "error saving [auth code destination]-code item to cach")

@@ -1,6 +1,7 @@
 package userHandler
 
 import (
+	"fmt"
 	"net"
 	"net/http"
 	"time"
@@ -210,6 +211,7 @@ func (h UserHandler) GetUser(ctx echo.Context) error {
 }
 
 func (h UserHandler) UpdateUser(ctx echo.Context) error {
+	fmt.Println(ctx.Request())
 	user := middleware.GetUserFromCtx(ctx)
 	if user == nil {
 		return echo.NewHTTPError(http.StatusUnauthorized, httpErrDescr.AUTH_REQUIRED)
