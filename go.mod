@@ -4,21 +4,21 @@ go 1.17
 
 require (
 	github.com/BurntSushi/toml v1.0.0
+	github.com/asaskevich/govalidator v0.0.0-20210307081110-f21760c49a8d
+	github.com/bradfitz/gomemcache v0.0.0-20220106215444-fb4bf637b56d
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
+	github.com/golang-jwt/jwt v3.2.2+incompatible
+	github.com/jackc/pgx v3.6.2+incompatible
+	github.com/jmoiron/sqlx v1.3.4
 	github.com/labstack/echo/v4 v4.7.2
 	github.com/pkg/errors v0.9.1
 	go.uber.org/zap v1.21.0
 )
 
 require (
-	github.com/asaskevich/govalidator v0.0.0-20210307081110-f21760c49a8d // indirect
 	github.com/boombuler/barcode v1.0.1-0.20190219062509-6c824513bacc // indirect
-	github.com/bradfitz/gomemcache v0.0.0-20220106215444-fb4bf637b56d // indirect
-	github.com/golang-jwt/jwt v3.2.2+incompatible // indirect
 	github.com/gorilla/csrf v1.7.1 // indirect
 	github.com/gorilla/mux v1.8.0 // indirect
-	github.com/jackc/pgx v3.6.2+incompatible // indirect
-	github.com/jmoiron/sqlx v1.3.4 // indirect
 	github.com/labstack/gommon v0.3.1 // indirect
 	github.com/mattn/go-colorable v0.1.11 // indirect
 	github.com/mattn/go-isatty v0.0.14 // indirect
