@@ -122,6 +122,8 @@ func main() {
 	}
 
 	if err := router.StartServer(&httpServ); err != http.ErrServerClosed {
+		// if err := httpServ.ListenAndServeTLS("../localhost.crt", "../localhost.key"); err != http.ErrServerClosed {
+		// if err := router.StartAutoTLS(":8080"); err != http.ErrServerClosed {
 		log.Fatal(err)
 	}
 }

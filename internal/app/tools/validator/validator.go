@@ -9,10 +9,36 @@ import (
 )
 
 const (
-	phoneRegexp = `^79[0-9]{9}$`
+	phoneRegexp   = `^79[0-9]{9}$`
+	nameRegexp    = `^[a-zA-Zа-яА-Я \-]+$`
+	addressRegexp = `^[a-zA-Zа-яА-Я \-/,.]+$` // TODO: надо ли экранировать -
 )
 
 func init() {
+	govalidator.CustomTypeTagMap.Set(
+		"name",
+		govalidator.CustomTypeValidator(func(i interface{}, o interface{}) bool {
+			name, ok := i.(string)
+			if !ok {
+				return false
+			}
+
+			isName, _ := regexp.MatchString(nameRegexp, name)
+			return isName
+		}),
+	)
+	govalidator.CustomTypeTagMap.Set(
+		"address",
+		govalidator.CustomTypeValidator(func(i interface{}, o interface{}) bool {
+			name, ok := i.(string)
+			if !ok {
+				return false
+			}
+
+			isName, _ := regexp.MatchString(nameRegexp, name)
+			return isName
+		}),
+	)
 	govalidator.CustomTypeTagMap.Set(
 		"phone",
 		govalidator.CustomTypeValidator(func(i interface{}, o interface{}) bool {
