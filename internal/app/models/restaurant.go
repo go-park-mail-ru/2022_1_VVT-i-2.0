@@ -1,7 +1,62 @@
 package models
 
 type Restaurant struct {
-	name        string
-	description string
-	//...
+	Id   int
+	Name string
+	City 		string
+	Address 	string
+	Image_path 	string
+	Slug 		string
+	Min_price 	int
+	Avg_price 	int
+	Rating 		float64
+}
+
+type RestaurantJson struct {
+	Id 			int		`json:"id"`
+	Name        string	`json:"restName"`
+	City 		string	`json:"city"`
+	Address 	string	`json:"address"`
+	Image_path 	string	`json:"imgPath"`
+	Slug 		string	`json:"slug"`
+	Min_price 	int		`json:"min_price"`
+	Avg_price 	int		`json:"avg_price"`
+	Rating 		float64	`json:"rating"`
+}
+
+type RestaurantsResponse struct {
+	Restaurants []RestaurantJson 	`json:"restaurants"`
+	Auth        bool         		`json:"auth"`
+	City        string       		`json:"city"`
+}
+
+type Dish struct {
+	Id 			int
+	Restaurant 	string
+	Name 		string
+	Description string
+	Image_path 	string
+	Calories 	int
+	Price 		int
+}
+
+type DishJson struct {
+	Id 			int		`json:"id"`
+	Name 		string	`json:"name"`
+	Description string	`json:"description"`
+	Image_path 	string	`json:"image_path"`
+	Calories 	int		`json:"calories"`
+	Price 		int		`json:"price"`
+}
+
+type RestaurantsDishJson struct {
+	Id 			int			`json:"id"`
+	Name        string		`json:"restName"`
+	City 		string		`json:"city"`
+	Address 	string		`json:"address"`
+	Image_path 	string		`json:"imgPath"`
+	Slug 		string		`json:"slug"`
+	Min_price 	int			`json:"min_price"`
+	Avg_price 	int			`json:"avg_price"`
+	Dishes		[]DishJson 	`json:"dishes"`
 }
