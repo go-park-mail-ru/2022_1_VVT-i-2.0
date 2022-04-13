@@ -1,6 +1,6 @@
 package models
 
-type restaurant struct {
+type Restaurant struct {
 	name        string
 	description string
 	//...
