@@ -12,6 +12,38 @@ type Restaurant struct {
 	Rating 		float64
 }
 
+type RestaurantDataStorage struct {
+	Id   int
+	Name string
+	City 		string
+	Address 	string
+	Image_path 	string
+	Slug 		string
+	Min_price 	int
+	Avg_price 	int
+	Rating 		float64
+}
+
+type RestaurantsDataStorage struct {
+	Restaurants []*RestaurantDataStorage
+}
+
+type RestaurantUsecase struct {
+	Id   		int
+	Name 		string
+	City 		string
+	Address 	string
+	Image_path 	string
+	Slug 		string
+	Min_price 	int
+	Avg_price 	int
+	Rating 		float64
+}
+
+type RestaurantsUsecase struct {
+	Restaurants []Restaurant
+}
+
 type RestaurantJson struct {
 	Id 			int		`json:"id"`
 	Name        string	`json:"restName"`
@@ -38,6 +70,10 @@ type Dish struct {
 	Image_path 	string
 	Calories 	int
 	Price 		int
+}
+
+type DishesDataStorage struct {
+	Dishes []*Dish
 }
 
 type DishJson struct {
