@@ -72,8 +72,18 @@ type Dish struct {
 	Price 		int
 }
 
+type DishDataStorage struct {
+	Id 			int
+	Restaurant 	string
+	Name 		string
+	Description string
+	Image_path 	string
+	Calories 	int
+	Price 		int
+}
+
 type DishesDataStorage struct {
-	Dishes []*Dish
+	Dishes []*DishDataStorage
 }
 
 type DishJson struct {

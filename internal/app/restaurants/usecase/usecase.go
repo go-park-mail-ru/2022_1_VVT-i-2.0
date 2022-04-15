@@ -3,21 +3,15 @@ package usecase
 import (
 	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/models"
 	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/restaurants"
-	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/tools/cacher"
-	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/tools/notification"
 	"github.com/pkg/errors"
 )
 
 type RestaurantsUsecase struct {
-	Notificator 		notification.Notificator
-	Cacher      		cacher.Cacher
 	RestaurantsRepo    	restaurants.Repository
 }
 
-func NewRestaurantsUsecase(notificator notification.Notificator, cacher cacher.Cacher, restaurantsRepo restaurants.Repository) *RestaurantsUsecase {
+func NewRestaurantsUsecase(restaurantsRepo restaurants.Repository) *RestaurantsUsecase {
 	return &RestaurantsUsecase{
-		Notificator: 		notificator,
-		Cacher:      		cacher,
 		RestaurantsRepo:    restaurantsRepo,
 	}
 }
