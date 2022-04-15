@@ -57,7 +57,7 @@ func (h RestaurantsHandler) GetAllRestaurants(ctx echo.Context) error {
 		restaurantsD.Restaurants = append(restaurantsD.Restaurants, *item)
 	}
 
-	return ctx.JSON(http.StatusOK, models.RestaurantsResponse{Restaurants: restaurantsD.Restaurants})
+	return ctx.JSON(http.StatusOK, restaurantsD.Restaurants)
 }
 
 func (h RestaurantsHandler) GetDishesByRestaurants(ctx echo.Context) error {
@@ -82,6 +82,20 @@ func (h RestaurantsHandler) GetDishesByRestaurants(ctx echo.Context) error {
 	}
 
 	dishesDataDelivery, err := h.Usecase.GetDishByRestaurant(restaurantDataDelivery.Id)
+
+	if err != nil {
+		cause := servErrors.ErrorAs(err)
+		if cause != nil && cause.Code == servErrors.NO_SUCH_ENTITY_IN_DB {
+			return echo.NewHTTPError(http.StatusForbidden, httpErrDescr.NO_SUCH_USER)
+		}
+		logger.Error(requestId, err.Error())
+		return echo.NewHTTPError(http.StatusInternalServerError, httpErrDescr.SERVER_ERROR)
+	}
+
+	if dishesDataDelivery == nil {
+		logger.Error(requestId, "from user-usecase-get-user returned userData==nil and err==nil, unknown error")
+		return echo.NewHTTPError(http.StatusInternalServerError, httpErrDescr.SERVER_ERROR)
+	}
 
 	restaurantD := &models.RestaurantsDishJson{
 		Id: restaurantDataDelivery.Id,
