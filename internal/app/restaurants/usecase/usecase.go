@@ -16,14 +16,30 @@ func NewRestaurantsUsecase(restaurantsRepo restaurants.Repository) *RestaurantsU
 	}
 }
 
-func (u *RestaurantsUsecase) GetAllRestaurants() (*models.RestaurantsDataStorage, error) {
+func (u *RestaurantsUsecase) GetAllRestaurants() (*models.RestaurantsUsecase, error) {
 	restaurantsData, err := u.RestaurantsRepo.GetRestaurants()
 	if err != nil {
 		return nil, errors.Wrapf(err, "error getting restaurants")
 	}
-	return &models.RestaurantsDataStorage{
-		Restaurants: restaurantsData.Restaurants,
-	}, nil
+
+	restaurantsUC := &models.RestaurantsUsecase{}
+
+	for _, rest := range restaurantsData {
+		item := &models.RestaurantUsecase{
+			Id: rest.Id,
+			Name: rest.Name,
+			City: rest.City,
+			Address: rest.Address,
+			Image_path: rest.Image_path,
+			Slug: rest.Slug,
+			Min_price: rest.Min_price,
+			Avg_price: rest.Avg_price,
+			Rating: rest.Rating,
+		}
+		restaurantsUC.Restaurants = append(restaurantsUC.Restaurants, *item)
+	}
+
+	return restaurantsUC, nil
 }
 
 func (u *RestaurantsUsecase) GetRestaurantBySluf(slug string) (*models.RestaurantUsecase, error) {
@@ -49,7 +65,21 @@ func (u *RestaurantsUsecase) GetDishByRestaurant(id int) (*models.DishesDataStor
 	if err != nil {
 		return nil, errors.Wrapf(err, "error getting restaurants")
 	}
-	return &models.DishesDataStorage{
-		Dishes: dishesData,
-	}, nil
+
+	dishesUC := &models.DishesDataStorage{}
+
+	for _, dish := range dishesData {
+		item := &models.DishDataStorage{
+			Id: dish.Id,
+			Restaurant: dish.Restaurant,
+			Name: dish.Name,
+			Description: dish.Description,
+			Image_path: dish.Image_path,
+			Calories: dish.Calories,
+			Price: dish.Price,
+		}
+		dishesUC.Dishes = append(dishesUC.Dishes, *item)
+	}
+
+	return dishesUC, nil
 }

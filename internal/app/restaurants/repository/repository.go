@@ -16,11 +16,11 @@ func NewRestaurantsRepo(db *sqlx.DB) *RestaurantsRepo {
 }
 
 func (r *RestaurantsRepo) GetRestaurants() ([]*models.RestaurantDataStorage, error) {
-	restaurants := make([]*models.RestaurantDataStorage, 0, 10)
-	err := r.DB.Select(&restaurants, "SELECT * FROM restaurants")
+	restaurantsDS := make([]*models.RestaurantDataStorage, 0, 21)
+	err := r.DB.Select(&restaurantsDS, "SELECT * FROM restaurants")
 	switch err {
 	case nil:
-		return restaurants, nil
+		return restaurantsDS, nil
 	case sql.ErrNoRows:
 		return nil, servErrors.NewError(servErrors.NO_SUCH_ENTITY_IN_DB, err.Error())
 	default:
@@ -28,9 +28,9 @@ func (r *RestaurantsRepo) GetRestaurants() ([]*models.RestaurantDataStorage, err
 	}
 }
 
-func (r *RestaurantsRepo) GetRestaurantsBySlug(slug string) (*models.Restaurant, error) {
-	restaurant := &models.Restaurant{}
-	err := r.DB.Get(restaurant, `select * from restaurants where slug = $1`, slug)
+func (r *RestaurantsRepo) GetRestaurantsBySlug(slug string) (*models.RestaurantDataStorage, error) {
+	restaurant := &models.RestaurantDataStorage{}
+	err := r.DB.Get(restaurant, "select * from restaurants where slug = $1", slug)
 	switch err {
 	case nil:
 		return restaurant, nil
@@ -41,8 +41,8 @@ func (r *RestaurantsRepo) GetRestaurantsBySlug(slug string) (*models.Restaurant,
 	}
 }
 
-func (r *RestaurantsRepo) GetDishByRestaurants(id int) ([]*models.Dish, error) {
-	dishes := make([]*models.Dish, 0, 21)
+func (r *RestaurantsRepo) GetDishByRestaurants(id int) ([]*models.DishDataStorage, error) {
+	dishes := make([]*models.DishDataStorage, 0, 21)
 	err := r.DB.Select(&dishes, "select * from dish where restaurant = $1", id)
 	switch err {
 	case nil:

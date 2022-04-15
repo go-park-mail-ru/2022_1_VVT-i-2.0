@@ -25,7 +25,7 @@ type RestaurantDataStorage struct {
 }
 
 type RestaurantsDataStorage struct {
-	Restaurants []*RestaurantDataStorage
+	Restaurants []RestaurantDataStorage
 }
 
 type RestaurantUsecase struct {
@@ -41,7 +41,7 @@ type RestaurantUsecase struct {
 }
 
 type RestaurantsUsecase struct {
-	Restaurants []Restaurant
+	Restaurants []RestaurantUsecase
 }
 
 type RestaurantJson struct {
@@ -58,8 +58,6 @@ type RestaurantJson struct {
 
 type RestaurantsResponse struct {
 	Restaurants []RestaurantJson 	`json:"restaurants"`
-	Auth        bool         		`json:"auth"`
-	City        string       		`json:"city"`
 }
 
 type Dish struct {
@@ -83,7 +81,7 @@ type DishDataStorage struct {
 }
 
 type DishesDataStorage struct {
-	Dishes []*DishDataStorage
+	Dishes []DishDataStorage
 }
 
 type DishJson struct {
