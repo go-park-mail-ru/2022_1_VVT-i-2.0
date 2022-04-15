@@ -59,3 +59,53 @@ func (h RestaurantsHandler) GetAllRestaurants(ctx echo.Context) error {
 
 	return ctx.JSON(http.StatusOK, models.RestaurantsResponse{Restaurants: restaurantsD.Restaurants})
 }
+
+func (h RestaurantsHandler) GetDishesByRestaurants(ctx echo.Context) error {
+	logger := middleware.GetLoggerFromCtx(ctx)
+	requestId := middleware.GetRequestIdFromCtx(ctx)
+
+	slug := ctx.Param("slug")
+	restaurantDataDelivery, err := h.Usecase.GetRestaurantBySluf(slug)
+
+	if err != nil {
+		cause := servErrors.ErrorAs(err)
+		if cause != nil && cause.Code == servErrors.NO_SUCH_ENTITY_IN_DB {
+			return echo.NewHTTPError(http.StatusForbidden, httpErrDescr.NO_SUCH_USER)
+		}
+		logger.Error(requestId, err.Error())
+		return echo.NewHTTPError(http.StatusInternalServerError, httpErrDescr.SERVER_ERROR)
+	}
+
+	if restaurantDataDelivery == nil {
+		logger.Error(requestId, "from user-usecase-get-user returned userData==nil and err==nil, unknown error")
+		return echo.NewHTTPError(http.StatusInternalServerError, httpErrDescr.SERVER_ERROR)
+	}
+
+	dishesDataDelivery, err := h.Usecase.GetDishByRestaurant(restaurantDataDelivery.Id)
+
+	restaurantD := &models.RestaurantsDishJson{
+		Id: restaurantDataDelivery.Id,
+		Name: restaurantDataDelivery.Name,
+		City: restaurantDataDelivery.City,
+		Address: restaurantDataDelivery.Address,
+		Image_path: "http://tavide.xyz:8080/static/" + restaurantDataDelivery.Image_path,
+		Slug: restaurantDataDelivery.Slug,
+		Min_price: restaurantDataDelivery.Min_price,
+		Avg_price: restaurantDataDelivery.Avg_price,
+	}
+
+	for _, dish := range dishesDataDelivery.Dishes {
+		item := &models.DishJson{
+			Id: dish.Id,
+			Restaurant: dish.Restaurant,
+			Name: dish.Name,
+			Description: dish.Description,
+			Image_path: "http://tavide.xyz:8080/static/" + dish.Image_path,
+			Calories: dish.Calories,
+			Price: dish.Price,
+		}
+		restaurantD.Dishes = append(restaurantD.Dishes, *item)
+	}
+
+	return ctx.JSON(http.StatusOK, restaurantD)
+}

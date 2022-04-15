@@ -35,12 +35,12 @@ import (
 	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/tools/notification/flashcall"
 	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/tools/postgresqlx"
 
+	restaurantsHandler "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/restaurants/delivery/http"
+	restaurantsRepo "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/restaurants/repository"
+	restaurantsUsecase "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/restaurants/usecase"
 	userHandler "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/user/delivery/http"
 	userRepo "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/user/repository"
 	userUcase "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/user/usecase"
-	// restaurantHandler "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/restaurant/delivery"
-	// restaurantRepo "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/restaurant/repository"
-	// restaurantUsecase "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/restaurant/usecase"
 	// dishHandler "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/dish/delivery"
 	// dishRepo "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/dish/repository"
 	// dishUsecase "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/dish/usecase"
@@ -100,10 +100,15 @@ func main() {
 	// // restaurantHandler := restaurantHandler.NewRestaurantHandler(restaurantUcase)
 	// // dishHandler := dishHandler.NewDishHandler(dishUcase)
 
+	restaurantsRepo := restaurantsRepo.NewRestaurantsRepo(pgxManager)
+	restaurantsUsecase := restaurantsUsecase.NewRestaurantsUsecase(restaurantsRepo)
+	restaurantsHandler := restaurantsHandler.NewRestaurantsHandler(restaurantsUsecase)
+
 	router := echo.New()
 
 	serverRouting := configRouting.ServerHandlers{
 		UserHandler: userHandler,
+		RestaurantsHandler: restaurantsHandler,
 		// OrderHandler: orderHandler,
 		// CartHandler:  cartHandler,
 		//...

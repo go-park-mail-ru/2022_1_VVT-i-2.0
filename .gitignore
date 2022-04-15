@@ -6,6 +6,6 @@ access_log
 error_log
 logs
 
-static
+config/configRouting/static
 
 db_t.go

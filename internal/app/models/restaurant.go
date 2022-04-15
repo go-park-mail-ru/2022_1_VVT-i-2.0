@@ -86,6 +86,7 @@ type DishesDataStorage struct {
 
 type DishJson struct {
 	Id 			int		`json:"id"`
+	Restaurant 	string	`json:"restaurany"`
 	Name 		string	`json:"name"`
 	Description string	`json:"description"`
 	Image_path 	string	`json:"image_path"`
