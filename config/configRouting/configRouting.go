@@ -1,25 +1,23 @@
 package configRouting
 
 import (
-	restaurantsHandler "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/restaurants/delivery/http"
 	suggestHandler "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/address/delivery/http"
 	orderHandler "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/order/delivery/http"
+	restaurantsHandler "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/restaurants/delivery/http"
 	userHandler "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/user/delivery/http"
 	"github.com/labstack/echo/v4"
 )
 
 type ServerHandlers struct {
-	UserHandler *userHandler.UserHandler
+	UserHandler        *userHandler.UserHandler
 	RestaurantsHandler *restaurantsHandler.RestaurantsHandler
-	UserHandler  *userHandler.UserHandler
-	SuggsHandler *suggestHandler.SuggsHandler
-	OrderHandler *orderHandler.OrderHandler
+	SuggsHandler       *suggestHandler.SuggsHandler
+	OrderHandler       *orderHandler.OrderHandler
 }
 
 const (
 	v1Prefix = "/api/v1/"
 )
-
 
 // TODO:  убрать миддлвар авторизации с suggests
 func (sh *ServerHandlers) ConfigureRouting(router *echo.Echo) {
