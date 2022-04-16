@@ -8,12 +8,9 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-// from handlers return this:
-// return echo.NewHTTPError(http.StatusUnauthorized, errors.AUTH_REQUED_MSG)
 func (mw *CommonMiddlewareChain) ErrorHandler(err error, ctx echo.Context) {
 	requestId := GetRequestIdFromCtx(ctx)
 
-	// TODO: чекнуть норм ли ошибка логируется
 	if mw.Logger != nil && requestId > 0 {
 		mw.Logger.Error(requestId, err.Error())
 	}

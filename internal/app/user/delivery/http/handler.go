@@ -57,6 +57,8 @@ func (h UserHandler) Login(ctx echo.Context) error {
 		return echo.NewHTTPError(http.StatusBadRequest, httpErrDescr.BAD_REQUEST_BODY)
 	}
 	if _, err := govalidator.ValidateStruct(loginReq); err != nil {
+		fmt.Println(err)
+		fmt.Println(loginReq)
 		return echo.NewHTTPError(http.StatusBadRequest, httpErrDescr.INVALID_DATA)
 	}
 
@@ -173,6 +175,7 @@ func (h UserHandler) SendCode(ctx echo.Context) error {
 		return echo.NewHTTPError(http.StatusBadRequest, httpErrDescr.BAD_REQUEST_BODY)
 	}
 	if _, err := govalidator.ValidateStruct(sendCodeReq); err != nil {
+		fmt.Println(err, sendCodeReq)
 		return echo.NewHTTPError(http.StatusBadRequest, httpErrDescr.INVALID_DATA)
 	}
 	isRegistered, err := h.Usecase.SendCode(&sendCodeReq)
