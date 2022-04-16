@@ -21,6 +21,9 @@ import (
 	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/tools/notification/flashcall"
 	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/tools/postgresqlx"
 
+	restaurantsHandler "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/restaurants/delivery/http"
+	restaurantsRepo "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/restaurants/repository"
+	restaurantsUsecase "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/restaurants/usecase"
 	suggsHandler "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/address/delivery/http"
 	suggsRepo "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/address/repository"
 	suggsUcase "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/address/usecase"
@@ -86,9 +89,15 @@ func main() {
 	suggsHandler := suggsHandler.NewSuggsHandler(suggsUcase)
 	orderHandler := orderHandler.NewOrderHandler(orderUcase)
 
+	restaurantsRepo := restaurantsRepo.NewRestaurantsRepo(pgxManager)
+	restaurantsUsecase := restaurantsUsecase.NewRestaurantsUsecase(restaurantsRepo)
+	restaurantsHandler := restaurantsHandler.NewRestaurantsHandler(restaurantsUsecase)
+
 	router := echo.New()
 
 	serverRouting := configRouting.ServerHandlers{
+		UserHandler: userHandler,
+		RestaurantsHandler: restaurantsHandler,
 		UserHandler:  userHandler,
 		SuggsHandler: suggsHandler,
 		OrderHandler: orderHandler,

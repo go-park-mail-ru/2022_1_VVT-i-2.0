@@ -6,4 +6,6 @@ access_log
 error_log
 logs
 
-static
+cmd/static
+
+db_t.go
