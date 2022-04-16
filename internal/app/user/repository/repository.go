@@ -2,6 +2,7 @@ package repository
 
 import (
 	"database/sql"
+	"fmt"
 
 	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/models"
 	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/tools/servErrors"
@@ -16,15 +17,11 @@ func NewUserRepo(db *sqlx.DB) *UserRepo {
 	return &UserRepo{DB: db}
 }
 
-// case sql.ErrNoRows:
-// 	return servErrors.NewError(servErrors.NO_SUCH_ENTITY_IN_DB, (*err).Error())
-// 	// return nil
-// default:
-// 	return servErrors.NewError(servErrors.DB_ERROR, (*err).Error())
-
 func (r *UserRepo) GetUserByPhone(phone string) (*models.UserDataStorage, error) {
 	user := &models.UserDataStorage{}
 	err := r.DB.Get(user, `SELECT id, phone, email, name FROM users WHERE phone = $1`, phone)
+	fmt.Println(err)
+	fmt.Println(user)
 	switch err {
 	case nil:
 		return user, nil
@@ -36,18 +33,19 @@ func (r *UserRepo) GetUserByPhone(phone string) (*models.UserDataStorage, error)
 }
 
 func (r *UserRepo) AddUser(newUser *models.UserAddDataStorage) (models.UserId, error) {
-	result, err := r.DB.Exec(`INSERT INTO users (name,phone,email) VALUES ($1,$2,$3) RETURNING id`, newUser.Name, newUser.Phone, newUser.Email)
+	var newUserId int64
+	err := r.DB.QueryRow(`INSERT INTO users (name,phone,email) VALUES ($1,$2,$3) RETURNING id`, newUser.Name, newUser.Phone, newUser.Email).Scan(&newUserId)
+	fmt.Println(err)
 	if err != nil {
 		if err == sql.ErrConnDone || err == sql.ErrTxDone {
 			return 0, servErrors.NewError(servErrors.DB_ERROR, err.Error())
 		}
 		return 0, servErrors.NewError(servErrors.DB_INSERT, err.Error())
 	}
-	if count, _ := result.RowsAffected(); count != 1 {
+	if newUserId == 0 {
 		return 0, servErrors.NewError(servErrors.DB_INSERT, "")
 	}
-	id, _ := result.LastInsertId()
-	return models.UserId(id), nil
+	return models.UserId(newUserId), nil
 }
 
 func (r *UserRepo) GetUserById(id models.UserId) (*models.UserDataStorage, error) {
@@ -94,7 +92,9 @@ func (r *UserRepo) UpdateUser(updUser *models.UpdateUser) (*models.UserDataStora
 
 func (r *UserRepo) HasUserByPhone(phone string) (bool, error) {
 	user := &models.UserDataStorage{}
-	err := r.DB.Get(user, `SELECT id, phone, email, name FROM users WHERE phone = $1`, phone)
+	err := r.DB.Get(user, `SELECT id FROM users WHERE phone = $1`, phone)
+	fmt.Println(err)
+	fmt.Println(user)
 	switch err {
 	case nil:
 		return true, nil

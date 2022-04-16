@@ -9,6 +9,7 @@ const (
 	SUCH_USER_ALREADY_EXISTS = "пользователь с таким телефоном или почтой уже зарегистрирован"
 	BAD_REQUEST_BODY         = "неправильное тело запроса"
 	SERVER_ERROR             = "ошибка на сервере"
+	CREATING_ORDER           = "такой заказ не может быть создан"
 	WRONG_AUTH_CODE          = "неверный код для входа"
 	INVALID_DATA             = "переданы невалидные данные"
 	ALREADY_AUTHORIZED       = "пользователь уже авторизован"

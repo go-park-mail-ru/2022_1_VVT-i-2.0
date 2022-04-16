@@ -1,17 +1,5 @@
 package main
 
-// читаем конфиг
-// создание объекта БД
-// создание объекта логера
-
-// создание объектов-репозиториев
-// создание объектов-юзкейсов
-// создание объектов-http-хендлеров
-
-// создание роутера, настрока хендлеров и миддлеваре
-
-// err = server.ListenAndServe() с нашим роутером
-
 import (
 	"flag"
 	"log"
@@ -27,8 +15,6 @@ import (
 	jwt "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/authManager/jwtManager"
 	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/delivery/http/middleware"
 
-	// "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/tools/logger"
-
 	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/tools/cacher/memcacher"
 	servLog "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/tools/logger"
 	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/tools/logger/zaplogger"
@@ -38,12 +24,15 @@ import (
 	restaurantsHandler "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/restaurants/delivery/http"
 	restaurantsRepo "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/restaurants/repository"
 	restaurantsUsecase "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/restaurants/usecase"
+	suggsHandler "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/address/delivery/http"
+	suggsRepo "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/address/repository"
+	suggsUcase "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/address/usecase"
+	orderHandler "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/order/delivery/http"
+	orderRepo "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/order/repository"
+	orderUcase "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/order/usecase"
 	userHandler "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/user/delivery/http"
 	userRepo "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/user/repository"
 	userUcase "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/user/usecase"
-	// dishHandler "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/dish/delivery"
-	// dishRepo "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/dish/repository"
-	// dishUsecase "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/dish/usecase"
 )
 
 func main() {
@@ -89,16 +78,16 @@ func main() {
 	flashcaller := flashcall.NewFlashcaller(&config.NotificatorConfig)
 
 	userRepo := userRepo.NewUserRepo(pgxManager)
-	// // restaurantRepo := restaurantRepo.NewRestaurantRepository(postgresDB.GetDatabase())
-	// // dishRepo := dishRepo.NewDishRepository(postgresDB.GetDatabase())
+	suggsRepo := suggsRepo.NewAddrRepo(pgxManager)
+	orderRepo := orderRepo.NewOrderRepo(pgxManager)
 
 	userUcase := userUcase.NewUsecase(flashcaller, memcacher, userRepo)
-	// // restaurantUcase := restaurantUsecase.NewRestaurantUsecase(restaurantRepo)
-	// // dishUcase := dishUsecase.NewDishUsecase(dishRepo)
+	suggsUcase := suggsUcase.NewAddrUsecase(suggsRepo)
+	orderUcase := orderUcase.NewUsecase(orderRepo)
 
 	userHandler := userHandler.NewUserHandler(userUcase, jwtManager)
-	// // restaurantHandler := restaurantHandler.NewRestaurantHandler(restaurantUcase)
-	// // dishHandler := dishHandler.NewDishHandler(dishUcase)
+	suggsHandler := suggsHandler.NewSuggsHandler(suggsUcase)
+	orderHandler := orderHandler.NewOrderHandler(orderUcase)
 
 	restaurantsRepo := restaurantsRepo.NewRestaurantsRepo(pgxManager)
 	restaurantsUsecase := restaurantsUsecase.NewRestaurantsUsecase(restaurantsRepo)
@@ -109,9 +98,9 @@ func main() {
 	serverRouting := configRouting.ServerHandlers{
 		UserHandler: userHandler,
 		RestaurantsHandler: restaurantsHandler,
-		// OrderHandler: orderHandler,
-		// CartHandler:  cartHandler,
-		//...
+		UserHandler:  userHandler,
+		SuggsHandler: suggsHandler,
+		OrderHandler: orderHandler,
 	}
 
 	serverRouting.ConfigureRouting(router)
@@ -127,6 +116,8 @@ func main() {
 	}
 
 	if err := router.StartServer(&httpServ); err != http.ErrServerClosed {
+		// if err := httpServ.ListenAndServeTLS("../localhost.crt", "../localhost.key"); err != http.ErrServerClosed {
+		// if err := router.StartAutoTLS(":8080"); err != http.ErrServerClosed {
 		log.Fatal(err)
 	}
 }
