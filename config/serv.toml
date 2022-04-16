@@ -39,6 +39,7 @@ port = 5432
 host = "127.0.0.1"
 connectionMax = 500
 dbname = "vvti"
+# dbname = "test"
 
 [cacher]
 host = "127.0.0.1"

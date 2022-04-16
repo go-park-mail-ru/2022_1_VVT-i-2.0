@@ -30,6 +30,8 @@ const (
 	DB_ERROR
 	DB_INSERT
 	DB_UPDATE
+	NO_SUCH_CITY
+	NO_SUCH_STREET
 )
 
 const (
@@ -43,7 +45,9 @@ const (
 	NO_SUCH_ENTITY_IN_DB_DESCR = "нет такой сущности в базе данных"
 	NO_SUCH_USER_DESCR         = "не существует такого пользователя"
 	// невалидные данные от пользователя
-	DB_INSERT_DESCR = "неуспешная вставка в базу данных"
+	DB_INSERT_DESCR      = "неуспешная вставка в базу данных"
+	NO_SUCH_CITY_DESCR   = "не существует такого города"
+	NO_SUCH_STREET_DESCR = "не существует такой улицы"
 )
 
 var codeDescr = map[int]string{
@@ -82,5 +86,3 @@ func ErrorAs(e error) *Error {
 	}
 	return nil
 }
-
-// TODO потестить норм ли работает ас

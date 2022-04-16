@@ -10,9 +10,51 @@ import (
 
 const (
 	phoneRegexp = `^79[0-9]{9}$`
+	nameRegexp  = `^[a-zA-Zа-яА-Я \-]{,256}$`
+	// addressRegexp = `^[a-zA-Zа-яА-Я0-9 \-\/,.]{,256}$` // TODO: составить норм регулярки
+	// commentRegexp = `^[a-zA-Zа-яА-Я0-9 \-\/,.]{,512}$` // TODO: составить норм регулярки
 )
 
 func init() {
+	govalidator.CustomTypeTagMap.Set(
+		"name",
+		govalidator.CustomTypeValidator(func(i interface{}, o interface{}) bool {
+			name, ok := i.(string)
+			if !ok {
+				return false
+			}
+
+			isName, _ := regexp.MatchString(nameRegexp, name)
+			return isName
+		}),
+	)
+	govalidator.CustomTypeTagMap.Set(
+		"address",
+		govalidator.CustomTypeValidator(func(i interface{}, o interface{}) bool {
+			// 	addr, ok := i.(string)
+			// 	if !ok {
+			// 		return false
+			// 	}
+
+			// 	isAddr, _ := regexp.MatchString(addressRegexp, addr)
+			// 	return isAddr
+			return true
+		}),
+	)
+	govalidator.CustomTypeTagMap.Set(
+		"comment",
+		govalidator.CustomTypeValidator(func(i interface{}, o interface{}) bool {
+			// comment, ok := i.(string)
+			// if !ok {
+			// 	return false
+			// }
+
+			// isComment, _ := regexp.MatchString(addressRegexp, comment)
+			// return isComment
+
+			return true
+		}),
+	)
 	govalidator.CustomTypeTagMap.Set(
 		"phone",
 		govalidator.CustomTypeValidator(func(i interface{}, o interface{}) bool {
@@ -39,7 +81,6 @@ func init() {
 			return true
 		}),
 	)
-
 	govalidator.CustomTypeTagMap.Set(
 		"expired",
 		govalidator.CustomTypeValidator(func(i interface{}, o interface{}) bool {
