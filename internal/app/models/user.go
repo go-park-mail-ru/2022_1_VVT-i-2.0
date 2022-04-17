@@ -40,6 +40,13 @@ type RegisterReq struct {
 	Email string `json:"email" valid:"email,required"`
 }
 
+// type RegisterReq struct {
+// Phone string `json:"phone" valid:"phone, required"`
+// Code  string `json:"code" valid:"required"`
+// Name  string `json:"name" valid:"name,required"`
+// 	Email string `json:"email" valid:"email,required"`
+// }
+
 type SendCodeReq struct {
 	Phone string `json:"phone" valid:"phone, required"`
 }

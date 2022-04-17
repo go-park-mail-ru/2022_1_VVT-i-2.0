@@ -33,7 +33,7 @@ func (h OrderHandler) Order(ctx echo.Context) error {
 
 	var orderReq models.OrderReq
 	if err := ctx.Bind(&orderReq); err != nil {
-		fmt.Println(err)
+		fmt.Println(err.Error())
 		fmt.Println(ctx.Request().Body)
 		return echo.NewHTTPError(http.StatusBadRequest, httpErrDescr.BAD_REQUEST_BODY)
 	}
