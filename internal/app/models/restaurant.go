@@ -86,24 +86,26 @@ type DishesDataStorage struct {
 	Dishes []DishDataStorage
 }
 
+// TODO: они ждут info!!
 type DishJson struct {
 	Id          int    `json:"id"`
 	Restaurant  string `json:"restaurant"`
-	Name        string `json:"name"`
+	Name        string `json:"productName"`
 	Description string `json:"description"`
-	Image_path  string `json:"image_path"`
+	Image_path  string `json:"imgPath"`
 	Calories    int    `json:"calories"`
 	Price       int    `json:"price"`
+	Info        string `json:"info"`
 }
 
 type RestaurantsDishJson struct {
 	Id         int        `json:"id"`
-	Name       string     `json:"rest_name"`
+	Name       string     `json:"restName"`
 	City       string     `json:"city"`
 	Address    string     `json:"address"`
-	Image_path string     `json:"img_path"`
+	Image_path string     `json:"imgPath"`
 	Slug       string     `json:"slug"`
-	Min_price  int        `json:"min_price"`
-	Avg_price  int        `json:"avg_price"`
+	Min_price  int        `json:"minPrice"`
+	Avg_price  int        `json:"avgPrice"`
 	Dishes     []DishJson `json:"dishes"`
 }
