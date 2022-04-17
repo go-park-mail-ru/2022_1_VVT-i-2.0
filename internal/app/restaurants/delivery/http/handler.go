@@ -63,18 +63,8 @@ func (h RestaurantsHandler) GetAllRestaurants(ctx echo.Context) error {
 
 	result, _ := json.Marshal(restaurantsD.Restaurants)
 	fmt.Printf("json string: %s\n", string(result))
-	ctx.Response().Header().Add("content-length", strconv.Itoa(len(result)))
+	ctx.Response().Header().Add(echo.HeaderContentLength, strconv.Itoa(len(result)))
 	return ctx.JSONBlob(http.StatusOK, result)
-	// ctx.Response().Header().Add("content-length", strconv.Itoa(len(restaurantsD.Restaurants)))
-	// return ctx.JSON(http.StatusOK, restaurantsD.Restaurants)
-	// ctx.Response().Header().Set(echo.HeaderContentType, echo.MIMEApplicationJSONCharsetUTF8)
-	// ctx.Response().WriteHeader(http.StatusOK)
-	// return ctx.JSON(http.StatusOK, &(restaurantsD.Restaurants))
-	// ctx.Response().Header().Set(echo.HeaderContentType, echo.MIMEApplicationJSONCharsetUTF8)
-
-	// ctx.Response().WriteHeader(http.StatusOK)
-	// encodedJSON := []byte{} // Encoded JSON from external source
-	// return json.NewEncoder(ctx.Response()).Encode(&restaurantsD)
 }
 
 func (h RestaurantsHandler) GetDishesByRestaurants(ctx echo.Context) error {
@@ -138,11 +128,8 @@ func (h RestaurantsHandler) GetDishesByRestaurants(ctx echo.Context) error {
 		restaurantD.Dishes = append(restaurantD.Dishes, *item)
 	}
 
-	// return ctx.JSON(http.StatusOK, restaurantD)
-
-	// return ctx.JSON(http.StatusOK, restaurantD)
 	result, _ := json.Marshal(restaurantD)
 	fmt.Printf("json string: %s\n", string(result))
-	ctx.Response().Header().Add("content-length", strconv.Itoa(len(result)))
+	ctx.Response().Header().Add(echo.HeaderContentLength, strconv.Itoa(len(result)))
 	return ctx.JSONBlob(http.StatusOK, result)
 }
