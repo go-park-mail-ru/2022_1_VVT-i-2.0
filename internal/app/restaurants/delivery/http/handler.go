@@ -61,7 +61,7 @@ func (h RestaurantsHandler) GetAllRestaurants(ctx echo.Context) error {
 		restaurantsD.Restaurants = append(restaurantsD.Restaurants, *item)
 	}
 
-	result, _ := json.Marshal(restaurantsD)
+	result, _ := json.Marshal(restaurantsD.Restaurants)
 	fmt.Printf("json string: %s\n", string(result))
 	// ctx.Response().Header().Add("content-length", strconv.Itoa(len(restaurantsD.Restaurants)))
 	ctx.Response().Header().Add("content-length", strconv.Itoa(len(result)))
