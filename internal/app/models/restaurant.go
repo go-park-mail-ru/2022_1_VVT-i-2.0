@@ -44,16 +44,18 @@ type RestaurantsUsecase struct {
 	Restaurants []RestaurantUsecase
 }
 
+// imgPath, restName, slug, timeToDeliver, price, rating
 type RestaurantJson struct {
-	Id         int     `json:"id"`
-	Name       string  `json:"rest_name"`
-	City       string  `json:"city"`
-	Address    string  `json:"address"`
-	Image_path string  `json:"img_path"`
-	Slug       string  `json:"slug"`
-	Min_price  int     `json:"min_price"`
-	Avg_price  int     `json:"avg_price"`
-	Rating     float64 `json:"rating"`
+	Id            int     `json:"id"`
+	Name          string  `json:"restName"`
+	City          string  `json:"city"`
+	Address       string  `json:"address"`
+	Image_path    string  `json:"imgPath"`
+	Slug          string  `json:"slug"`
+	Min_price     int     `json:"minPrice"`
+	Avg_price     int     `json:"avgPrice"`
+	Rating        float64 `json:"rating"`
+	TimeToDeliver string  `json:"timeToDeliver"`
 }
 
 type RestaurantsResponse struct {
@@ -86,7 +88,7 @@ type DishesDataStorage struct {
 
 type DishJson struct {
 	Id          int    `json:"id"`
-	Restaurant  string `json:"restaurany"`
+	Restaurant  string `json:"restaurant"`
 	Name        string `json:"name"`
 	Description string `json:"description"`
 	Image_path  string `json:"image_path"`
