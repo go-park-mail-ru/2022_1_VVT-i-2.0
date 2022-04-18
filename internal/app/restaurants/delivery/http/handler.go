@@ -3,23 +3,25 @@ package restaurantsHandler
 import (
 	"encoding/json"
 	"fmt"
+
+	"net/http"
+	"strconv"
+
 	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/delivery/http/httpErrDescr"
 	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/delivery/http/middleware"
 	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/models"
 	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/restaurants"
 	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/tools/servErrors"
 	"github.com/labstack/echo/v4"
-	"net/http"
-	"strconv"
 )
 
 type RestaurantsHandler struct {
-	Usecase     restaurants.Usecase
+	Usecase restaurants.Usecase
 }
 
 func NewRestaurantsHandler(usecase restaurants.Usecase) *RestaurantsHandler {
 	return &RestaurantsHandler{
-		Usecase:     usecase,
+		Usecase: usecase,
 	}
 }
 
@@ -65,7 +67,6 @@ func (h RestaurantsHandler) GetAllRestaurants(ctx echo.Context) error {
 	fmt.Printf("json string: %s\n", string(result))
 	ctx.Response().Header().Add(echo.HeaderContentLength, strconv.Itoa(len(result)))
 	return ctx.JSONBlob(http.StatusOK, result)
-	//return ctx.JSON(http.StatusOK, restaurantsD.Restaurants)
 }
 
 func (h RestaurantsHandler) GetDishesByRestaurants(ctx echo.Context) error {
@@ -124,9 +125,9 @@ func (h RestaurantsHandler) GetDishesByRestaurants(ctx echo.Context) error {
 			Restaurant: dish.Restaurant,
 			Name: dish.Name,
 			Description: dish.Description,
-			Image_path: "http://tavide.xyz:8080/static/dish_static/" + dish.Image_path,
-			Calories: dish.Calories,
-			Price: dish.Price,
+			Image_path:  "http://tavide.xyz:8080/static/dish_static/" + dish.Image_path,
+			Calories:    dish.Calories,
+			Price:       dish.Price,
 		}
 		restaurantD.Dishes = append(restaurantD.Dishes, *item)
 	}
@@ -135,5 +136,4 @@ func (h RestaurantsHandler) GetDishesByRestaurants(ctx echo.Context) error {
 	fmt.Printf("json string: %s\n", string(result))
 	ctx.Response().Header().Add(echo.HeaderContentLength, strconv.Itoa(len(result)))
 	return ctx.JSONBlob(http.StatusOK, result)
-	//return ctx.JSON(http.StatusOK, restaurantD)
 }

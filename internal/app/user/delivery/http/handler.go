@@ -99,6 +99,7 @@ func (h UserHandler) Login(ctx echo.Context) error {
 }
 
 func (h UserHandler) Register(ctx echo.Context) error {
+
 	if middleware.GetUserFromCtx(ctx) != nil {
 		return echo.NewHTTPError(http.StatusConflict, httpErrDescr.ALREADY_AUTHORIZED)
 	}
@@ -107,6 +108,7 @@ func (h UserHandler) Register(ctx echo.Context) error {
 	requestId := middleware.GetRequestIdFromCtx(ctx)
 
 	var registerReq models.RegisterReq
+
 	if err := ctx.Bind(&registerReq); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, httpErrDescr.BAD_REQUEST_BODY)
 	}
