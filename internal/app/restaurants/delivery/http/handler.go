@@ -1,6 +1,8 @@
 package restaurantsHandler
 
 import (
+	"encoding/json"
+	"fmt"
 	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/delivery/http/httpErrDescr"
 	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/delivery/http/middleware"
 	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/models"
@@ -8,6 +10,7 @@ import (
 	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/tools/servErrors"
 	"github.com/labstack/echo/v4"
 	"net/http"
+	"strconv"
 )
 
 type RestaurantsHandler struct {
@@ -40,10 +43,10 @@ func (h RestaurantsHandler) GetAllRestaurants(ctx echo.Context) error {
 		return echo.NewHTTPError(http.StatusInternalServerError, httpErrDescr.SERVER_ERROR)
 	}
 
-	restaurantsD := &models.RestaurantsResponse{}
+	restaurantsD := &models.RestaurantsResponseForKirill{}
 
 	for _, rest := range restaurantsDataDelivery.Restaurants {
-		item := &models.RestaurantJson{
+		item := &models.RestaurantJsonForKirill{
 			Id: rest.Id,
 			Name: rest.Name,
 			City: rest.City,
@@ -52,12 +55,17 @@ func (h RestaurantsHandler) GetAllRestaurants(ctx echo.Context) error {
 			Slug: rest.Slug,
 			Min_price: rest.Min_price,
 			Avg_price: rest.Avg_price,
-			Rating: rest.Rating,
+			Rating: float64(int(rest.Rating * 10)) / 10,
+			TimeToDelivery: "25-30",
 		}
 		restaurantsD.Restaurants = append(restaurantsD.Restaurants, *item)
 	}
 
-	return ctx.JSON(http.StatusOK, restaurantsD.Restaurants)
+	result, _ := json.Marshal(restaurantsD.Restaurants)
+	fmt.Printf("json string: %s\n", string(result))
+	ctx.Response().Header().Add(echo.HeaderContentLength, strconv.Itoa(len(result)))
+	return ctx.JSONBlob(http.StatusOK, result)
+	//return ctx.JSON(http.StatusOK, restaurantsD.Restaurants)
 }
 
 func (h RestaurantsHandler) GetDishesByRestaurants(ctx echo.Context) error {
@@ -97,7 +105,7 @@ func (h RestaurantsHandler) GetDishesByRestaurants(ctx echo.Context) error {
 		return echo.NewHTTPError(http.StatusInternalServerError, httpErrDescr.SERVER_ERROR)
 	}
 
-	restaurantD := &models.RestaurantsDishJson{
+	restaurantD := &models.RestaurantsDishJsonForKirill{
 		Id: restaurantDataDelivery.Id,
 		Name: restaurantDataDelivery.Name,
 		City: restaurantDataDelivery.City,
@@ -106,10 +114,12 @@ func (h RestaurantsHandler) GetDishesByRestaurants(ctx echo.Context) error {
 		Slug: restaurantDataDelivery.Slug,
 		Min_price: restaurantDataDelivery.Min_price,
 		Avg_price: restaurantDataDelivery.Avg_price,
+		Rating: float64(int(restaurantDataDelivery.Rating * 10)) / 10,
+		TimeToDelivery: "25-30",
 	}
 
 	for _, dish := range dishesDataDelivery.Dishes {
-		item := &models.DishJson{
+		item := &models.DishJsonForKirill{
 			Id: dish.Id,
 			Restaurant: dish.Restaurant,
 			Name: dish.Name,
@@ -121,5 +131,9 @@ func (h RestaurantsHandler) GetDishesByRestaurants(ctx echo.Context) error {
 		restaurantD.Dishes = append(restaurantD.Dishes, *item)
 	}
 
-	return ctx.JSON(http.StatusOK, restaurantD)
+	result, _ := json.Marshal(restaurantD)
+	fmt.Printf("json string: %s\n", string(result))
+	ctx.Response().Header().Add(echo.HeaderContentLength, strconv.Itoa(len(result)))
+	return ctx.JSONBlob(http.StatusOK, result)
+	//return ctx.JSON(http.StatusOK, restaurantD)
 }
