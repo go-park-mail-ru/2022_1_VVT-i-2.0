@@ -12,6 +12,7 @@ import (
 	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/delivery/http/middleware"
 	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/models"
 	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/tools/servErrors"
+	_ "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/tools/validator"
 	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/user"
 	"github.com/labstack/echo/v4"
 )
@@ -51,11 +52,13 @@ func (h UserHandler) Login(ctx echo.Context) error {
 	logger := middleware.GetLoggerFromCtx(ctx)
 	requestId := middleware.GetRequestIdFromCtx(ctx)
 
-	var loginReq models.LoginRequest
+	var loginReq models.LoginReq
 	if err := ctx.Bind(&loginReq); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, httpErrDescr.BAD_REQUEST_BODY)
 	}
 	if _, err := govalidator.ValidateStruct(loginReq); err != nil {
+		fmt.Println(err)
+		fmt.Println(loginReq)
 		return echo.NewHTTPError(http.StatusBadRequest, httpErrDescr.INVALID_DATA)
 	}
 
@@ -172,6 +175,7 @@ func (h UserHandler) SendCode(ctx echo.Context) error {
 		return echo.NewHTTPError(http.StatusBadRequest, httpErrDescr.BAD_REQUEST_BODY)
 	}
 	if _, err := govalidator.ValidateStruct(sendCodeReq); err != nil {
+		fmt.Println(err, sendCodeReq)
 		return echo.NewHTTPError(http.StatusBadRequest, httpErrDescr.INVALID_DATA)
 	}
 	isRegistered, err := h.Usecase.SendCode(&sendCodeReq)

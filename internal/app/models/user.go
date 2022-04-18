@@ -2,9 +2,6 @@ package models
 
 type UserId uint64
 
-// // type User struct {
-// }
-
 type UserDataStorage struct {
 	Id    UserId
 	Name  string
@@ -31,13 +28,7 @@ type UserDataResp struct {
 	Email string `json:"email"`
 }
 
-type UserDataUpdateReq struct {
-	Name  string `json:"name"`
-	Phone string `json:"phone"`
-	Email string `json:"email"`
-}
-
-type LoginRequest struct {
+type LoginReq struct {
 	Phone string `json:"phone" valid:"phone, required"`
 	Code  string `json:"code" valid:"required"`
 }
@@ -45,7 +36,7 @@ type LoginRequest struct {
 type RegisterReq struct {
 	Phone string `json:"phone" valid:"phone, required"`
 	Code  string `json:"code" valid:"required"`
-	Name  string `json:"name" valid:"required"`
+	Name  string `json:"name" valid:"name,required"`
 	Email string `json:"email" valid:"email,required"`
 }
 
@@ -58,7 +49,7 @@ type SendCodeResp struct {
 }
 
 type UpdateUserReq struct {
-	Name  string `json:"name" `
+	Name  string `json:"name" valid:"name"`
 	Email string `json:"email" valid:"email"`
 }
 
@@ -67,3 +58,6 @@ type UpdateUser struct {
 	Name  string
 	Email string
 }
+
+// validate name
+// экранировать код

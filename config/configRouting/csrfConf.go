@@ -12,9 +12,10 @@ func getCsrfConfig(cfg *config.CsrfConfig) middleware.CSRFConfig {
 	return middleware.CSRFConfig{
 		CookieMaxAge: cfg.MaxAge,
 		Skipper: func(context echo.Context) bool {
-			if context.Request().RequestURI == v1Prefix+"/login" ||
-				context.Request().RequestURI == v1Prefix+"/sendcode" ||
-				context.Request().RequestURI == v1Prefix+"/register" {
+			if context.Request().RequestURI == v1Prefix+"login" ||
+				context.Request().RequestURI == v1Prefix+"send_code" ||
+				context.Request().RequestURI == v1Prefix+"register" ||
+				context.Request().RequestURI == v1Prefix+"suggest" {
 				return true
 			}
 			return false

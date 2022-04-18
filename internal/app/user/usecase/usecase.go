@@ -73,7 +73,7 @@ func (u *UserUsecase) isCodeCorrect(codeDst string, code string) (bool, error) {
 	return true, nil
 }
 
-func (u *UserUsecase) Login(req *models.LoginRequest) (*models.UserDataUsecase, error) {
+func (u *UserUsecase) Login(req *models.LoginReq) (*models.UserDataUsecase, error) {
 	isCorrect, err := u.isCodeCorrect(req.Phone, req.Code)
 	if err != nil {
 		return nil, errors.Wrap(err, "code check failed")
