@@ -58,7 +58,7 @@ func (h RestaurantsHandler) GetAllRestaurants(ctx echo.Context) error {
 			Min_price: rest.Min_price,
 			Avg_price: rest.Avg_price,
 			Rating: float64(int(rest.Rating * 10)) / 10,
-			TimeToDelivery: "25-30",
+			TimeToDelivery: "25 - 30",
 		}
 		restaurantsD.Restaurants = append(restaurantsD.Restaurants, *item)
 	}
