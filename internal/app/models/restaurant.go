@@ -150,3 +150,44 @@ type RestaurantJsonForKirill struct {
 type RestaurantsResponseForKirill struct {
 	Restaurants []RestaurantJsonForKirill 	`json:"restaurants"`
 }
+
+type DishJsonForKirill struct {
+	Id 			int		`json:"id"`
+	Restaurant 	string	`json:"restaurany"`
+	Name 		string	`json:"productName"`
+	Description string	`json:"description"`
+	Image_path 	string	`json:"imgPath"`
+	Calories 	int		`json:"info"`
+	Price 		int		`json:"price"`
+}
+
+type RestaurantsDishJsonForKirill struct {
+	Id 			int			`json:"id"`
+	Name        string		`json:"restName"`
+	City 		string		`json:"city"`
+	Address 	string		`json:"address"`
+	Image_path 	string		`json:"imgPath"`
+	Slug 		string		`json:"slug"`
+	Min_price 	int			`json:"min_price"`
+	Avg_price 	int			`json:"avg_price"`
+	Rating 		float64		`json:"rating"`
+	TimeToDelivery string `json:"timeToDelivery"`
+	Dishes		[]DishJsonForKirill 	`json:"dishes"`
+}
+
+type RestaurantJsonForKirill struct {
+	Id 			int		`json:"id"`
+	Name        string	`json:"restName"`
+	City 		string	`json:"city"`
+	Address 	string	`json:"address"`
+	Image_path 	string	`json:"imgPath"`
+	Slug 		string	`json:"slug"`
+	Min_price 	int		`json:"min_price"`
+	Avg_price 	int		`json:"avg_price"`
+	Rating 		float64	`json:"rating"`
+	TimeToDelivery string `json:"timeToDelivery"`
+}
+
+type RestaurantsResponseForKirill struct {
+	Restaurants []RestaurantJsonForKirill 	`json:"restaurants"`
+}
