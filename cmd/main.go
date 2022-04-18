@@ -96,10 +96,10 @@ func main() {
 	router := echo.New()
 
 	serverRouting := configRouting.ServerHandlers{
-		UserHandler:        userHandler,
+		UserHandler: userHandler,
 		RestaurantsHandler: restaurantsHandler,
-		SuggsHandler:       suggsHandler,
-		OrderHandler:       orderHandler,
+		SuggsHandler: suggsHandler,
+		OrderHandler: orderHandler,
 	}
 
 	serverRouting.ConfigureRouting(router)
