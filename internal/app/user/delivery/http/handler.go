@@ -189,7 +189,7 @@ func (h UserHandler) SendCode(ctx echo.Context) error {
 func (h UserHandler) GetUser(ctx echo.Context) error {
 	user := middleware.GetUserFromCtx(ctx)
 	if user == nil {
-		return echo.NewHTTPError(http.StatusUnauthorized, httpErrDescr.AUTH_REQUIRED)
+		return ctx.JSON(http.StatusOK, ``)
 	}
 
 	logger := middleware.GetLoggerFromCtx(ctx)
