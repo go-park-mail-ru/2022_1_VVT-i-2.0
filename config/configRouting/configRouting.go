@@ -1,9 +1,9 @@
 package configRouting
 
 import (
-	restaurantsHandler "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/restaurants/delivery/http"
 	suggestHandler "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/address/delivery/http"
 	orderHandler "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/order/delivery/http"
+	restaurantsHandler "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/restaurants/delivery/http"
 	userHandler "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/user/delivery/http"
 	"github.com/labstack/echo/v4"
 )
@@ -11,7 +11,6 @@ import (
 type ServerHandlers struct {
 	UserHandler *userHandler.UserHandler
 	RestaurantsHandler *restaurantsHandler.RestaurantsHandler
-	UserHandler  *userHandler.UserHandler
 	SuggsHandler *suggestHandler.SuggsHandler
 	OrderHandler *orderHandler.OrderHandler
 }
