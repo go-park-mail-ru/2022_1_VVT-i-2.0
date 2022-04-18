@@ -126,7 +126,7 @@ type RestaurantsDishJsonForKirill struct {
 	Min_price 	int			`json:"min_price"`
 	Avg_price 	int			`json:"avg_price"`
 	Rating 		float64		`json:"rating"`
-	TimeToDelivery string `json:"timeToDelivery"`
+	TimeToDelivery string `json:"timeToDeliver"`
 	Dishes		[]DishJsonForKirill 	`json:"dishes"`
 }
 
@@ -140,7 +140,7 @@ type RestaurantJsonForKirill struct {
 	Min_price 	int		`json:"min_price"`
 	Avg_price 	int		`json:"avg_price"`
 	Rating 		float64	`json:"rating"`
-	TimeToDelivery string `json:"timeToDelivery"`
+	TimeToDelivery string `json:"timeToDeliver"`
 }
 
 type RestaurantsResponseForKirill struct {
