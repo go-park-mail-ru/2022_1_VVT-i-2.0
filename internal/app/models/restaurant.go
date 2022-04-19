@@ -13,8 +13,8 @@ type Restaurant struct {
 }
 
 type RestaurantDataStorage struct {
-	Id   int
-	Name string
+	Id   		int
+	Name 		string
 	City 		string
 	Address 	string
 	Image_path 	string
@@ -72,7 +72,7 @@ type Dish struct {
 
 type DishDataStorage struct {
 	Id 			int
-	Restaurant 	string
+	Restaurant 	int
 	Name 		string
 	Description string
 	Image_path 	string
@@ -86,7 +86,7 @@ type DishesDataStorage struct {
 
 type DishJson struct {
 	Id 			int		`json:"id"`
-	Restaurant 	string	`json:"restaurany"`
+	Restaurant 	int	`json:"restaurany"`
 	Name 		string	`json:"name"`
 	Description string	`json:"description"`
 	Image_path 	string	`json:"image_path"`
@@ -108,7 +108,7 @@ type RestaurantsDishJson struct {
 
 type DishJsonForKirill struct {
 	Id 			int		`json:"id"`
-	Restaurant 	string	`json:"restaurany"`
+	Restaurant 	int	`json:"restaurany"`
 	Name 		string	`json:"productName"`
 	Description string	`json:"description"`
 	Image_path 	string	`json:"imgPath"`
