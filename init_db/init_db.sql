@@ -1,6 +1,9 @@
 DROP TABLE IF EXISTS restaurants;
 DROP TABLE IF EXISTS dish;
 DROP TABLE IF EXISTS users;
+DROP TABLE IF EXISTS comment_restaurants;
+DROP TABLE IF EXISTS streets;
+
 
 
 create table restaurants
@@ -520,8 +523,7 @@ INSERT INTO dish(restaurant, name, description, image_path, calories, price) VAL
 
 --(1, '', '', '', 100, 500),
 
-CREATE TABLE users
-(
+CREATE TABLE users (
     id integer PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
     name VARCHAR(256) NOT NULL,
     email VARCHAR(256)  CHECK (email ~* '^[A-Za-z0-9._+%-]+@[A-Za-z0-9.-]+[.][A-Za-z]+$') NOT NULL UNIQUE,
@@ -533,9 +535,23 @@ INSERT INTO users(name,email,phone) VALUES
 ('Кирилл','katashinsky-k@yandex.ru',79040666020),
 ('Андрей','diakonovA@gmail.com',79877434370);
 
-CREATE TABLE  streets(
-id integer PRIMARY KEY ,
-name VARCHAR(128) NOT NULL);
+CREATE TABLE comment_restaurants (
+    id integer PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
+    restaurant integer references restaurants,
+    user_id integer references users,
+    comment_text text
+);
+
+INSERT INTO comment_restaurants(restaurant, user_id, comment_text) VALUES
+(1, 1, 'привет, классный ресторан'),
+(1, 2, 'norm, very cute');
+
+
+
+CREATE TABLE streets (
+    id integer PRIMARY KEY,
+    name VARCHAR(128) NOT NULL
+);
 
 CREATE INDEX ON streets (name  varchar_pattern_ops);
 
@@ -543,8 +559,9 @@ CREATE INDEX ON streets (name  varchar_pattern_ops);
 -- copy streets(id, name) FROM 'csv/street.csv' (DELIMITER ';');
 
 CREATE TABLE houses (
-house VARCHAR(20) NOT NULL,
-street_id integer  REFERENCES streets ON DELETE CASCADE) ;
+    house VARCHAR(20) NOT NULL,
+    street_id integer  REFERENCES streets ON DELETE CASCADE
+);
  
 CREATE INDEX ON houses (house varchar_pattern_ops);
 
@@ -586,14 +603,15 @@ $$
 LANGUAGE plpgsql;
 
 CREATE TABLE orders (
-id integer PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
-restaurant_id integer  REFERENCES restaurants ON DELETE NO ACTION NOT NULL,
-date TIMESTAMP DEFAULT now() NOT NULL,
-user_id integer  REFERENCES users ON DELETE NO ACTION NOT NULL,
-address VARCHAR(256) NOT NULL,
-comment VARCHAR(256),
-cart order_dish[] NOT NULL,
-total_price integer NOT NULL);
+    id integer PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
+    restaurant_id integer  REFERENCES restaurants ON DELETE NO ACTION NOT NULL,
+    date TIMESTAMP DEFAULT now() NOT NULL,
+    user_id integer  REFERENCES users ON DELETE NO ACTION NOT NULL,
+    address VARCHAR(256) NOT NULL,
+    comment VARCHAR(256),
+    cart order_dish[] NOT NULL,
+    total_price integer NOT NULL
+);
 
 CREATE TRIGGER cost_and_restaurant_id BEFORE UPDATE OR INSERT ON orders
  FOR EACH ROW EXECUTE FUNCTION total_cost();
