@@ -7,5 +7,5 @@ type Usecase interface {
 	GetRestaurantBySluf(slug string) (*models.RestaurantUsecase, error)
 	GetDishByRestaurant(id int) (*models.DishesUseCase, error)
 	GetCommentsRestaurantByRestaurants(id int) (*models.CommentsRestaurantUseCase, error)
-	AddCommentsRestaurantByRestaurants(item *models.AddCommentRestaurantUseCase) (models.CommentRestaurantUseCase, error)
+	AddCommentsRestaurantByRestaurants(item *models.AddCommentRestaurantUseCase) (*models.CommentRestaurantUseCase, error)
 }
