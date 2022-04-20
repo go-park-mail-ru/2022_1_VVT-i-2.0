@@ -128,6 +128,7 @@ func (h RestaurantsHandler) GetDishesByRestaurants(ctx echo.Context) error {
 			Image_path:  "http://tavide.xyz:8080/static/dish_static/" + dish.Image_path,
 			Calories:    dish.Calories,
 			Price:       dish.Price,
+			Weight: dish.Weight,
 		}
 		restaurantD.Dishes = append(restaurantD.Dishes, *item)
 	}

@@ -80,6 +80,7 @@ type DishDataStorage struct {
 	Image_path  string
 	Calories    int
 	Price       int
+	Weight		int
 }
 
 type DishUseCase struct {
@@ -90,6 +91,7 @@ type DishUseCase struct {
 	Image_path  string
 	Calories    int
 	Price       int
+	Weight		int
 }
 
 type DishesDataStorage struct {
@@ -108,6 +110,7 @@ type DishJson struct {
 	Image_path  string `json:"imgPath"`
 	Calories    int    `json:"calories"`
 	Price       int    `json:"price"`
+	Weight		int		`json:"weight"`
 	Info        string `json:"info"`
 }
 
@@ -131,6 +134,7 @@ type DishJsonForKirill struct {
 	Image_path 	string	`json:"imgPath"`
 	Calories 	int		`json:"info"`
 	Price 		int		`json:"price"`
+	Weight		int		`json:"weight"`
 }
 
 type RestaurantsDishJsonForKirill struct {

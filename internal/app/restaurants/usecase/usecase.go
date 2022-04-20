@@ -76,6 +76,7 @@ func (u *RestaurantsUsecase) GetDishByRestaurant(id int) (*models.DishesUseCase,
 			Description: dish.Description,
 			Image_path: dish.Image_path,
 			Calories: dish.Calories,
+			Weight: dish.Weight,
 			Price: dish.Price,
 		}
 		dishesUC.Dishes = append(dishesUC.Dishes, *item)
