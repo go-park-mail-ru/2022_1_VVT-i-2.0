@@ -44,7 +44,7 @@ func (r *RestaurantsRepo) GetRestaurantsBySlug(slug string) (*models.RestaurantD
 
 func (r *RestaurantsRepo) GetDishByRestaurants(id int) ([]*models.DishDataStorage, error) {
 	dishes := make([]*models.DishDataStorage, 0, 21)
-	err := r.DB.Select(&dishes, "SELECT id, restaurant, name, description, image_path, calories, price FROM dish WHERE restaurant = $1", id)
+	err := r.DB.Select(&dishes, "SELECT id, restaurant, name, description, image_path, calories, price, weight FROM dish WHERE restaurant = $1", id)
 	switch err {
 	case nil:
 		return dishes, nil

@@ -106,7 +106,7 @@ func (h RestaurantsHandler) GetDishesByRestaurants(ctx echo.Context) error {
 		return echo.NewHTTPError(http.StatusInternalServerError, httpErrDescr.SERVER_ERROR)
 	}
 
-	restaurantD := &models.RestaurantsDishJsonForKirill{
+	restaurantD := &models.RestaurantsDishesJsonForKirill{
 		Id: restaurantDataDelivery.Id,
 		Name: restaurantDataDelivery.Name,
 		City: restaurantDataDelivery.City,
@@ -121,14 +121,14 @@ func (h RestaurantsHandler) GetDishesByRestaurants(ctx echo.Context) error {
 
 	for _, dish := range dishesDataDelivery.Dishes {
 		item := &models.DishJsonForKirill{
-			Id: dish.Id,
-			Restaurant: dish.Restaurant,
-			Name: dish.Name,
-			Description: dish.Description,
-			Image_path:  "http://tavide.xyz:8080/static/dish_static/" + dish.Image_path,
-			Calories:    dish.Calories,
-			Price:       dish.Price,
-			Weight: dish.Weight,
+			Id: 			dish.Id,
+			Restaurant: 	dish.Restaurant,
+			Name: 			dish.Name,
+			Description: 	dish.Description,
+			Image_path:  	"http://tavide.xyz:8080/static/dish_static/" + dish.Image_path,
+			Calories:    	dish.Calories,
+			Price:       	dish.Price,
+			Weight: 		dish.Weight,
 		}
 		restaurantD.Dishes = append(restaurantD.Dishes, *item)
 	}

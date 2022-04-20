@@ -103,15 +103,15 @@ type DishesUseCase struct {
 }
 
 type DishJson struct {
-	Id          int    `json:"id"`
-	Restaurant  string `json:"restaurant"`
-	Name        string `json:"productName"`
-	Description string `json:"description"`
-	Image_path  string `json:"imgPath"`
-	Calories    int    `json:"calories"`
-	Price       int    `json:"price"`
+	Id          int    	`json:"id"`
+	Restaurant  string 	`json:"restaurant"`
+	Name        string 	`json:"productName"`
+	Description string 	`json:"description"`
+	Image_path  string 	`json:"imgPath"`
+	Calories    int    	`json:"calories"`
+	Price       int    	`json:"price"`
 	Weight		int		`json:"weight"`
-	Info        string `json:"info"`
+	Info        string 	`json:"info"`
 }
 
 type RestaurantsDishJson struct {
@@ -128,7 +128,7 @@ type RestaurantsDishJson struct {
 
 type DishJsonForKirill struct {
 	Id 			int		`json:"id"`
-	Restaurant 	int	`json:"restaurany"`
+	Restaurant 	int		`json:"restaurany"`
 	Name 		string	`json:"productName"`
 	Description string	`json:"description"`
 	Image_path 	string	`json:"imgPath"`
@@ -137,7 +137,7 @@ type DishJsonForKirill struct {
 	Weight		int		`json:"weight"`
 }
 
-type RestaurantsDishJsonForKirill struct {
+type RestaurantsDishesJsonForKirill struct {
 	Id 			int			`json:"id"`
 	Name        string		`json:"restName"`
 	City 		string		`json:"city"`
@@ -147,21 +147,21 @@ type RestaurantsDishJsonForKirill struct {
 	Min_price 	int			`json:"min_price"`
 	Avg_price 	int			`json:"price"`
 	Rating 		float64		`json:"rating"`
-	TimeToDelivery string `json:"timeToDeliver"`
+	TimeToDelivery string 	`json:"timeToDeliver"`
 	Dishes		[]DishJsonForKirill 	`json:"dishes"`
 }
 
 type RestaurantJsonForKirill struct {
-	Id 			int		`json:"id"`
-	Name        string	`json:"restName"`
-	City 		string	`json:"city"`
-	Address 	string	`json:"address"`
-	Image_path 	string	`json:"imgPath"`
-	Slug 		string	`json:"slug"`
-	Min_price 	int		`json:"min_price"`
-	Avg_price 	int		`json:"price"`
-	Rating 		float64	`json:"rating"`
-	TimeToDelivery string `json:"timeToDeliver"`
+	Id 				int		`json:"id"`
+	Name        	string	`json:"restName"`
+	City 			string	`json:"city"`
+	Address 		string	`json:"address"`
+	Image_path 		string	`json:"imgPath"`
+	Slug 			string	`json:"slug"`
+	Min_price 		int		`json:"min_price"`
+	Avg_price 		int		`json:"price"`
+	Rating 			float64	`json:"rating"`
+	TimeToDelivery 	string `json:"timeToDeliver"`
 }
 
 type RestaurantsResponseForKirill struct {
