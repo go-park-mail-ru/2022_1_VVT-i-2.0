@@ -108,7 +108,7 @@ func TestAddUser(t *testing.T) {
 
 	//ok query
 	mock.
-		ExpectExec(`INSERT INTO users`).
+		ExpectExec(`INSERT INTO users (name,phone,email) VALUES ($1,$2,$3) RETURNING id`).
 		WithArgs(name, phone, email).
 		WillReturnResult(sqlmock.NewResult(1, 1))
 
