@@ -144,8 +144,8 @@ type RestaurantsDishesJsonForKirill struct {
 	Address 	string		`json:"address"`
 	Image_path 	string		`json:"imgPath"`
 	Slug 		string		`json:"slug"`
-	Min_price 	int			`json:"min_price"`
-	Avg_price 	int			`json:"price"`
+	Min_price 	int			`json:"minPrice"`
+	Avg_price 	int			`json:"avgPrice"`
 	Rating 		float64		`json:"rating"`
 	TimeToDelivery string 	`json:"timeToDeliver"`
 	Dishes		[]DishJsonForKirill 	`json:"dishes"`
