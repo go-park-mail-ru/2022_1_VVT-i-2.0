@@ -82,11 +82,24 @@ type DishDataStorage struct {
 	Price       int
 }
 
+type DishUseCase struct {
+	Id 			int
+	Restaurant 	int
+	Name 		string
+	Description string
+	Image_path  string
+	Calories    int
+	Price       int
+}
+
 type DishesDataStorage struct {
 	Dishes []DishDataStorage
 }
 
-// TODO: они ждут info!!
+type DishesUseCase struct {
+	Dishes []DishUseCase
+}
+
 type DishJson struct {
 	Id          int    `json:"id"`
 	Restaurant  string `json:"restaurant"`
@@ -156,10 +169,37 @@ type CommentRestaurantDataStorage struct {
 	Restaurant	int
 	User_id		int
 	Comment_text string
+	Comment_rating int
 }
 
 type AddCommentRestaurantDataStorage struct {
 	Restaurant	int
 	User_id		int
 	Comment_text string
+	Comment_rating int
+}
+
+type AddCommentRestaurantUseCase struct {
+	Restaurant	int
+	User_id		int
+	Comment_text string
+	Comment_rating int
+}
+
+type AddCommentsRestaurantDataStorage struct {
+	Comment []AddCommentRestaurantDataStorage
+}
+
+type CommentRestaurantId int64
+
+type CommentRestaurantUseCase struct {
+	Id 			int
+	Restaurant	int
+	User_id		int
+	Comment_text string
+	Comment_rating int
+}
+
+type CommentsRestaurantUseCase struct {
+	Comment []CommentRestaurantUseCase
 }

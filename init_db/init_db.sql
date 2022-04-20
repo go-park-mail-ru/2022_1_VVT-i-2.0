@@ -13,11 +13,117 @@ create table restaurants
     city varchar(80),
     address text,
     image_path text,
-    slug varchar(20),
+    slug varchar(20) UNIQUE,
     min_price int,
     avg_price int,
-    rating float4
+    rating float4 check(1.0 <= rating and rating <= 5.0)
 );
+
+create table dish
+(
+    id integer PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
+    restaurant integer references restaurants,
+    name varchar(80),
+    description text,
+    image_path text,
+    calories integer,
+    weight integer,
+    price integer
+);
+
+CREATE TABLE users (
+    id integer PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
+    name VARCHAR(256) NOT NULL,
+    email VARCHAR(256)  CHECK (email ~* '^[A-Za-z0-9._+%-]+@[A-Za-z0-9.-]+[.][A-Za-z]+$') NOT NULL UNIQUE,
+    phone NUMERIC(11) CHECK(phone>79000000000 and phone <80000000000) NOT NULL UNIQUE
+);
+
+INSERT INTO users(name,email,phone) VALUES
+('Наташа','nat-s.skv@mail.ru',79015020456),
+('Кирилл','katashinsky-k@yandex.ru',79040666020),
+('Андрей','diakonovA@gmail.com',79877434370);
+
+CREATE TABLE comment_restaurants (
+    id integer PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
+    restaurant integer references restaurants,
+    user_id integer references users,
+    comment_text text,
+    comment_rating int check(1 <= comment_rating and comment_rating <= 5)
+);
+
+INSERT INTO comment_restaurants(restaurant, user_id, comment_text, comment_rating) VALUES
+(1, 1, 'привет, классный ресторан', 3),
+(1, 2, 'norm, very cute', 4);
+
+
+
+CREATE TABLE streets (
+    id integer PRIMARY KEY,
+    name VARCHAR(128) NOT NULL
+);
+
+CREATE INDEX ON streets (name  varchar_pattern_ops);
+
+-- copy streets(id, name) FROM '/home/ns/tp/bd/back/csv/street.csv' (DELIMITER ';');
+-- copy streets(id, name) FROM 'csv/street.csv' (DELIMITER ';');
+
+CREATE TABLE houses (
+    house VARCHAR(20) NOT NULL,
+    street_id integer  REFERENCES streets ON DELETE CASCADE
+);
+ 
+CREATE INDEX ON houses (house varchar_pattern_ops);
+
+-- copy houses(street_id, house) FROM '/home/ns/tp/bd/back/csv/houses.csv' (DELIMITER ';');
+-- copy houses(street_id, house) FROM 'csv/houses.csv' (DELIMITER ';');
+
+CREATE TYPE order_dish AS (id integer,count int, price int);
+
+CREATE OR REPLACE FUNCTION public.total_cost() RETURNS trigger
+AS $$
+DECLARE
+    rest_id1 integer;
+    rest_id_next integer;
+    price_per_one integer;
+    total_price integer;
+    arr order_dish[];
+BEGIN
+    IF array_length( NEW.cart,1) = 0 THEN
+        RETURN NULL;
+    END IF;
+    SELECT restaurant INTO rest_id1 FROM dish WHERE id=NEW.cart[1].id;
+    total_price=0;
+    FOR i IN 1..array_length(NEW.cart,1)
+    LOOP
+        SELECT restaurant,price INTO rest_id_next, price_per_one FROM dish WHERE id=NEW.cart[i].id;
+        IF rest_id1 != rest_id_next THEN
+            RETURN NULL; 
+        END IF;
+        total_price = total_price + NEW.cart[i].count*price_per_one;
+        arr = array_append(arr, (NEW.cart[i].id, NEW.cart[i].count, price_per_one)::order_dish);
+    END LOOP;
+    NEW.cart = arr;
+    NEW.restaurant_id = rest_id1;
+    NEW.total_price = total_price; 
+    RAISE NOTICE '%', NEW;
+    RETURN NEW;
+END;
+$$
+LANGUAGE plpgsql;
+
+CREATE TABLE orders (
+    id integer PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
+    restaurant_id integer  REFERENCES restaurants ON DELETE NO ACTION NOT NULL,
+    date TIMESTAMP DEFAULT now() NOT NULL,
+    user_id integer  REFERENCES users ON DELETE NO ACTION NOT NULL,
+    address VARCHAR(256) NOT NULL,
+    comment VARCHAR(256),
+    cart order_dish[] NOT NULL,
+    total_price integer NOT NULL
+);
+
+CREATE TRIGGER cost_and_restaurant_id BEFORE UPDATE OR INSERT ON orders
+ FOR EACH ROW EXECUTE FUNCTION total_cost();
 
 INSERT INTO restaurants(name, city, address, image_path, slug, min_price, avg_price, rating) VALUES
 ('Шоколадница','Москва','Братиславская 3', 'shokoladiza.png', 'shokoladiza', 500, 650, 4.8),
@@ -43,18 +149,6 @@ INSERT INTO restaurants(name, city, address, image_path, slug, min_price, avg_pr
 ('Sakura','Москва','Братиславская 3', 'sakura.png', 'sakura', 500, 770, 4.8);
 -- 21
 --('','Москва','Братиславская 3' ,'', , , )
-
-create table dish
-(
-    id integer PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
-    restaurant integer references restaurants,
-    name varchar(80),
-    description text,
-    image_path text,
-    calories integer,
-    weight integer,
-    price integer
-);
 
 INSERT INTO dish(restaurant, name, description, image_path, calories, weight, price) VALUES
 -- 1
@@ -519,99 +613,4 @@ INSERT INTO dish(restaurant, name, description, image_path, calories, weight, pr
 (21, 'Картофель по-охотничьи', 'Золотистый жареный картофель с сочными свиными колбасками, томлеными вешенками и шампиньонами 350 гр', '7.jpeg', 100, 100, 500),
 (21, 'Калифорния с кунжутом', 'Краб-крем, огурцы, авокадо, шеф-соус, кунжут белый', '8.jpeg', 100, 100, 500),
 (21, 'Том Ям с морепродуктами', 'Креветки тигровые, мидии, бульон Том Ям, рис, шампиньоны, кокосовое молоко, сливки, кинза, томаты черри', '9.jpeg', 100, 100, 500);
-
-
 --(1, '', '', '', 100, 500),
-
-CREATE TABLE users (
-    id integer PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
-    name VARCHAR(256) NOT NULL,
-    email VARCHAR(256)  CHECK (email ~* '^[A-Za-z0-9._+%-]+@[A-Za-z0-9.-]+[.][A-Za-z]+$') NOT NULL UNIQUE,
-    phone NUMERIC(11) CHECK(phone>79000000000 and phone <80000000000) NOT NULL UNIQUE
-);
-
-INSERT INTO users(name,email,phone) VALUES
-('Наташа','nat-s.skv@mail.ru',79015020456),
-('Кирилл','katashinsky-k@yandex.ru',79040666020),
-('Андрей','diakonovA@gmail.com',79877434370);
-
-CREATE TABLE comment_restaurants (
-    id integer PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
-    restaurant integer references restaurants,
-    user_id integer references users,
-    comment_text text
-);
-
-INSERT INTO comment_restaurants(restaurant, user_id, comment_text) VALUES
-(1, 1, 'привет, классный ресторан'),
-(1, 2, 'norm, very cute');
-
-
-
-CREATE TABLE streets (
-    id integer PRIMARY KEY,
-    name VARCHAR(128) NOT NULL
-);
-
-CREATE INDEX ON streets (name  varchar_pattern_ops);
-
--- copy streets(id, name) FROM '/home/ns/tp/bd/back/csv/street.csv' (DELIMITER ';');
--- copy streets(id, name) FROM 'csv/street.csv' (DELIMITER ';');
-
-CREATE TABLE houses (
-    house VARCHAR(20) NOT NULL,
-    street_id integer  REFERENCES streets ON DELETE CASCADE
-);
- 
-CREATE INDEX ON houses (house varchar_pattern_ops);
-
--- copy houses(street_id, house) FROM '/home/ns/tp/bd/back/csv/houses.csv' (DELIMITER ';');
--- copy houses(street_id, house) FROM 'csv/houses.csv' (DELIMITER ';');
-
-CREATE TYPE order_dish AS (id integer,count int, price int);
-
-CREATE OR REPLACE FUNCTION public.total_cost() RETURNS trigger
-AS $$
-DECLARE
-    rest_id1 integer;
-    rest_id_next integer;
-    price_per_one integer;
-    total_price integer;
-    arr order_dish[];
-BEGIN
-    IF array_length( NEW.cart,1) = 0 THEN
-        RETURN NULL;
-    END IF;
-    SELECT restaurant INTO rest_id1 FROM dish WHERE id=NEW.cart[1].id;
-    total_price=0;
-    FOR i IN 1..array_length(NEW.cart,1)
-    LOOP
-        SELECT restaurant,price INTO rest_id_next, price_per_one FROM dish WHERE id=NEW.cart[i].id;
-        IF rest_id1 != rest_id_next THEN
-            RETURN NULL; 
-        END IF;
-        total_price = total_price + NEW.cart[i].count*price_per_one;
-        arr = array_append(arr, (NEW.cart[i].id, NEW.cart[i].count, price_per_one)::order_dish);
-    END LOOP;
-    NEW.cart = arr;
-    NEW.restaurant_id = rest_id1;
-    NEW.total_price = total_price; 
-    RAISE NOTICE '%', NEW;
-    RETURN NEW;
-END;
-$$
-LANGUAGE plpgsql;
-
-CREATE TABLE orders (
-    id integer PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
-    restaurant_id integer  REFERENCES restaurants ON DELETE NO ACTION NOT NULL,
-    date TIMESTAMP DEFAULT now() NOT NULL,
-    user_id integer  REFERENCES users ON DELETE NO ACTION NOT NULL,
-    address VARCHAR(256) NOT NULL,
-    comment VARCHAR(256),
-    cart order_dish[] NOT NULL,
-    total_price integer NOT NULL
-);
-
-CREATE TRIGGER cost_and_restaurant_id BEFORE UPDATE OR INSERT ON orders
- FOR EACH ROW EXECUTE FUNCTION total_cost();

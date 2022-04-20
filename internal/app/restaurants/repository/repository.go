@@ -58,7 +58,7 @@ func (r *RestaurantsRepo) GetDishByRestaurants(id int) ([]*models.DishDataStorag
 func (r *RestaurantsRepo) GetCommentsRestaurantByRestaurants(id int) ([]*models.CommentRestaurantDataStorage, error) {
 	fmt.Println(id)
 	comments := make([]*models.CommentRestaurantDataStorage, 0, 2)
-	err := r.DB.Select(&comments, `SELECT id, restaurant, user_id, comment_text FROM comment_restaurants WHERE id = $1`, id)
+	err := r.DB.Select(&comments, `SELECT id, restaurant, user_id, comment_text, comment_rating FROM comment_restaurants WHERE id = $1`, id)
 
 	switch err {
 	case nil:
@@ -70,18 +70,17 @@ func (r *RestaurantsRepo) GetCommentsRestaurantByRestaurants(id int) ([]*models.
 	}
 }
 
-func (r *RestaurantsRepo) AddCommentsRestaurantByRestaurants(newUser *models.AddCommentRestaurantDataStorage) (bool, error) {
-	var newUserId int64
-	err := r.DB.QueryRow(`INSERT INTO comment_restaurants (restaurant, user_id, comment_text) VALUES ($1,$2,$3) RETURNING id`, newUser.Restaurant, newUser.User_id, newUser.Comment_text).Scan(&newUserId)
-	fmt.Println(err)
+func (r *RestaurantsRepo) AddCommentsRestaurantByRestaurants(newComment *models.AddCommentRestaurantDataStorage) (models.CommentRestaurantId, error) {
+	var newCommentRestaurantId int64
+	err := r.DB.QueryRow(`INSERT INTO comment_restaurants (restaurant, user_id, comment_text, comment_rating) VALUES ($1,$2,$3,$4) RETURNING id`, newComment.Restaurant, newComment.User_id, newComment.Comment_text, newComment.Comment_rating).Scan(&newCommentRestaurantId)
 	if err != nil {
 		if err == sql.ErrConnDone || err == sql.ErrTxDone {
-			return true, servErrors.NewError(servErrors.DB_ERROR, err.Error())
+			return 0, servErrors.NewError(servErrors.DB_ERROR, err.Error())
 		}
-		return true, servErrors.NewError(servErrors.DB_INSERT, err.Error())
+		return 0, servErrors.NewError(servErrors.DB_INSERT, err.Error())
 	}
-	if newUserId == 0 {
-		return true, servErrors.NewError(servErrors.DB_INSERT, "")
+	if newCommentRestaurantId == 0 {
+		return 0, servErrors.NewError(servErrors.DB_INSERT, "")
 	}
-	return true, nil
+	return models.CommentRestaurantId(newCommentRestaurantId), nil
 }

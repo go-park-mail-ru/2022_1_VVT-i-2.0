@@ -84,95 +84,95 @@ func TestGetUserByPhone(t *testing.T) {
 	//}
 }
 
-//func TestAddUser(t *testing.T) {
-//	db, mock, err := sqlmock.New()
-//	if err != nil {
-//		t.Fatalf("cant create mock: %s", err)
-//	}
-//	defer db.Close()
-//
-//	sqlxDB := sqlx.NewDb(db, "sqlmock")
-//
-//	repo := UserRepo{
-//		DB: sqlxDB,
-//	}
-//
-//	name := "Sergey"
-//	phone := "89166152595"
-//	email := "sergey@mail.ru"
-//	testItem := &models.UserAddDataStorage{
-//		Name: name,
-//		Phone:phone,
-//		Email: email,
-//	}
-//
-//	//ok query
-//	mock.
-//		ExpectExec(`INSERT INTO users`).
-//		WithArgs(name, phone, email).
-//		WillReturnResult(sqlmock.NewResult(1, 1))
-//
-//	id, err := repo.AddUser(testItem)
-//	if err != nil {
-//		t.Errorf("unexpected err: %s", err)
-//		return
-//	}
-//	if id != 0 {
-//		t.Errorf("bad id: want %v, have %v", id, 0)
-//		return
-//	}
-//
-//	if err := mock.ExpectationsWereMet(); err != nil {
-//		t.Errorf("there were unfulfilled expectations: %s", err)
-//	}
-//
-//	//query error
-//	mock.
-//		ExpectExec(`INSERT INTO items`).
-//		WithArgs(name, phone, email).
-//		WillReturnError(fmt.Errorf("bad query"))
-//
-//	// mock.ExpectClose()
-//
-//	_, err = repo.AddUser(testItem)
-//	if err == nil {
-//		t.Errorf("expected error, got nil")
-//		return
-//	}
-//	if err := mock.ExpectationsWereMet(); err != nil {
-//		t.Errorf("there were unfulfilled expectations: %s", err)
-//	}
-//
-//	// result error
-//	mock.
-//		ExpectExec(`INSERT INTO users`).
-//		WithArgs(name, phone, email).
-//		WillReturnResult(sqlmock.NewErrorResult(fmt.Errorf("bad_result")))
-//
-//	_, err = repo.AddUser(testItem)
-//	if err == nil {
-//		t.Errorf("expected error, got nil")
-//		return
-//	}
-//	if err := mock.ExpectationsWereMet(); err != nil {
-//		t.Errorf("there were unfulfilled expectations: %s", err)
-//	}
-//
-//	// last id error
-//	mock.
-//		ExpectExec(`INSERT INTO items`).
-//		WithArgs(name, phone, email).
-//		WillReturnResult(sqlmock.NewResult(0, 0))
-//
-//	_, err = repo.AddUser(testItem)
-//	if err == nil {
-//		t.Errorf("expected error, got nil")
-//		return
-//	}
-//	if err := mock.ExpectationsWereMet(); err != nil {
-//		t.Errorf("there were unfulfilled expectations: %s", err)
-//	}
-//}
+func TestAddUser(t *testing.T) {
+	db, mock, err := sqlmock.New()
+	if err != nil {
+		t.Fatalf("cant create mock: %s", err)
+	}
+	defer db.Close()
+
+	sqlxDB := sqlx.NewDb(db, "sqlmock")
+
+	repo := UserRepo{
+		DB: sqlxDB,
+	}
+
+	name := "Sergey"
+	phone := "79166152595"
+	email := "sergey@mail.ru"
+	testItem := &models.UserAddDataStorage{
+		Name: name,
+		Phone:phone,
+		Email: email,
+	}
+
+	//ok query
+	mock.
+		ExpectExec(`INSERT INTO users`).
+		WithArgs(name, phone, email).
+		WillReturnResult(sqlmock.NewResult(1, 1))
+
+	id, err := repo.AddUser(testItem)
+	if err != nil {
+		t.Errorf("unexpected err: %s", err)
+		return
+	}
+	if id != 0 {
+		t.Errorf("bad id: want %v, have %v", id, 0)
+		return
+	}
+
+	if err := mock.ExpectationsWereMet(); err != nil {
+		t.Errorf("there were unfulfilled expectations: %s", err)
+	}
+
+	//query error
+	mock.
+		ExpectExec(`INSERT INTO items`).
+		WithArgs(name, phone, email).
+		WillReturnError(fmt.Errorf("bad query"))
+
+	// mock.ExpectClose()
+
+	_, err = repo.AddUser(testItem)
+	if err == nil {
+		t.Errorf("expected error, got nil")
+		return
+	}
+	if err := mock.ExpectationsWereMet(); err != nil {
+		t.Errorf("there were unfulfilled expectations: %s", err)
+	}
+
+	// result error
+	mock.
+		ExpectExec(`INSERT INTO users`).
+		WithArgs(name, phone, email).
+		WillReturnResult(sqlmock.NewErrorResult(fmt.Errorf("bad_result")))
+
+	_, err = repo.AddUser(testItem)
+	if err == nil {
+		t.Errorf("expected error, got nil")
+		return
+	}
+	if err := mock.ExpectationsWereMet(); err != nil {
+		t.Errorf("there were unfulfilled expectations: %s", err)
+	}
+
+	// last id error
+	mock.
+		ExpectExec(`INSERT INTO items`).
+		WithArgs(name, phone, email).
+		WillReturnResult(sqlmock.NewResult(0, 0))
+
+	_, err = repo.AddUser(testItem)
+	if err == nil {
+		t.Errorf("expected error, got nil")
+		return
+	}
+	if err := mock.ExpectationsWereMet(); err != nil {
+		t.Errorf("there were unfulfilled expectations: %s", err)
+	}
+}
 
 //func TestUpdateUser(t *testing.T) {
 //	db, mock, err := sqlmock.New()

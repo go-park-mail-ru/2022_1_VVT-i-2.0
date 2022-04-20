@@ -35,7 +35,7 @@ func (r *UserRepo) GetUserByPhone(phone string) (*models.UserDataStorage, error)
 func (r *UserRepo) AddUser(newUser *models.UserAddDataStorage) (models.UserId, error) {
 	var newUserId int64
 	err := r.DB.QueryRow(`INSERT INTO users (name,phone,email) VALUES ($1,$2,$3) RETURNING id`, newUser.Name, newUser.Phone, newUser.Email).Scan(&newUserId)
-	fmt.Println(err)
+
 	if err != nil {
 		if err == sql.ErrConnDone || err == sql.ErrTxDone {
 			return 0, servErrors.NewError(servErrors.DB_ERROR, err.Error())
