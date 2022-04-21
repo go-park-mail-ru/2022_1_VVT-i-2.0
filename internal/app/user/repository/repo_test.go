@@ -184,12 +184,6 @@ func TestAddUser1(t *testing.T) {
 
 	rows := sqlmock.
 		NewRows([]string{"id"}).AddRow(expect)
-	//expect := []*models.UserDataStorage{
-	//	{1, "Sergey", "89166152595", "seregey@mail.ru"},
-	//}
-	//for _, item := range expect {
-	//	rows = rows.AddRow(item.Id, item.Name, item.Phone, item.Email)
-	//}
 
 	mock.
 		ExpectQuery(`INSERT INTO users`).
