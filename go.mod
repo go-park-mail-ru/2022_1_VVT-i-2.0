@@ -6,7 +6,9 @@ require (
 	github.com/BurntSushi/toml v1.1.0
 	github.com/asaskevich/govalidator v0.0.0-20210307081110-f21760c49a8d
 	github.com/bradfitz/gomemcache v0.0.0-20220106215444-fb4bf637b56d
+	github.com/disintegration/imaging v1.6.2
 	github.com/golang-jwt/jwt v3.2.2+incompatible
+	github.com/google/uuid v1.3.0
 	github.com/jackc/pgx v3.6.2+incompatible
 	github.com/jmoiron/sqlx v1.3.4
 	github.com/labstack/echo/v4 v4.7.2
@@ -23,21 +25,6 @@ require (
 	github.com/mattn/go-colorable v0.1.12 // indirect
 	github.com/mattn/go-isatty v0.0.14 // indirect
 	github.com/shopspring/decimal v1.3.1 // indirect
-	github.com/boombuler/barcode v1.0.1-0.20190219062509-6c824513bacc // indirect
-	github.com/dgrijalva/jwt-go v3.2.0+incompatible // indirect
-	github.com/disintegration/imaging v1.6.2 // indirect
-	github.com/google/uuid v1.3.0 // indirect
-	github.com/gorilla/csrf v1.7.1 // indirect
-	github.com/gorilla/mux v1.8.0 // indirect
-	github.com/labstack/gommon v0.3.1 // indirect
-	github.com/mattn/go-colorable v0.1.12 // indirect
-	github.com/mattn/go-isatty v0.0.14 // indirect
-	github.com/nfnt/resize v0.0.0-20180221191011-83c6a9932646 // indirect
-	github.com/opentracing-contrib/go-grpc v0.0.0-20210225150812-73cb765af46e // indirect
-	github.com/pelletier/go-toml v1.9.4 // indirect
-	github.com/pquerna/otp v1.3.0 // indirect
-	github.com/sirupsen/logrus v1.8.0 // indirect
-	github.com/souvikhaldar/gobudgetsms v0.0.0-20181104103442-ac7075c13441 // indirect
 	github.com/valyala/bytebufferpool v1.0.0 // indirect
 	github.com/valyala/fasttemplate v1.2.1 // indirect
 	go.uber.org/atomic v1.9.0 // indirect
