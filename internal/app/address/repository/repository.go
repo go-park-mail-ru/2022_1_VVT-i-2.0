@@ -2,7 +2,6 @@ package repository
 
 import (
 	"database/sql"
-	"fmt"
 	"strings"
 
 	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/models"
@@ -42,9 +41,9 @@ func (r *AddrRepo) SuggestStreet(address *models.SuggestStreetRepoInput) (*model
 	// var suggs []string
 	err := r.DB.Select(&suggs, `SELECT name FROM streets WHERE name ILIKE $1 LIMIT $2`, address.Street+"%", suggsLimit)
 	// err := r.DB.Select(&suggs, `SELECT name FROM msc_streets WHERE name ILIKE $1 LIMIT $2`, "%"+"Измайл"+"%", suggsLimit)
-	fmt.Println(suggs)
-	fmt.Println(err)
-	fmt.Println(len(suggs))
+	// fmt.Println(suggs)
+	// fmt.Println(err)
+	// fmt.Println(len(suggs))
 	switch err {
 	case nil:
 		if len(suggs) == 0 {
@@ -66,9 +65,9 @@ func (r *AddrRepo) SuggestHouse(address *models.SuggestHouseRepoInput) (*models.
 	suggs := make([]*string, 0, suggsLimit)
 
 	err := r.DB.Select(&suggs, `SELECT house FROM houses WHERE street_id =$1 AND house ILIKE $2  LIMIT $3`, address.StreetId, address.House+"%", suggsLimit)
-	fmt.Println(suggs)
-	fmt.Println(err)
-	fmt.Println(len(suggs))
+	// fmt.Println(suggs)
+	// fmt.Println(err)
+	// fmt.Println(len(suggs))
 	switch err {
 	case nil:
 		if len(suggs) == 0 {

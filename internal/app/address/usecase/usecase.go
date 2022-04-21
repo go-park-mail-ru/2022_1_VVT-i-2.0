@@ -101,7 +101,7 @@ func (u *AddrUsecase) suggestStreet(address addressT) (*models.SuggestResp, erro
 	var suggs *models.SuggestStreetRepoAnsw
 
 	pozToCut := len(address.street)
-	for i := 0; i < 3 && suggs == nil && pozToCut > 1; i++ {
+	for i := 0; i < 3 && suggs == nil && pozToCut >= 0; i++ {
 
 		street := []rune(address.street[:(pozToCut)])
 		fmt.Println(string(street))
@@ -110,7 +110,8 @@ func (u *AddrUsecase) suggestStreet(address addressT) (*models.SuggestResp, erro
 			break
 		}
 
-		for j := 0; j < 3 && pozToCut > 0; pozToCut-- {
+		pozToCut--
+		for j := 0; j < 2 && pozToCut >= 0; pozToCut-- {
 			if utf8.ValidString(address.street[pozToCut:]) {
 				j++
 			}
@@ -171,16 +172,13 @@ func (u *AddrUsecase) suggestHouse(address addressT) (*models.SuggestResp, error
 	for i := 0; i < 3 && suggs == nil && pozToCut >= 0; i++ {
 
 		house := []rune(address.house[:pozToCut])
-		fmt.Println(string(house))
-		suggs, err = u.AddrRepo.SuggestHouse(&models.SuggestHouseRepoInput{StreetId: street.StreetId, House: address.house})
+		// fmt.Println(string(house))
+		suggs, err = u.AddrRepo.SuggestHouse(&models.SuggestHouseRepoInput{StreetId: street.StreetId, House: string(house)})
 		if len(address.house)-i*1 <= 0 {
 			break
 		}
 
-		for j := 0; j < 3 && pozToCut > 0; pozToCut-- {
-			if utf8.ValidString(address.house[pozToCut:]) {
-				j++
-			}
+		for pozToCut--; !utf8.ValidString(address.house[pozToCut:]) && pozToCut >= 0; pozToCut-- {
 		}
 	}
 	if suggs == nil {
