@@ -48,17 +48,16 @@ func (h RestaurantsHandler) GetAllRestaurants(ctx echo.Context) error {
 
 	for _, rest := range restaurantsDataDelivery.Restaurants {
 		item := &models.RestaurantJsonForKirill{
-
-			Id:             rest.Id,
-			Name:           rest.Name,
-			City:           rest.City,
-			Address:        rest.Address,
-			Image_path:     "http://tavide.xyz:8080/static/static/" + rest.Image_path,
-			Slug:           rest.Slug,
-			Min_price:      rest.Min_price,
-			Avg_price:      rest.Avg_price,
-			Rating:         float64(int(rest.Rating*10)) / 10,
-			TimeToDelivery: "25-30",
+			Id: rest.Id,
+			Name: rest.Name,
+			City: rest.City,
+			Address: rest.Address,
+			Image_path: "http://127.0.0.1:8080/static/static/" + rest.Image_path,
+			Slug: rest.Slug,
+			Min_price: rest.Min_price,
+			Avg_price: rest.Avg_price,
+			Rating: float64(int(rest.Rating * 10)) / 10,
+			TimeToDelivery: "25 - 30",
 		}
 		restaurantsD.Restaurants = append(restaurantsD.Restaurants, *item)
 	}
@@ -106,28 +105,29 @@ func (h RestaurantsHandler) GetDishesByRestaurants(ctx echo.Context) error {
 		return echo.NewHTTPError(http.StatusInternalServerError, httpErrDescr.SERVER_ERROR)
 	}
 
-	restaurantD := &models.RestaurantsDishJsonForKirill{
-		Id:             restaurantDataDelivery.Id,
-		Name:           restaurantDataDelivery.Name,
-		City:           restaurantDataDelivery.City,
-		Address:        restaurantDataDelivery.Address,
-		Image_path:     "http://tavide.xyz:8080/static/static/" + restaurantDataDelivery.Image_path,
-		Slug:           restaurantDataDelivery.Slug,
-		Min_price:      restaurantDataDelivery.Min_price,
-		Avg_price:      restaurantDataDelivery.Avg_price,
-		Rating:         float64(int(restaurantDataDelivery.Rating*10)) / 10,
+	restaurantD := &models.RestaurantsDishesJsonForKirill{
+		Id: restaurantDataDelivery.Id,
+		Name: restaurantDataDelivery.Name,
+		City: restaurantDataDelivery.City,
+		Address: restaurantDataDelivery.Address,
+		Image_path: "http://127.0.0.1:8080/static/static/" + restaurantDataDelivery.Image_path,
+		Slug: restaurantDataDelivery.Slug,
+		Min_price: restaurantDataDelivery.Min_price,
+		Avg_price: restaurantDataDelivery.Avg_price,
+		Rating: float64(int(restaurantDataDelivery.Rating * 10)) / 10,
 		TimeToDelivery: "25-30",
 	}
 
 	for _, dish := range dishesDataDelivery.Dishes {
 		item := &models.DishJsonForKirill{
-			Id:          dish.Id,
-			Restaurant:  dish.Restaurant,
-			Name:        dish.Name,
-			Description: dish.Description,
-			Image_path:  "http://tavide.xyz:8080/static/dish_static/" + dish.Image_path,
-			Calories:    dish.Calories,
-			Price:       dish.Price,
+			Id: 			dish.Id,
+			Restaurant: 	dish.Restaurant,
+			Name: 			dish.Name,
+			Description: 	dish.Description,
+			Image_path:  	"http://127.0.0.1:8080/static/dish_static/" + dish.Image_path,
+			Calories:    	dish.Calories,
+			Price:       	dish.Price,
+			Weight: 		dish.Weight,
 		}
 		restaurantD.Dishes = append(restaurantD.Dishes, *item)
 	}

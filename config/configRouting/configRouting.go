@@ -9,25 +9,15 @@ import (
 )
 
 type ServerHandlers struct {
-	UserHandler        *userHandler.UserHandler
+	UserHandler *userHandler.UserHandler
 	RestaurantsHandler *restaurantsHandler.RestaurantsHandler
-	SuggsHandler       *suggestHandler.SuggsHandler
-	OrderHandler       *orderHandler.OrderHandler
+	SuggsHandler *suggestHandler.SuggsHandler
+	OrderHandler *orderHandler.OrderHandler
 }
 
 const (
 	v1Prefix = "/api/v1/"
 )
-
-// var staticUrl = ""
-
-// func InitStaticUrl(url string) {
-// 	staticUrl = url
-// }
-
-// func GetStaticUrl() string {
-// 	return staticUrl
-// }
 
 // TODO:  убрать миддлвар авторизации с suggests
 func (sh *ServerHandlers) ConfigureRouting(router *echo.Echo) {

@@ -6,4 +6,6 @@ type Repository interface {
 	GetRestaurants() ([]*models.RestaurantDataStorage, error)
 	GetRestaurantsBySlug(slug string) (*models.RestaurantDataStorage, error)
 	GetDishByRestaurants(id int) ([]*models.DishDataStorage, error)
+	GetCommentsRestaurantByRestaurants(id int) ([]*models.CommentRestaurantDataStorage, error)
+	AddCommentsRestaurantByRestaurants(item *models.AddCommentRestaurantDataStorage) (models.CommentRestaurantId, error)
 }

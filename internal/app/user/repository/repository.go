@@ -32,10 +32,25 @@ func (r *UserRepo) GetUserByPhone(phone string) (*models.UserDataStorage, error)
 	}
 }
 
-func (r *UserRepo) AddUser(newUser *models.UserAddDataStorage) (models.UserId, error) {
+func (r *UserRepo) AddUser(newUser *models.UserAddDataStorage) (*models.UserDataStorage, error) {
+	user := &models.UserDataStorage{}
+	err := r.DB.Get(user, `INSERT INTO users (name,phone,email) VALUES ($1,$2,$3) RETURNING id, name, phone, email`, newUser.Name, newUser.Phone, newUser.Email)
+
+	if err != nil {
+		if err == sql.ErrConnDone || err == sql.ErrTxDone {
+			return nil, servErrors.NewError(servErrors.DB_ERROR, err.Error())
+		}
+		return nil, servErrors.NewError(servErrors.DB_INSERT, err.Error())
+	}
+	if user == nil {
+		return nil, servErrors.NewError(servErrors.DB_INSERT, "")
+	}
+	return user, nil
+}
+
+func (r *UserRepo) AddUser1(newUser *models.UserAddDataStorage) (models.UserId, error) {
 	var newUserId int64
-	err := r.DB.QueryRow(`INSERT INTO users (name,phone,email,avatar) VALUES ($1,$2,$3,$4) RETURNING id`, newUser.Name, newUser.Phone, newUser.Email, newUser.Avatar).Scan(&newUserId)
-	fmt.Println(err)
+	err := r.DB.QueryRow(`INSERT INTO users (name,phone,email) VALUES ($1,$2,$3) RETURNING id`, newUser.Name, newUser.Phone, newUser.Email).Scan(&newUserId)
 	if err != nil {
 		if err == sql.ErrConnDone || err == sql.ErrTxDone {
 			return 0, servErrors.NewError(servErrors.DB_ERROR, err.Error())

@@ -60,26 +60,68 @@ func (u *RestaurantsUsecase) GetRestaurantBySluf(slug string) (*models.Restauran
 	}, nil
 }
 
-func (u *RestaurantsUsecase) GetDishByRestaurant(id int) (*models.DishesDataStorage, error) {
+func (u *RestaurantsUsecase) GetDishByRestaurant(id int) (*models.DishesUseCase, error) {
 	dishesData, err := u.RestaurantsRepo.GetDishByRestaurants(id)
 	if err != nil {
 		return nil, errors.Wrapf(err, "error getting restaurants")
 	}
 
-	dishesUC := &models.DishesDataStorage{}
+	dishesUC := &models.DishesUseCase{}
 
 	for _, dish := range dishesData {
-		item := &models.DishDataStorage{
+		item := &models.DishUseCase{
 			Id: dish.Id,
 			Restaurant: dish.Restaurant,
 			Name: dish.Name,
 			Description: dish.Description,
 			Image_path: dish.Image_path,
 			Calories: dish.Calories,
+			Weight: dish.Weight,
 			Price: dish.Price,
 		}
 		dishesUC.Dishes = append(dishesUC.Dishes, *item)
 	}
 
 	return dishesUC, nil
+}
+
+func (u *RestaurantsUsecase) GetCommentsRestaurantByRestaurants(id int) (*models.CommentsRestaurantUseCase, error) {
+	commentsData, err := u.RestaurantsRepo.GetCommentsRestaurantByRestaurants(id)
+	if err != nil {
+		return nil, errors.Wrapf(err, "error getting restaurants")
+	}
+
+	commentsUC := &models.CommentsRestaurantUseCase{}
+
+	for _, comment := range commentsData {
+		item := &models.CommentRestaurantUseCase{
+			Id: comment.Id,
+			Restaurant: comment.Restaurant,
+			User_id: comment.User_id,
+			Comment_text: comment.Comment_text,
+			Comment_rating: comment.Comment_rating,
+		}
+		commentsUC.Comment = append(commentsUC.Comment, *item)
+	}
+
+	return commentsUC, nil
+}
+
+func (u *RestaurantsUsecase) AddCommentsRestaurantByRestaurants(item *models.AddCommentRestaurantUseCase) (*models.CommentRestaurantUseCase, error) {
+	id, err := u.RestaurantsRepo.AddCommentsRestaurantByRestaurants(&models.AddCommentRestaurantDataStorage{
+		Restaurant: item.Restaurant,
+		User_id: item.User_id,
+		Comment_text: item.Comment_text,
+		Comment_rating: item.Comment_rating,
+	})
+	if err != nil {
+		return nil, errors.Wrap(err, "error adding user to storage")
+	}
+	return &models.CommentRestaurantUseCase{
+		Id:    int(id),
+		Restaurant: item.Restaurant,
+		User_id: item.User_id,
+		Comment_text: item.Comment_text,
+		Comment_rating: item.Comment_rating,
+	}, nil
 }
