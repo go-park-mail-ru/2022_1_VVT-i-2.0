@@ -12,7 +12,7 @@ type LocalFileManager struct {
 	staticPath     string
 	avatarPath     string
 	restaurantPath string
-	dishPath       string
+	dishesPath     string
 }
 
 func NewLocalFileManager(staticUrl string, staticPath string) *LocalFileManager {
@@ -21,7 +21,7 @@ func NewLocalFileManager(staticUrl string, staticPath string) *LocalFileManager 
 		staticPath:     staticPath,
 		avatarPath:     "avatar/",
 		restaurantPath: "restaurants/",
-		dishPath:       "dishes/",
+		dishesPath:     "dishes/",
 	}
 }
 
@@ -51,4 +51,8 @@ func (f *LocalFileManager) GetAvatarDirPath() string {
 
 func (f *LocalFileManager) GetRestaurantUrl(fileName string) string {
 	return f.staticUrl + f.restaurantPath + fileName
+}
+
+func (f *LocalFileManager) GetDishesUrl(fileName string) string {
+	return f.staticUrl + f.dishesPath + fileName
 }

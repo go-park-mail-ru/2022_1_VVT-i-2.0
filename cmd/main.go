@@ -94,15 +94,15 @@ func main() {
 
 	restaurantsRepo := restaurantsRepo.NewRestaurantsRepo(pgxManager)
 	restaurantsUsecase := restaurantsUsecase.NewRestaurantsUsecase(restaurantsRepo)
-	restaurantsHandler := restaurantsHandler.NewRestaurantsHandler(restaurantsUsecase)
+	restaurantsHandler := restaurantsHandler.NewRestaurantsHandler(restaurantsUsecase, staticManager)
 
 	router := echo.New()
 
 	serverRouting := configRouting.ServerHandlers{
-		UserHandler: userHandler,
+		UserHandler:        userHandler,
 		RestaurantsHandler: restaurantsHandler,
-		SuggsHandler: suggsHandler,
-		OrderHandler: orderHandler,
+		SuggsHandler:       suggsHandler,
+		OrderHandler:       orderHandler,
 	}
 
 	serverRouting.ConfigureRouting(router)

@@ -110,15 +110,15 @@ func (u *UserUsecase) Register(req *models.RegisterReq) (*models.UserDataUsecase
 		return nil, servErrors.NewError(servErrors.WRONG_AUTH_CODE, servErrors.WRONG_AUTH_CODE_DESCR)
 	}
 
-	id, err := u.UserRepo.AddUser(&models.UserAddDataStorage{Phone: req.Phone, Email: req.Email, Name: req.Name})
+	userDataStorage, err := u.UserRepo.AddUser(&models.UserAddDataStorage{Phone: req.Phone, Email: req.Email, Name: req.Name})
 	if err != nil {
 		return nil, errors.Wrap(err, "error adding user to storage")
 	}
 	return &models.UserDataUsecase{
-		Id:    id,
-		Phone: req.Phone,
-		Name:  req.Name,
-		Email: req.Email,
+		Id:    userDataStorage.Id,
+		Phone: userDataStorage.Phone,
+		Name:  userDataStorage.Name,
+		Email: userDataStorage.Email,
 	}, nil
 }
 

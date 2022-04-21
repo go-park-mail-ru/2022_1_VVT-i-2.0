@@ -11,16 +11,19 @@ import (
 	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/models"
 	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/restaurants"
 	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/tools/servErrors"
+	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/tools/staticManager"
 	"github.com/labstack/echo/v4"
 )
 
 type RestaurantsHandler struct {
-	Usecase restaurants.Usecase
+	Usecase       restaurants.Usecase
+	StaticManager staticManager.FileManager
 }
 
-func NewRestaurantsHandler(usecase restaurants.Usecase) *RestaurantsHandler {
+func NewRestaurantsHandler(usecase restaurants.Usecase, staticManager staticManager.FileManager) *RestaurantsHandler {
 	return &RestaurantsHandler{
-		Usecase: usecase,
+		Usecase:       usecase,
+		StaticManager: staticManager,
 	}
 }
 
@@ -48,15 +51,16 @@ func (h RestaurantsHandler) GetAllRestaurants(ctx echo.Context) error {
 
 	for _, rest := range restaurantsDataDelivery.Restaurants {
 		item := &models.RestaurantJsonForKirill{
-			Id: rest.Id,
-			Name: rest.Name,
-			City: rest.City,
-			Address: rest.Address,
-			Image_path: "http://127.0.0.1:8080/static/static/" + rest.Image_path,
-			Slug: rest.Slug,
-			Min_price: rest.Min_price,
-			Avg_price: rest.Avg_price,
-			Rating: float64(int(rest.Rating * 10)) / 10,
+			Id:         rest.Id,
+			Name:       rest.Name,
+			City:       rest.City,
+			Address:    rest.Address,
+			Image_path: h.StaticManager.GetRestaurantUrl(rest.Image_path),
+			// Image_path:     "http://127.0.0.1:8080/static/static/" + rest.Image_path,
+			Slug:           rest.Slug,
+			Min_price:      rest.Min_price,
+			Avg_price:      rest.Avg_price,
+			Rating:         float64(int(rest.Rating*10)) / 10,
 			TimeToDelivery: "25 - 30",
 		}
 		restaurantsD.Restaurants = append(restaurantsD.Restaurants, *item)
@@ -106,28 +110,30 @@ func (h RestaurantsHandler) GetDishesByRestaurants(ctx echo.Context) error {
 	}
 
 	restaurantD := &models.RestaurantsDishesJsonForKirill{
-		Id: restaurantDataDelivery.Id,
-		Name: restaurantDataDelivery.Name,
-		City: restaurantDataDelivery.City,
+		Id:      restaurantDataDelivery.Id,
+		Name:    restaurantDataDelivery.Name,
+		City:    restaurantDataDelivery.City,
 		Address: restaurantDataDelivery.Address,
-		Image_path: "http://127.0.0.1:8080/static/static/" + restaurantDataDelivery.Image_path,
-		Slug: restaurantDataDelivery.Slug,
-		Min_price: restaurantDataDelivery.Min_price,
-		Avg_price: restaurantDataDelivery.Avg_price,
-		Rating: float64(int(restaurantDataDelivery.Rating * 10)) / 10,
+		// Image_path:     "http://127.0.0.1:8080/static/static/" + restaurantDataDelivery.Image_path,
+		Image_path:     h.StaticManager.GetRestaurantUrl(restaurantDataDelivery.Image_path),
+		Slug:           restaurantDataDelivery.Slug,
+		Min_price:      restaurantDataDelivery.Min_price,
+		Avg_price:      restaurantDataDelivery.Avg_price,
+		Rating:         float64(int(restaurantDataDelivery.Rating*10)) / 10,
 		TimeToDelivery: "25-30",
 	}
 
 	for _, dish := range dishesDataDelivery.Dishes {
 		item := &models.DishJsonForKirill{
-			Id: 			dish.Id,
-			Restaurant: 	dish.Restaurant,
-			Name: 			dish.Name,
-			Description: 	dish.Description,
-			Image_path:  	"http://127.0.0.1:8080/static/dish_static/" + dish.Image_path,
-			Calories:    	dish.Calories,
-			Price:       	dish.Price,
-			Weight: 		dish.Weight,
+			Id:          dish.Id,
+			Restaurant:  dish.Restaurant,
+			Name:        dish.Name,
+			Description: dish.Description,
+			Image_path:  h.StaticManager.GetDishesUrl(dish.Image_path),
+			// Image_path:  "http://127.0.0.1:8080/static/dish_static/" + dish.Image_path,
+			Calories: dish.Calories,
+			Price:    dish.Price,
+			Weight:   dish.Weight,
 		}
 		restaurantD.Dishes = append(restaurantD.Dishes, *item)
 	}

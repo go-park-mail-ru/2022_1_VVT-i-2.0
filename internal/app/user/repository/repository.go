@@ -103,6 +103,9 @@ func (r *UserRepo) UpdateUser(updUser *models.UpdateUserStorage) (*models.UserDa
 		if err == sql.ErrConnDone || err == sql.ErrTxDone {
 			return nil, servErrors.NewError(servErrors.DB_ERROR, err.Error())
 		}
+		if err == sql.ErrNoRows {
+			return nil, servErrors.NewError(servErrors.NO_SUCH_ENTITY_IN_DB, err.Error())
+		}
 		return nil, servErrors.NewError(servErrors.DB_UPDATE, err.Error())
 	}
 	if count, _ := result.RowsAffected(); count != 1 {
