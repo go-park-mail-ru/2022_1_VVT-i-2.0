@@ -48,6 +48,7 @@ func (h RestaurantsHandler) GetAllRestaurants(ctx echo.Context) error {
 
 	for _, rest := range restaurantsDataDelivery.Restaurants {
 		item := &models.RestaurantJsonForKirill{
+
 			Id:             rest.Id,
 			Name:           rest.Name,
 			City:           rest.City,
