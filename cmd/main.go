@@ -20,6 +20,7 @@ import (
 	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/tools/logger/zaplogger"
 	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/tools/notification/flashcall"
 	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/tools/postgresqlx"
+	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/tools/staticManager/localStaticManager"
 
 	suggsHandler "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/address/delivery/http"
 	suggsRepo "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/address/repository"
@@ -77,15 +78,17 @@ func main() {
 
 	flashcaller := flashcall.NewFlashcaller(&config.NotificatorConfig)
 
+	staticManager := localStaticManager.NewLocalFileManager(config.ServConfig.StaticUrl, config.ServConfig.StaticPath)
+
 	userRepo := userRepo.NewUserRepo(pgxManager)
 	suggsRepo := suggsRepo.NewAddrRepo(pgxManager)
 	orderRepo := orderRepo.NewOrderRepo(pgxManager)
 
-	userUcase := userUcase.NewUsecase(flashcaller, memcacher, userRepo)
+	userUcase := userUcase.NewUsecase(flashcaller, memcacher, userRepo, staticManager)
 	suggsUcase := suggsUcase.NewAddrUsecase(suggsRepo)
 	orderUcase := orderUcase.NewUsecase(orderRepo)
 
-	userHandler := userHandler.NewUserHandler(userUcase, jwtManager)
+	userHandler := userHandler.NewUserHandler(userUcase, jwtManager, staticManager)
 	suggsHandler := suggsHandler.NewSuggsHandler(suggsUcase)
 	orderHandler := orderHandler.NewOrderHandler(orderUcase)
 

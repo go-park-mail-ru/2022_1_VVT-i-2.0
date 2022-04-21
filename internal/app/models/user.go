@@ -1,31 +1,45 @@
 package models
 
+import (
+	"database/sql"
+	"io"
+)
+
 type UserId uint64
 
 type UserDataStorage struct {
-	Id    UserId
-	Name  string
-	Phone string
-	Email string
+	Id     UserId
+	Name   string
+	Phone  string
+	Email  string
+	Avatar sql.NullString
 }
 
 type UserAddDataStorage struct {
-	Name  string
-	Phone string
-	Email string
+	Name   string
+	Phone  string
+	Email  string
+	Avatar string
 }
 
 type UserDataUsecase struct {
-	Id    UserId
-	Name  string
-	Phone string
-	Email string
+	Id     UserId
+	Name   string
+	Phone  string
+	Email  string
+	Avatar string
+}
+
+type UpdateAvatarRepo struct {
+	ImgPath string
+	UserId  UserId
 }
 
 type UserDataResp struct {
-	Name  string `json:"name"`
-	Phone string `json:"phone"`
-	Email string `json:"email"`
+	Name   string `json:"name"`
+	Phone  string `json:"phone"`
+	Email  string `json:"email"`
+	Avatar string `json:"avatar"`
 }
 
 type LoginReq struct {
@@ -60,11 +74,16 @@ type UpdateUserReq struct {
 	Email string `json:"email" valid:"email"`
 }
 
-type UpdateUser struct {
-	Id    UserId
-	Name  string
-	Email string
+type UpdateUserUsecase struct {
+	Id        UserId
+	Name      string
+	Email     string
+	AvatarImg io.Reader
 }
 
-// validate name
-// экранировать код
+type UpdateUserStorage struct {
+	Id     UserId
+	Name   string
+	Email  string
+	Avatar string
+}

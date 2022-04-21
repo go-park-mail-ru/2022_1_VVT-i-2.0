@@ -21,6 +21,8 @@ type ServerConfig struct {
 	BindAddr     string `toml:"bindAddr"`
 	ReadTimeout  int    `toml:"readTimeout"`
 	WriteTimeout int    `toml:"writeTimeout"`
+	StaticUrl    string `toml:"staticUrl"`
+	StaticPath   string `toml:"staticPath"`
 }
 
 type LogConfig struct {
