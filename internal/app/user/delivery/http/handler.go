@@ -1,6 +1,7 @@
 package userHandler
 
 import (
+	"encoding/json"
 	"fmt"
 	"net"
 	"net/http"
@@ -12,24 +13,29 @@ import (
 	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/delivery/http/middleware"
 	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/models"
 	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/tools/servErrors"
+	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/tools/staticManager"
 	_ "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/tools/validator"
 	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/user"
 	"github.com/labstack/echo/v4"
 )
 
 const (
-	tokenCookieKey = "token"
+	tokenCookieKey    = "token"
+	avatarMaxSize     = 4000000
+	updateUserMaxSize = 1000
 )
 
 type UserHandler struct {
-	Usecase     user.Usecase
-	AuthManager authManager.AuthManager
+	Usecase       user.Usecase
+	AuthManager   authManager.AuthManager
+	StaticManager staticManager.FileManager
 }
 
-func NewUserHandler(usecase user.Usecase, authManager authManager.AuthManager) *UserHandler {
+func NewUserHandler(usecase user.Usecase, authManager authManager.AuthManager, staticManager staticManager.FileManager) *UserHandler {
 	return &UserHandler{
-		Usecase:     usecase,
-		AuthManager: authManager,
+		Usecase:       usecase,
+		AuthManager:   authManager,
+		StaticManager: staticManager,
 	}
 }
 
@@ -95,7 +101,11 @@ func (h UserHandler) Login(ctx echo.Context) error {
 	tokenCookie := createTokenCookie(token, host, h.AuthManager.GetEpiryTime())
 
 	ctx.SetCookie(tokenCookie)
-	return ctx.JSON(http.StatusOK, models.UserDataResp{Phone: userDataUcase.Phone, Email: userDataUcase.Email, Name: userDataUcase.Name})
+	if userDataUcase.Avatar == "" {
+
+		return ctx.JSON(http.StatusOK, models.UserDataResp{Phone: userDataUcase.Phone, Email: userDataUcase.Email, Name: userDataUcase.Name, Avatar: ""})
+	}
+	return ctx.JSON(http.StatusOK, models.UserDataResp{Phone: userDataUcase.Phone, Email: userDataUcase.Email, Name: userDataUcase.Name, Avatar: h.StaticManager.GetAvatarUrl(userDataUcase.Avatar)})
 }
 
 func (h UserHandler) Register(ctx echo.Context) error {
@@ -150,7 +160,10 @@ func (h UserHandler) Register(ctx echo.Context) error {
 	tokenCookie := createTokenCookie(token, host, h.AuthManager.GetEpiryTime())
 
 	ctx.SetCookie(tokenCookie)
-	return ctx.JSON(http.StatusOK, models.UserDataResp{Phone: userDataUcase.Phone, Email: userDataUcase.Email, Name: userDataUcase.Name})
+	if userDataUcase.Avatar == "" {
+		return ctx.JSON(http.StatusOK, models.UserDataResp{Phone: userDataUcase.Phone, Email: userDataUcase.Email, Name: userDataUcase.Name, Avatar: ""})
+	}
+	return ctx.JSON(http.StatusOK, models.UserDataResp{Phone: userDataUcase.Phone, Email: userDataUcase.Email, Name: userDataUcase.Name, Avatar: h.StaticManager.GetAvatarUrl(userDataUcase.Avatar)})
 }
 
 func (h UserHandler) Logout(ctx echo.Context) error {
@@ -213,7 +226,11 @@ func (h UserHandler) GetUser(ctx echo.Context) error {
 		return echo.NewHTTPError(http.StatusInternalServerError, httpErrDescr.SERVER_ERROR)
 	}
 
-	return ctx.JSON(http.StatusOK, models.UserDataResp{Phone: userDataUcase.Phone, Email: userDataUcase.Email, Name: userDataUcase.Name})
+	if userDataUcase.Avatar == "" {
+
+		return ctx.JSON(http.StatusOK, models.UserDataResp{Phone: userDataUcase.Phone, Email: userDataUcase.Email, Name: userDataUcase.Name})
+	}
+	return ctx.JSON(http.StatusOK, models.UserDataResp{Phone: userDataUcase.Phone, Email: userDataUcase.Email, Name: userDataUcase.Name, Avatar: h.StaticManager.GetAvatarUrl(userDataUcase.Avatar)})
 }
 
 func (h UserHandler) UpdateUser(ctx echo.Context) error {
@@ -234,7 +251,7 @@ func (h UserHandler) UpdateUser(ctx echo.Context) error {
 		return echo.NewHTTPError(http.StatusBadRequest, httpErrDescr.INVALID_DATA)
 	}
 
-	userDataUcase, err := h.Usecase.UpdateUser(&models.UpdateUser{Id: user.Id, Email: updateReq.Email, Name: updateReq.Name})
+	userDataUcase, err := h.Usecase.UpdateUser(&models.UpdateUserUsecase{Id: user.Id, Email: updateReq.Email, Name: updateReq.Name})
 
 	if err != nil {
 		cause := servErrors.ErrorAs(err)
@@ -252,3 +269,97 @@ func (h UserHandler) UpdateUser(ctx echo.Context) error {
 
 	return ctx.JSON(http.StatusOK, models.UserDataResp{Phone: userDataUcase.Phone, Email: userDataUcase.Email, Name: userDataUcase.Name})
 }
+
+func (h UserHandler) UpdateAvatar(ctx echo.Context) error {
+	user := middleware.GetUserFromCtx(ctx)
+	if user == nil {
+		return echo.NewHTTPError(http.StatusUnauthorized, httpErrDescr.AUTH_REQUIRED)
+	}
+
+	err := ctx.Request().ParseMultipartForm(avatarMaxSize + updateUserMaxSize)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, httpErrDescr.BAD_REQUEST_BODY)
+	}
+	logger := middleware.GetLoggerFromCtx(ctx)
+	requestId := middleware.GetRequestIdFromCtx(ctx)
+
+	ctx.MultipartForm()
+	uploadUserData := ctx.Request().FormValue("newData")
+	fmt.Println(uploadUserData)
+	var updateReq models.UpdateUserReq
+	if err := json.Unmarshal([]byte(uploadUserData), &updateReq); err != nil {
+		fmt.Println(err)
+		return echo.NewHTTPError(http.StatusBadRequest, httpErrDescr.BAD_REQUEST_BODY)
+	}
+
+	fmt.Println(updateReq.Email)
+	fmt.Println(updateReq.Name)
+
+	if _, err := govalidator.ValidateStruct(updateReq); err != nil || (updateReq.Email == "" && updateReq.Name == "") {
+		fmt.Println(err)
+		return echo.NewHTTPError(http.StatusBadRequest, httpErrDescr.INVALID_DATA)
+	}
+
+	avatarImage, _, _ := ctx.Request().FormFile("avatar")
+	defer avatarImage.Close()
+
+	userDataUcase, err := h.Usecase.UpdateUser(&models.UpdateUserUsecase{Id: user.Id, Email: updateReq.Email, Name: updateReq.Name, AvatarImg: avatarImage})
+
+	if err != nil {
+		cause := servErrors.ErrorAs(err)
+		if cause == nil {
+			logger.Error(requestId, err.Error())
+			return echo.NewHTTPError(http.StatusInternalServerError, httpErrDescr.SERVER_ERROR)
+		}
+		switch cause.Code {
+		case servErrors.DB_UPDATE:
+			return echo.NewHTTPError(http.StatusConflict, httpErrDescr.SUCH_USER_ALREADY_EXISTS)
+		case servErrors.DECODE_IMG:
+			return echo.NewHTTPError(http.StatusBadRequest, httpErrDescr.BAD_IMAGE)
+		}
+		logger.Error(requestId, err.Error())
+		return echo.NewHTTPError(http.StatusInternalServerError, httpErrDescr.SERVER_ERROR)
+	}
+
+	if userDataUcase == nil {
+		logger.Error(requestId, "from user-usecase-get-user returned userData==nil and err==nil, unknown error")
+		return echo.NewHTTPError(http.StatusInternalServerError, httpErrDescr.SERVER_ERROR)
+	}
+
+	return ctx.JSON(http.StatusOK, models.UserDataResp{Phone: userDataUcase.Phone, Email: userDataUcase.Email, Name: userDataUcase.Name, Avatar: h.StaticManager.GetAvatarUrl(userDataUcase.Avatar)})
+}
+
+/*
+func (h *UserHandler) UploadPhoto(w http.ResponseWriter, r *http.Request) {
+	err := r.ParseMultipartForm(maxPhotoSize)
+	if err != nil {
+		responses.SendError(w, models.HTTPError{
+			Code:    http.StatusBadRequest,
+			Message: err,
+		}, h.Logger.ErrorLogging)
+		return
+	}
+
+	uploadedPhoto, fileHeader, err := r.FormFile("photo")
+	if err != nil {
+		responses.SendError(w, models.HTTPError{
+			Code:    http.StatusBadRequest,
+			Message: err,
+		}, h.Logger.ErrorLogging)
+		return
+	}
+	defer uploadedPhoto.Close()
+
+	photo, err := h.UserUCase.AddPhoto(r.Context(), uploadedPhoto, fileHeader.Filename)
+	if err != nil {
+		responses.SendError(w, models.HTTPError{
+			Code:    http.StatusInternalServerError,
+			Message: err,
+		}, h.Logger.ErrorLogging)
+		return
+	}
+
+	responses.SendData(w, photo)
+}
+
+*/

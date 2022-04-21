@@ -2,6 +2,9 @@
 bindAddr = ":8080"
 readTimeout = 10
 writeTimeout= 10
+staticUrl="http://localhost:8080/static/"
+staticPath="static/"
+# staticUrl="http://tavide.xyz:8080/static/"
 
 [cors]
 allowOrigins=["", "http://localhost:3000", "http://tavide.xyz:3000"]

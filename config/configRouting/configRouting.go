@@ -19,14 +19,14 @@ const (
 	v1Prefix = "/api/v1/"
 )
 
-
 // TODO:  убрать миддлвар авторизации с suggests
 func (sh *ServerHandlers) ConfigureRouting(router *echo.Echo) {
 	router.Static("/static", "static")
 	router.POST(v1Prefix+"login", sh.UserHandler.Login)
 	router.GET(v1Prefix+"logout", sh.UserHandler.Logout)
 	router.POST(v1Prefix+"register", sh.UserHandler.Register)
-	router.POST(v1Prefix+"update", sh.UserHandler.UpdateUser)
+	// router.POST(v1Prefix+"update", sh.UserHandler.UpdateUser)
+	router.POST(v1Prefix+"update", sh.UserHandler.UpdateAvatar)
 	router.POST(v1Prefix+"send_code", sh.UserHandler.SendCode)
 	router.GET(v1Prefix+"user", sh.UserHandler.GetUser)
 	router.GET(v1Prefix+"restaurants", sh.RestaurantsHandler.GetAllRestaurants)

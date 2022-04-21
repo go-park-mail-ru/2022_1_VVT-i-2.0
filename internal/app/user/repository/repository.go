@@ -19,7 +19,7 @@ func NewUserRepo(db *sqlx.DB) *UserRepo {
 
 func (r *UserRepo) GetUserByPhone(phone string) (*models.UserDataStorage, error) {
 	user := &models.UserDataStorage{}
-	err := r.DB.Get(user, `SELECT id, phone, email, name FROM users WHERE phone = $1`, phone)
+	err := r.DB.Get(user, `SELECT id, phone, email, name, avatar FROM users WHERE phone = $1`, phone)
 	fmt.Println(err)
 	fmt.Println(user)
 	switch err {
@@ -51,7 +51,6 @@ func (r *UserRepo) AddUser(newUser *models.UserAddDataStorage) (*models.UserData
 func (r *UserRepo) AddUser1(newUser *models.UserAddDataStorage) (models.UserId, error) {
 	var newUserId int64
 	err := r.DB.QueryRow(`INSERT INTO users (name,phone,email) VALUES ($1,$2,$3) RETURNING id`, newUser.Name, newUser.Phone, newUser.Email).Scan(&newUserId)
-
 	if err != nil {
 		if err == sql.ErrConnDone || err == sql.ErrTxDone {
 			return 0, servErrors.NewError(servErrors.DB_ERROR, err.Error())
@@ -66,7 +65,7 @@ func (r *UserRepo) AddUser1(newUser *models.UserAddDataStorage) (models.UserId, 
 
 func (r *UserRepo) GetUserById(id models.UserId) (*models.UserDataStorage, error) {
 	user := &models.UserDataStorage{}
-	err := r.DB.Get(user, `SELECT id, phone, email, name FROM users WHERE id = $1`, id)
+	err := r.DB.Get(user, `SELECT id, phone, email, name, avatar FROM users WHERE id = $1`, id)
 
 	switch err {
 	case nil:
@@ -78,18 +77,24 @@ func (r *UserRepo) GetUserById(id models.UserId) (*models.UserDataStorage, error
 	}
 }
 
-func (r *UserRepo) UpdateUser(updUser *models.UpdateUser) (*models.UserDataStorage, error) {
+func (r *UserRepo) UpdateUser(updUser *models.UpdateUserStorage) (*models.UserDataStorage, error) {
 	var err error
 	var result sql.Result
 	switch {
-	case updUser.Email != "" && updUser.Name != "":
-		result, err = r.DB.Exec(`UPDATE users SET name=$1, email=$2 WHERE id=$3`, updUser.Name, updUser.Email, updUser.Id)
-
-	case updUser.Email != "" && updUser.Name == "":
+	case updUser.Email != "" && updUser.Name != "" && updUser.Avatar != "":
+		result, err = r.DB.Exec(`UPDATE users SET name=$1, email=$2, avatar=$3 WHERE id=$4`, updUser.Name, updUser.Email, updUser.Avatar, updUser.Id)
+	case updUser.Email != "" && updUser.Name == "" && updUser.Avatar == "":
 		result, err = r.DB.Exec(`UPDATE users SET email=$1 WHERE id=$2`, updUser.Email, updUser.Id)
-
-	case updUser.Email == "" && updUser.Name != "":
+	case updUser.Email == "" && updUser.Name != "" && updUser.Avatar == "":
 		result, err = r.DB.Exec(`UPDATE users SET name=$1 WHERE id=$2`, updUser.Name, updUser.Id)
+	case updUser.Email == "" && updUser.Name == "" && updUser.Avatar != "":
+		result, err = r.DB.Exec(`UPDATE users SET avatar=$1 WHERE id=$2`, updUser.Avatar, updUser.Id)
+	case updUser.Email != "" && updUser.Name != "" && updUser.Avatar == "":
+		result, err = r.DB.Exec(`UPDATE users SET name=$1, email=$2 WHERE id=$3`, updUser.Name, updUser.Email, updUser.Id)
+	case updUser.Email != "" && updUser.Name == "" && updUser.Avatar != "":
+		result, err = r.DB.Exec(`UPDATE users SET email=$1, avatar=$2 WHERE id=$3`, updUser.Email, updUser.Avatar, updUser.Id)
+	case updUser.Email == "" && updUser.Name != "" && updUser.Avatar != "":
+		result, err = r.DB.Exec(`UPDATE users SET name=$1, avatar=$2 WHERE id=$3`, updUser.Name, updUser.Avatar, updUser.Id)
 	default:
 		return nil, nil
 	}
@@ -105,6 +110,21 @@ func (r *UserRepo) UpdateUser(updUser *models.UpdateUser) (*models.UserDataStora
 	}
 	return r.GetUserById(updUser.Id)
 }
+
+// func (r *UserRepo) UpdateAvatar(req *models.UpdateAvatarRepo) error {
+// 	result, err := r.DB.Exec(`UPDATE users SET avatar=$1 WHERE id=$2`, req.ImgPath, req.UserId)
+
+// 	if err != nil {
+// 		if err == sql.ErrConnDone || err == sql.ErrTxDone {
+// 			return servErrors.NewError(servErrors.DB_ERROR, err.Error())
+// 		}
+// 		return servErrors.NewError(servErrors.DB_UPDATE, err.Error())
+// 	}
+// 	if count, _ := result.RowsAffected(); count != 1 {
+// 		return servErrors.NewError(servErrors.DB_UPDATE, "")
+// 	}
+// 	return nil
+// }
 
 func (r *UserRepo) HasUserByPhone(phone string) (bool, error) {
 	user := &models.UserDataStorage{}

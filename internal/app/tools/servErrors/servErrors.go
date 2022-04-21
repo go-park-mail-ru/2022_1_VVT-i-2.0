@@ -32,6 +32,10 @@ const (
 	DB_UPDATE
 	NO_SUCH_CITY
 	NO_SUCH_STREET
+	CANT_CREATE_AVATAR_NAME
+	CANT_SAVE_AVATAR
+	DECODE_IMG
+	UNKNOWN_STATIC_TYPE
 )
 
 const (
@@ -45,9 +49,12 @@ const (
 	NO_SUCH_ENTITY_IN_DB_DESCR = "нет такой сущности в базе данных"
 	NO_SUCH_USER_DESCR         = "не существует такого пользователя"
 	// невалидные данные от пользователя
-	DB_INSERT_DESCR      = "неуспешная вставка в базу данных"
-	NO_SUCH_CITY_DESCR   = "не существует такого города"
-	NO_SUCH_STREET_DESCR = "не существует такой улицы"
+	DB_INSERT_DESCR               = "неуспешная вставка в базу данных"
+	NO_SUCH_CITY_DESCR            = "не существует такого города"
+	NO_SUCH_STREET_DESCR          = "не существует такой улицы"
+	CANT_CREATE_AVATAR_NAME_DESCR = "не получается сгенерировать имя аватарки"
+	CANT_SAVE_AVATAR_DESCR        = "не получается сохранить аватарку"
+	UNKNOWN_STATIC_TYPE_DESCR     = "неизвестный тип статики, невозможно определить расположение"
 )
 
 var codeDescr = map[int]string{

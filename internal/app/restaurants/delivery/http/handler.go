@@ -2,7 +2,6 @@ package restaurantsHandler
 
 import (
 	"encoding/json"
-	"fmt"
 
 	"net/http"
 	"strconv"
@@ -64,7 +63,7 @@ func (h RestaurantsHandler) GetAllRestaurants(ctx echo.Context) error {
 	}
 
 	result, _ := json.Marshal(restaurantsD.Restaurants)
-	fmt.Printf("json string: %s\n", string(result))
+	// fmt.Printf("json string: %s\n", string(result))
 	ctx.Response().Header().Add(echo.HeaderContentLength, strconv.Itoa(len(result)))
 	return ctx.JSONBlob(http.StatusOK, result)
 }
@@ -134,7 +133,7 @@ func (h RestaurantsHandler) GetDishesByRestaurants(ctx echo.Context) error {
 	}
 
 	result, _ := json.Marshal(restaurantD)
-	fmt.Printf("json string: %s\n", string(result))
+	// fmt.Printf("json string: %s\n", string(result))
 	ctx.Response().Header().Add(echo.HeaderContentLength, strconv.Itoa(len(result)))
 	return ctx.JSONBlob(http.StatusOK, result)
 }

@@ -3,14 +3,18 @@ package usecase
 import (
 	"crypto/rand"
 	"fmt"
+	"io"
 	"math/big"
 	"strconv"
 
+	"github.com/disintegration/imaging"
 	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/models"
 	cacher "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/tools/cacher"
 	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/tools/notification"
 	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/tools/servErrors"
+	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/tools/staticManager"
 	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/user"
+	"github.com/google/uuid"
 	"github.com/pkg/errors"
 )
 
@@ -20,21 +24,24 @@ var LOGIN_CODE string
 const (
 	codeUpBound          = 10000 // > 0
 	codeExpiration int32 = 300   // 5 min
+	avatarSide           = 100
 	codeSendMsg          = "Ваш код для входа в Foobrinto: "
 	msgEncoding          = "unicode"
 )
 
 type UserUsecase struct {
-	Notificator notification.Notificator
-	Cacher      cacher.Cacher
-	UserRepo    user.Repository
+	Notificator   notification.Notificator
+	Cacher        cacher.Cacher
+	UserRepo      user.Repository
+	StaticManager staticManager.FileManager
 }
 
-func NewUsecase(notificator notification.Notificator, cacher cacher.Cacher, userRepo user.Repository) *UserUsecase {
+func NewUsecase(notificator notification.Notificator, cacher cacher.Cacher, userRepo user.Repository, staticManager staticManager.FileManager) *UserUsecase {
 	return &UserUsecase{
-		Notificator: notificator,
-		Cacher:      cacher,
-		UserRepo:    userRepo,
+		Notificator:   notificator,
+		Cacher:        cacher,
+		UserRepo:      userRepo,
+		StaticManager: staticManager,
 	}
 }
 
@@ -86,10 +93,11 @@ func (u *UserUsecase) Login(req *models.LoginReq) (*models.UserDataUsecase, erro
 		return nil, errors.Wrap(err, "error getting user by phone")
 	}
 	return &models.UserDataUsecase{
-		Id:    userData.Id,
-		Phone: userData.Phone,
-		Name:  userData.Name,
-		Email: userData.Email,
+		Id:     userData.Id,
+		Phone:  userData.Phone,
+		Name:   userData.Name,
+		Email:  userData.Email,
+		Avatar: userData.Avatar.String,
 	}, nil
 }
 
@@ -120,22 +128,89 @@ func (u *UserUsecase) GetUser(id models.UserId) (*models.UserDataUsecase, error)
 		return nil, errors.Wrapf(err, "error getting user by id %d", id)
 	}
 	return &models.UserDataUsecase{
-		Id:    userData.Id,
-		Phone: userData.Phone,
-		Name:  userData.Name,
-		Email: userData.Email,
+		Id:     userData.Id,
+		Phone:  userData.Phone,
+		Name:   userData.Name,
+		Email:  userData.Email,
+		Avatar: userData.Avatar.String,
 	}, nil
 }
 
-func (u *UserUsecase) UpdateUser(updates *models.UpdateUser) (*models.UserDataUsecase, error) {
-	updUser, err := u.UserRepo.UpdateUser(updates)
+func (u *UserUsecase) UpdateUser(updates *models.UpdateUserUsecase) (*models.UserDataUsecase, error) {
+	var newAvatarName string
+	var err error
+	if updates.AvatarImg != nil {
+		newAvatarName, err = u.saveNewAvatar(updates.AvatarImg)
+		if err != nil {
+			return nil, errors.Wrap(err, "error saving new avatar to server")
+		}
+	}
+	updUser, err := u.UserRepo.UpdateUser(&models.UpdateUserStorage{Id: updates.Id, Email: updates.Email, Name: updates.Name, Avatar: newAvatarName})
 	if err != nil {
+		if newAvatarName != "" {
+			u.StaticManager.RemoveAvatar(newAvatarName)
+			// os.Remove(avatarPath + newAvatarName)
+		}
 		return nil, errors.Wrap(err, "error updating user")
 	}
+	if updUser == nil {
+		if newAvatarName != "" {
+			u.StaticManager.RemoveAvatar(newAvatarName)
+			// os.Remove(avatarPath + newAvatarName)
+		}
+		updUser, err = u.UserRepo.GetUserById(updates.Id)
+		if err != nil {
+			return nil, errors.Wrapf(err, "error getting user by id %d", updates.Id)
+		}
+	}
 	return &models.UserDataUsecase{
-		Id:    updUser.Id,
-		Phone: updUser.Phone,
-		Name:  updUser.Name,
-		Email: updUser.Email,
+		Id:     updUser.Id,
+		Phone:  updUser.Phone,
+		Name:   updUser.Name,
+		Email:  updUser.Email,
+		Avatar: updUser.Avatar.String,
 	}, nil
+}
+
+// /*
+func (u *UserUsecase) saveNewAvatar(avatar io.Reader) (string, error) {
+	avatarImg, err := imaging.Decode(avatar)
+	if err != nil {
+		return "", servErrors.NewError(servErrors.DECODE_IMG, err.Error())
+	}
+	var squareSide int
+	if avatarImg.Bounds().Max.X < avatarImg.Bounds().Max.Y {
+		squareSide = avatarImg.Bounds().Max.X
+	} else {
+		squareSide = avatarImg.Bounds().Max.Y
+	}
+	avatarImg = imaging.CropAnchor(avatarImg, squareSide, squareSide, imaging.Center)
+	avatarImg = imaging.Resize(avatarImg, avatarSide, avatarSide, imaging.Lanczos)
+
+	var avatarName string
+	for i := 0; i < 10; i++ {
+		avatarName = newAvatarName() + ".png"
+		if u.StaticManager.IsNotSuchAvatarExist(avatarName) {
+			break
+		}
+		avatarName = ""
+	}
+	if avatarName == "" {
+		return "", servErrors.NewError(servErrors.CANT_CREATE_AVATAR_NAME, "")
+	}
+
+	// err = imaging.Save(avatarImg, staticPath+avatarPath+avatarName)
+	err = u.StaticManager.SafeAvatar(avatarImg, avatarName)
+	fmt.Println(err)
+	fmt.Println(avatarName)
+	if err != nil {
+		return "", servErrors.NewError(servErrors.CANT_SAVE_AVATAR, err.Error())
+	}
+
+	return avatarName, nil
+}
+
+func newAvatarName() string {
+	fname, _ := uuid.NewUUID()
+	return fname.String()
 }
