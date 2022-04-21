@@ -14,4 +14,6 @@ type FileManager interface {
 	GetAvatarUrl(fileName string) string
 	GetAvatarDirPath() string
 	IsNotSuchAvatarExist(avatarName string) bool
+	GetRestaurantUrl(fileName string) string
+	GetDishesUrl(fileName string) string
 }
