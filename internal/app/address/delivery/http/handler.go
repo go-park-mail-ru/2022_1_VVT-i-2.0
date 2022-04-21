@@ -3,7 +3,6 @@ package suggestHandler
 // отклонять слишком длиннные запросы
 
 import (
-	"fmt"
 	"net/http"
 
 	"github.com/asaskevich/govalidator"
@@ -32,8 +31,8 @@ func (h SuggsHandler) Suggest(ctx echo.Context) error {
 	requestId := middleware.GetRequestIdFromCtx(ctx)
 	var suggsReq models.SuggestReq
 	suggsReq.Address = ctx.QueryParam("q")
-	fmt.Println(suggsReq)
-	fmt.Println(ctx.Request().URL.Query())
+	// fmt.Println(suggsReq)
+	// fmt.Println(ctx.Request().URL.Query())
 	if _, err := govalidator.ValidateStruct(suggsReq); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, httpErrDescr.INVALID_DATA)
 	}

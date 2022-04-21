@@ -3,8 +3,8 @@ package models
 import "database/sql"
 
 type OrderPosition struct {
-	Id    int64 `json:"id,string"`
-	Count int64 `json:"count,string"`
+	Id    int64 `json:"id"`
+	Count int64 `json:"count"`
 }
 
 type OrderRepo struct {

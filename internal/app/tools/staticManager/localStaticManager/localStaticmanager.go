@@ -48,3 +48,7 @@ func (f *LocalFileManager) GetAvatarUrl(fileName string) string {
 func (f *LocalFileManager) GetAvatarDirPath() string {
 	return f.staticPath + f.avatarPath
 }
+
+func (f *LocalFileManager) GetRestaurantUrl(fileName string) string {
+	return f.staticUrl + f.restaurantPath + fileName
+}

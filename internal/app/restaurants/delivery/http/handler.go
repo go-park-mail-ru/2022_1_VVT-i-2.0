@@ -2,7 +2,6 @@ package restaurantsHandler
 
 import (
 	"encoding/json"
-	"fmt"
 
 	"net/http"
 	"strconv"
@@ -49,22 +48,22 @@ func (h RestaurantsHandler) GetAllRestaurants(ctx echo.Context) error {
 
 	for _, rest := range restaurantsDataDelivery.Restaurants {
 		item := &models.RestaurantJsonForKirill{
-			Id: rest.Id,
-			Name: rest.Name,
-			City: rest.City,
-			Address: rest.Address,
-			Image_path: "http://tavide.xyz:8080/static/static/" + rest.Image_path,
-			Slug: rest.Slug,
-			Min_price: rest.Min_price,
-			Avg_price: rest.Avg_price,
-			Rating: float64(int(rest.Rating * 10)) / 10,
+			Id:             rest.Id,
+			Name:           rest.Name,
+			City:           rest.City,
+			Address:        rest.Address,
+			Image_path:     "http://tavide.xyz:8080/static/static/" + rest.Image_path,
+			Slug:           rest.Slug,
+			Min_price:      rest.Min_price,
+			Avg_price:      rest.Avg_price,
+			Rating:         float64(int(rest.Rating*10)) / 10,
 			TimeToDelivery: "25-30",
 		}
 		restaurantsD.Restaurants = append(restaurantsD.Restaurants, *item)
 	}
 
 	result, _ := json.Marshal(restaurantsD.Restaurants)
-	fmt.Printf("json string: %s\n", string(result))
+	// fmt.Printf("json string: %s\n", string(result))
 	ctx.Response().Header().Add(echo.HeaderContentLength, strconv.Itoa(len(result)))
 	return ctx.JSONBlob(http.StatusOK, result)
 }
@@ -107,23 +106,23 @@ func (h RestaurantsHandler) GetDishesByRestaurants(ctx echo.Context) error {
 	}
 
 	restaurantD := &models.RestaurantsDishJsonForKirill{
-		Id: restaurantDataDelivery.Id,
-		Name: restaurantDataDelivery.Name,
-		City: restaurantDataDelivery.City,
-		Address: restaurantDataDelivery.Address,
-		Image_path: "http://tavide.xyz:8080/static/static/" + restaurantDataDelivery.Image_path,
-		Slug: restaurantDataDelivery.Slug,
-		Min_price: restaurantDataDelivery.Min_price,
-		Avg_price: restaurantDataDelivery.Avg_price,
-		Rating: float64(int(restaurantDataDelivery.Rating * 10)) / 10,
+		Id:             restaurantDataDelivery.Id,
+		Name:           restaurantDataDelivery.Name,
+		City:           restaurantDataDelivery.City,
+		Address:        restaurantDataDelivery.Address,
+		Image_path:     "http://tavide.xyz:8080/static/static/" + restaurantDataDelivery.Image_path,
+		Slug:           restaurantDataDelivery.Slug,
+		Min_price:      restaurantDataDelivery.Min_price,
+		Avg_price:      restaurantDataDelivery.Avg_price,
+		Rating:         float64(int(restaurantDataDelivery.Rating*10)) / 10,
 		TimeToDelivery: "25-30",
 	}
 
 	for _, dish := range dishesDataDelivery.Dishes {
 		item := &models.DishJsonForKirill{
-			Id: dish.Id,
-			Restaurant: dish.Restaurant,
-			Name: dish.Name,
+			Id:          dish.Id,
+			Restaurant:  dish.Restaurant,
+			Name:        dish.Name,
 			Description: dish.Description,
 			Image_path:  "http://tavide.xyz:8080/static/dish_static/" + dish.Image_path,
 			Calories:    dish.Calories,
@@ -133,7 +132,7 @@ func (h RestaurantsHandler) GetDishesByRestaurants(ctx echo.Context) error {
 	}
 
 	result, _ := json.Marshal(restaurantD)
-	fmt.Printf("json string: %s\n", string(result))
+	// fmt.Printf("json string: %s\n", string(result))
 	ctx.Response().Header().Add(echo.HeaderContentLength, strconv.Itoa(len(result)))
 	return ctx.JSONBlob(http.StatusOK, result)
 }
