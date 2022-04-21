@@ -356,16 +356,16 @@ func TestGetDishByRestaurants(t *testing.T) {
 		NewRows([]string{"id", "restaurant", "name", "description", "image_path", "calories", "price"})
 
 	expect := []*models.DishDataStorage{
-		{1, 1, "name", "description", "image_path", 1, 1},
-		{2, 1, "name2", "description2", "image_path2", 2, 2},
-		{3, 1, "name3", "description3", "image_path3", 3, 3},
-		{4, 1, "name4", "description4", "image_path4", 4, 4},
-		{5, 1, "name5", "description5", "image_path5", 5, 5},
-		{6, 1, "name6", "description6", "image_path6", 6, 6},
-		{7, 1, "name7", "description7", "image_path7", 7, 7},
-		{8, 1, "name8", "description8", "image_path8", 8, 8},
-		{9, 1, "name9", "description9", "image_path9", 9,9},
-		{10, 1, "name10", "description10", "image_path10", 10, 10},
+		{1, 1, "name", "description", "image_path", 1, 1, 1},
+		{2, 1, "name2", "description2", "image_path2", 2, 2, 2},
+		{3, 1, "name3", "description3", "image_path3", 3, 3, 3},
+		{4, 1, "name4", "description4", "image_path4", 4, 4, 4},
+		{5, 1, "name5", "description5", "image_path5", 5, 5, 5},
+		{6, 1, "name6", "description6", "image_path6", 6, 6, 6},
+		{7, 1, "name7", "description7", "image_path7", 7, 7, 7},
+		{8, 1, "name8", "description8", "image_path8", 8, 8, 8},
+		{9, 1, "name9", "description9", "image_path9", 9,9, 9},
+		{10, 1, "name10", "description10", "image_path10", 10, 10, 10},
 	}
 
 	for _, item := range expect {
@@ -443,16 +443,16 @@ func TestGetDishByRestaurantsQ(t *testing.T) {
 		NewRows([]string{"id", "restaurant", "name", "description", "image_path", "calories", "price"})
 
 	expect := []*models.DishDataStorage{
-		{1, 1, "name", "description", "image_path", 1, 1},
-		{2, 1, "name2", "description2", "image_path2", 2, 2},
-		{3, 1, "name3", "description3", "image_path3", 3, 3},
-		{4, 1, "name4", "description4", "image_path4", 4, 4},
-		{5, 1, "name5", "description5", "image_path5", 5, 5},
-		{6, 1, "name6", "description6", "image_path6", 6, 6},
-		{7, 1, "name7", "description7", "image_path7", 7, 7},
-		{8, 1, "name8", "description8", "image_path8", 8, 8},
-		{9, 1, "name9", "description9", "image_path9", 9,9},
-		{10, 1, "name10", "description10", "image_path10", 10, 10},
+		{1, 1, "name", "description", "image_path", 1, 1, 1},
+		{2, 1, "name2", "description2", "image_path2", 2, 2, 2},
+		{3, 1, "name3", "description3", "image_path3", 3, 3, 3},
+		{4, 1, "name4", "description4", "image_path4", 4, 4, 4},
+		{5, 1, "name5", "description5", "image_path5", 5, 5, 5},
+		{6, 1, "name6", "description6", "image_path6", 6, 6, 6},
+		{7, 1, "name7", "description7", "image_path7", 7, 7, 7},
+		{8, 1, "name8", "description8", "image_path8", 8, 8, 8},
+		{9, 1, "name9", "description9", "image_path9", 9,9, 9},
+		{10, 1, "name10", "description10", "image_path10", 10, 10, 10},
 	}
 
 	for _, item := range expect {

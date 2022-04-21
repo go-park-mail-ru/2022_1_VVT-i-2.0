@@ -6,6 +6,7 @@ import (
 	"github.com/jmoiron/sqlx"
 	"gopkg.in/DATA-DOG/go-sqlmock.v1"
 	"reflect"
+	"regexp"
 	"testing"
 )
 
@@ -101,24 +102,33 @@ func TestAddUser(t *testing.T) {
 	phone := "79166152595"
 	email := "sergey@mail.ru"
 	testItem := &models.UserAddDataStorage{
-		Name: name,
-		Phone:phone,
-		Email: email,
+		Name:  name,
+		Phone:  phone,
+		Email:  email,
 	}
 
-	//ok query
-	mock.
-		ExpectExec(`INSERT INTO users (name,phone,email) VALUES ($1,$2,$3) RETURNING id`).
-		WithArgs(name, phone, email).
-		WillReturnResult(sqlmock.NewResult(1, 1))
+	rows := sqlmock.
+		NewRows([]string{"id", "name", "phone", "email"})
+	expect := []*models.UserDataStorage{
+		{1, "Sergey", "89166152595", "seregey@mail.ru"},
+	}
+	for _, item := range expect {
+		rows = rows.AddRow(item.Id, item.Name, item.Phone, item.Email)
+	}
 
-	id, err := repo.AddUser(testItem)
+	mock.
+		ExpectQuery(`INSERT INTO users`).
+		WithArgs(name, phone, email).
+		WillReturnRows(rows)
+
+	item, err := repo.AddUser(testItem)
+
 	if err != nil {
 		t.Errorf("unexpected err: %s", err)
 		return
 	}
-	if id != 0 {
-		t.Errorf("bad id: want %v, have %v", id, 0)
+	if item == nil {
+		t.Errorf("bad id: want %v, have %v", item, 0)
 		return
 	}
 
@@ -126,51 +136,100 @@ func TestAddUser(t *testing.T) {
 		t.Errorf("there were unfulfilled expectations: %s", err)
 	}
 
-	//query error
-	mock.
-		ExpectExec(`INSERT INTO items`).
-		WithArgs(name, phone, email).
-		WillReturnError(fmt.Errorf("bad query"))
+	if !reflect.DeepEqual(item, expect[0]) {
+		t.Errorf("results not match, want %v, have %v", item, expect[0])
+		return
+	}
 
-	// mock.ExpectClose()
+	mock.
+		ExpectQuery(regexp.QuoteMeta(`INSERT INTO users`)).
+		WithArgs(name, phone, email).
+		WillReturnRows(rows)
 
 	_, err = repo.AddUser(testItem)
-	if err == nil {
-		t.Errorf("expected error, got nil")
+
+	if err := mock.ExpectationsWereMet(); err != nil {
+		t.Errorf("there were unfulfilled expectations: %s", err)
 		return
 	}
+	if err == nil {
+		t.Errorf("unexpected err: %s", err)
+		return
+	}
+}
+
+func TestAddUser1(t *testing.T) {
+	db, mock, err := sqlmock.New()
+	if err != nil {
+		t.Fatalf("cant create mock: %s", err)
+	}
+	defer db.Close()
+
+	sqlxDB := sqlx.NewDb(db, "sqlmock")
+
+	repo := UserRepo{
+		DB: sqlxDB,
+	}
+
+	name := "Sergey"
+	phone := "79166152595"
+	email := "sergey@mail.ru"
+	testItem := &models.UserAddDataStorage{
+		Name:  name,
+		Phone:  phone,
+		Email:  email,
+	}
+
+	var expect models.UserId = 1
+
+	rows := sqlmock.
+		NewRows([]string{"id"}).AddRow(expect)
+	//expect := []*models.UserDataStorage{
+	//	{1, "Sergey", "89166152595", "seregey@mail.ru"},
+	//}
+	//for _, item := range expect {
+	//	rows = rows.AddRow(item.Id, item.Name, item.Phone, item.Email)
+	//}
+
+	mock.
+		ExpectQuery(`INSERT INTO users`).
+		WithArgs(name, phone, email).
+		WillReturnRows(rows)
+
+	item, err := repo.AddUser1(testItem)
+
+	if err != nil {
+		t.Errorf("unexpected err: %s", err)
+		return
+	}
+	if item != expect {
+		t.Errorf("bad id: want %v, have %v", item, 0)
+		return
+	}
+
 	if err := mock.ExpectationsWereMet(); err != nil {
 		t.Errorf("there were unfulfilled expectations: %s", err)
 	}
 
-	// result error
+	if !reflect.DeepEqual(item, expect) {
+		t.Errorf("results not match, want %v, have %v", item, expect)
+		return
+	}
+
 	mock.
-		ExpectExec(`INSERT INTO users`).
+		ExpectQuery(regexp.QuoteMeta(`INSERT INTO users`)).
 		WithArgs(name, phone, email).
-		WillReturnResult(sqlmock.NewErrorResult(fmt.Errorf("bad_result")))
+		WillReturnRows(rows)
 
 	_, err = repo.AddUser(testItem)
-	if err == nil {
-		t.Errorf("expected error, got nil")
-		return
-	}
+
 	if err := mock.ExpectationsWereMet(); err != nil {
 		t.Errorf("there were unfulfilled expectations: %s", err)
-	}
-
-	// last id error
-	mock.
-		ExpectExec(`INSERT INTO items`).
-		WithArgs(name, phone, email).
-		WillReturnResult(sqlmock.NewResult(0, 0))
-
-	_, err = repo.AddUser(testItem)
-	if err == nil {
-		t.Errorf("expected error, got nil")
 		return
 	}
-	if err := mock.ExpectationsWereMet(); err != nil {
-		t.Errorf("there were unfulfilled expectations: %s", err)
+	if err == nil {
+		t.Errorf("unexpected err: %s", err)
+		return
 	}
 }
 
