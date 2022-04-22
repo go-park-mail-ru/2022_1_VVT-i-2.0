@@ -1,7 +1,6 @@
 package userHandler
 
 import (
-	"encoding/json"
 	"fmt"
 	"io"
 	"net"
@@ -274,8 +273,6 @@ func (h UserHandler) UpdateUser(ctx echo.Context) error {
 func (h UserHandler) UpdateAvatar(ctx echo.Context) error {
 	b, _ := io.ReadAll(ctx.Request().Body)
 	fmt.Println(string(b))
-	fmt.Println(ctx.Request())
-	fmt.Println(ctx.Request())
 	user := middleware.GetUserFromCtx(ctx)
 	if user == nil {
 		return echo.NewHTTPError(http.StatusUnauthorized, httpErrDescr.AUTH_REQUIRED)
@@ -291,10 +288,9 @@ func (h UserHandler) UpdateAvatar(ctx echo.Context) error {
 	ctx.MultipartForm()
 	uploadUserData := ctx.Request().FormValue("newData")
 	fmt.Println(uploadUserData)
-	var updateReq models.UpdateUserReq
-	if err := json.Unmarshal([]byte(uploadUserData), &updateReq); err != nil {
-		fmt.Println(err)
-		return echo.NewHTTPError(http.StatusBadRequest, httpErrDescr.BAD_REQUEST_BODY)
+	updateReq := models.UpdateUserReq{
+		Name:  ctx.Request().FormValue("name"),
+		Email: ctx.Request().FormValue("email"),
 	}
 
 	fmt.Println(updateReq.Email)
