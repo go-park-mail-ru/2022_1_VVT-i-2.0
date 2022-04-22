@@ -10,5 +10,4 @@ type Usecase interface {
 	SendCode(req *models.SendCodeReq) (bool, error)
 	GetUser(id models.UserId) (*models.UserDataUsecase, error)
 	UpdateUser(req *models.UpdateUserUsecase) (*models.UserDataUsecase, error)
-	// UpdateAvatar(req *models.UpdateAvatarUsecase) (string, error)
 }

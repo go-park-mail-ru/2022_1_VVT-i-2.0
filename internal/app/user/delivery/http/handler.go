@@ -2,7 +2,6 @@ package userHandler
 
 import (
 	"fmt"
-	"io"
 	"net"
 	"net/http"
 	"time"
@@ -234,45 +233,8 @@ func (h UserHandler) GetUser(ctx echo.Context) error {
 }
 
 func (h UserHandler) UpdateUser(ctx echo.Context) error {
-	fmt.Println(ctx.Request())
-	user := middleware.GetUserFromCtx(ctx)
-	if user == nil {
-		return echo.NewHTTPError(http.StatusUnauthorized, httpErrDescr.AUTH_REQUIRED)
-	}
-
-	logger := middleware.GetLoggerFromCtx(ctx)
-	requestId := middleware.GetRequestIdFromCtx(ctx)
-
-	var updateReq models.UpdateUserReq
-	if err := ctx.Bind(&updateReq); err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, httpErrDescr.BAD_REQUEST_BODY)
-	}
-	if _, err := govalidator.ValidateStruct(updateReq); err != nil || (updateReq.Email == "" && updateReq.Name == "") {
-		return echo.NewHTTPError(http.StatusBadRequest, httpErrDescr.INVALID_DATA)
-	}
-
-	userDataUcase, err := h.Usecase.UpdateUser(&models.UpdateUserUsecase{Id: user.Id, Email: updateReq.Email, Name: updateReq.Name})
-
-	if err != nil {
-		cause := servErrors.ErrorAs(err)
-		if cause != nil && cause.Code == servErrors.DB_UPDATE {
-			return echo.NewHTTPError(http.StatusConflict, httpErrDescr.SUCH_USER_ALREADY_EXISTS)
-		}
-		logger.Error(requestId, err.Error())
-		return echo.NewHTTPError(http.StatusInternalServerError, httpErrDescr.SERVER_ERROR)
-	}
-
-	if userDataUcase == nil {
-		logger.Error(requestId, "from user-usecase-get-user returned userData==nil and err==nil, unknown error")
-		return echo.NewHTTPError(http.StatusInternalServerError, httpErrDescr.SERVER_ERROR)
-	}
-
-	return ctx.JSON(http.StatusOK, models.UserDataResp{Phone: userDataUcase.Phone, Email: userDataUcase.Email, Name: userDataUcase.Name})
-}
-
-func (h UserHandler) UpdateAvatar(ctx echo.Context) error {
-	b, _ := io.ReadAll(ctx.Request().Body)
-	fmt.Println(string(b))
+	// b, _ := io.ReadAll(ctx.Request().Body)
+	// fmt.Println(string(b))
 	user := middleware.GetUserFromCtx(ctx)
 	if user == nil {
 		return echo.NewHTTPError(http.StatusUnauthorized, httpErrDescr.AUTH_REQUIRED)
@@ -285,9 +247,6 @@ func (h UserHandler) UpdateAvatar(ctx echo.Context) error {
 	logger := middleware.GetLoggerFromCtx(ctx)
 	requestId := middleware.GetRequestIdFromCtx(ctx)
 
-	ctx.MultipartForm()
-	uploadUserData := ctx.Request().FormValue("newData")
-	fmt.Println(uploadUserData)
 	updateReq := models.UpdateUserReq{
 		Name:  ctx.Request().FormValue("name"),
 		Email: ctx.Request().FormValue("email"),
@@ -302,9 +261,13 @@ func (h UserHandler) UpdateAvatar(ctx echo.Context) error {
 	}
 
 	avatarImage, _, _ := ctx.Request().FormFile("avatar")
-	defer avatarImage.Close()
+	if avatarImage != nil {
+		defer avatarImage.Close()
+	}
 
+	fmt.Println("1")
 	userDataUcase, err := h.Usecase.UpdateUser(&models.UpdateUserUsecase{Id: user.Id, Email: updateReq.Email, Name: updateReq.Name, AvatarImg: avatarImage})
+	fmt.Println("2")
 
 	if err != nil {
 		cause := servErrors.ErrorAs(err)
