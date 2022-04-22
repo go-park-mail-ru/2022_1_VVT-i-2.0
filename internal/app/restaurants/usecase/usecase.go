@@ -108,7 +108,7 @@ func (u *RestaurantsUsecase) GetCommentsRestaurantByRestaurants(id int) (*models
 }
 
 func (u *RestaurantsUsecase) AddCommentsRestaurantByRestaurants(item *models.AddCommentRestaurantUseCase) (*models.CommentRestaurantUseCase, error) {
-	id, err := u.RestaurantsRepo.AddCommentsRestaurantByRestaurants(&models.AddCommentRestaurantDataStorage{
+	comment, err := u.RestaurantsRepo.AddCommentsRestaurantByRestaurants(&models.AddCommentRestaurantDataStorage{
 		Restaurant: item.Restaurant,
 		User_id: item.User_id,
 		Comment_text: item.Comment_text,
@@ -118,10 +118,10 @@ func (u *RestaurantsUsecase) AddCommentsRestaurantByRestaurants(item *models.Add
 		return nil, errors.Wrap(err, "error adding user to storage")
 	}
 	return &models.CommentRestaurantUseCase{
-		Id:    int(id),
-		Restaurant: item.Restaurant,
-		User_id: item.User_id,
-		Comment_text: item.Comment_text,
-		Comment_rating: item.Comment_rating,
+		Id: comment.Id,
+		Restaurant: comment.Restaurant,
+		User_id: comment.User_id,
+		Comment_text: comment.Comment_text,
+		Comment_rating: comment.Comment_rating,
 	}, nil
 }

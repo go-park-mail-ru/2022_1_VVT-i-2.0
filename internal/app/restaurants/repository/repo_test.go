@@ -25,26 +25,25 @@ func TestGetRestaurants(t *testing.T) {
 	}
 
 	rows := sqlmock.
-		NewRows([]string{"id", "name", "city", "address", "image_path", "slug", "min_price", "avg_price", "rating"})
+		NewRows([]string{"id", "name", "city", "address", "image_path", "slug", "min_price", "avg_price", "rating", "count_rating"})
 	expect := []*models.RestaurantDataStorage{
-		{1, "name", "city", "address", "image_path", "slug", 101, 101, 3.1},
-		{2, "name2", "city2", "address2", "image_path2", "slug2", 102, 102, 3.2},
-		{3, "name3", "city3", "address3", "image_path3", "slug3", 103, 103, 3.3},
-		{4, "name4", "city4", "address4", "image_path4", "slug4", 104, 104, 3.4},
-		{5, "name5", "city5", "address5", "image_path5", "slug5", 105, 105, 3.5},
-		{6, "name6", "city6", "address6", "image_path6", "slug6", 106, 106, 3.6},
-		{7, "name7", "city7", "address7", "image_path7", "slug7", 107, 107, 3.7},
-		{8, "name8", "city8", "address8", "image_path8", "slug8", 108, 108, 3.8},
-		{9, "name9", "city9", "address9", "image_path9", "slug9", 109, 109, 3.9},
-		{10, "name10", "city10", "address10", "image_path10", "slug10", 110, 110, 4.0},
+		{1, "name", "city", "address", "image_path", "slug", 101, 101, 3, 1},
+		{2, "name2", "city2", "address2", "image_path2", "slug2", 102, 102, 3, 1},
+		{3, "name3", "city3", "address3", "image_path3", "slug3", 103, 103, 3, 1},
+		{4, "name4", "city4", "address4", "image_path4", "slug4", 104, 104, 3, 1},
+		{5, "name5", "city5", "address5", "image_path5", "slug5", 105, 105, 3, 1},
+		{6, "name6", "city6", "address6", "image_path6", "slug6", 106, 106, 3, 1},
+		{7, "name7", "city7", "address7", "image_path7", "slug7", 107, 107, 3, 1},
+		{8, "name8", "city8", "address8", "image_path8", "slug8", 108, 108, 3, 1},
+		{9, "name9", "city9", "address9", "image_path9", "slug9", 109, 109, 3, 1},
+		{10, "name10", "city10", "address10", "image_path10", "slug10", 110, 110, 3, 1},
 	}
-
 	for _, item := range expect {
-		rows = rows.AddRow(item.Id, item.Name, item.City, item.Address, item.Image_path, item.Slug, item.Min_price, item.Avg_price, item.Rating)
+		rows = rows.AddRow(item.Id, item.Name, item.City, item.Address, item.Image_path, item.Slug, item.Min_price, item.Avg_price, item.Rating, item.Count_rating)
 	}
 
 	mock.
-		ExpectQuery("SELECT id, name, city, address, image_path, slug, min_price, avg_price, rating FROM restaurants").
+		ExpectQuery("SELECT id, name, city, address, image_path, slug, min_price, avg_price, rating, count_rating FROM restaurants").
 		WillReturnRows(rows)
 
 	item, err := repo.GetRestaurants()
@@ -63,7 +62,7 @@ func TestGetRestaurants(t *testing.T) {
 
 	// query error
 	mock.
-		ExpectQuery("SELECT id, name, city, address, image_path, slug, min_price, avg_price, rating FROM restaurants").
+		ExpectQuery("SELECT id, name, city, address, image_path, slug, min_price, avg_price, rating, count_rating FROM restaurants").
 		WillReturnError(fmt.Errorf("db_error"))
 	_, err = repo.GetRestaurants()
 	if err := mock.ExpectationsWereMet(); err != nil {
@@ -80,7 +79,7 @@ func TestGetRestaurants(t *testing.T) {
 		AddRow(1, "name")
 
 	mock.
-		ExpectQuery("SELECT id, name, city, address, image_path, slug, min_price, avg_price, rating FROM restaurants").
+		ExpectQuery("SELECT id, name, city, address, image_path, slug, min_price, avg_price, rating, count_rating FROM restaurants").
 		WillReturnRows(rows)
 
 	_, err = repo.GetRestaurants()
@@ -110,13 +109,12 @@ func TestGetRestaurantsQ(t *testing.T) {
 	rows := sqlmock.
 		NewRows([]string{"id", "name", "city", "address", "image_path", "slug", "min_price", "avg_price", "rating"})
 	var expect []*models.RestaurantDataStorage
-
 	for _, item := range expect {
 		rows = rows.AddRow(item.Id, item.Name, item.City, item.Address, item.Image_path, item.Slug, item.Min_price, item.Avg_price, item.Rating)
 	}
 
 	mock.
-		ExpectQuery("SELECT id, name, city, address, image_path, slug, min_price, avg_price, rating FROM restaurants").
+		ExpectQuery("SELECT id, name, city, address, image_path, slug, min_price, avg_price, rating, count_rating FROM restaurants").
 		WillReturnRows(rows)
 
 	item, err := repo.GetRestaurants()
@@ -135,7 +133,7 @@ func TestGetRestaurantsQ(t *testing.T) {
 
 	// query error
 	mock.
-		ExpectQuery("SELECT id, name, city, address, image_path, slug, min_price, avg_price, rating FROM restaurants").
+		ExpectQuery("SELECT id, name, city, address, image_path, slug, min_price, avg_price, rating, count_rating FROM restaurants").
 		WillReturnError(fmt.Errorf("db_error"))
 	_, err = repo.GetRestaurants()
 	if err := mock.ExpectationsWereMet(); err != nil {
@@ -152,7 +150,7 @@ func TestGetRestaurantsQ(t *testing.T) {
 		AddRow(1, "name")
 
 	mock.
-		ExpectQuery("SELECT id, name, city, address, image_path, slug, min_price, avg_price, rating FROM restaurants").
+		ExpectQuery("SELECT id, name, city, address, image_path, slug, min_price, avg_price, rating, count_rating FROM restaurants").
 		WillReturnRows(rows)
 
 	_, err = repo.GetRestaurants()
@@ -180,26 +178,25 @@ func TestGetRestaurantsBySlug(t *testing.T) {
 	}
 
 	rows := sqlmock.
-		NewRows([]string{"id", "name", "city", "address", "image_path", "slug", "min_price", "avg_price", "rating"})
+		NewRows([]string{"id", "name", "city", "address", "image_path", "slug", "min_price", "avg_price", "rating", "count_rating"})
 	expect := []*models.RestaurantDataStorage{
-		{1, "name", "city", "address", "image_path", "slug", 101, 101, 3.1},
-		{2, "name2", "city2", "address2", "image_path2", "slug2", 102, 102, 3.2},
-		{3, "name3", "city3", "address3", "image_path3", "slug3", 103, 103, 3.3},
-		{4, "name4", "city4", "address4", "image_path4", "slug4", 104, 104, 3.4},
-		{5, "name5", "city5", "address5", "image_path5", "slug5", 105, 105, 3.5},
-		{6, "name6", "city6", "address6", "image_path6", "slug6", 106, 106, 3.6},
-		{7, "name7", "city7", "address7", "image_path7", "slug7", 107, 107, 3.7},
-		{8, "name8", "city8", "address8", "image_path8", "slug8", 108, 108, 3.8},
-		{9, "name9", "city9", "address9", "image_path9", "slug9", 109, 109, 3.9},
-		{10, "name10", "city10", "address10", "image_path10", "slug10", 110, 110, 4.0},
+		{1, "name", "city", "address", "image_path", "slug", 101, 101, 3, 1},
+		{2, "name2", "city2", "address2", "image_path2", "slug2", 102, 102, 3, 1},
+		{3, "name3", "city3", "address3", "image_path3", "slug3", 103, 103, 3, 1},
+		{4, "name4", "city4", "address4", "image_path4", "slug4", 104, 104, 3, 1},
+		{5, "name5", "city5", "address5", "image_path5", "slug5", 105, 105, 3, 1},
+		{6, "name6", "city6", "address6", "image_path6", "slug6", 106, 106, 3, 1},
+		{7, "name7", "city7", "address7", "image_path7", "slug7", 107, 107, 3, 1},
+		{8, "name8", "city8", "address8", "image_path8", "slug8", 108, 108, 3, 1},
+		{9, "name9", "city9", "address9", "image_path9", "slug9", 109, 109, 3, 1},
+		{10, "name10", "city10", "address10", "image_path10", "slug10", 110, 110, 3, 1},
 	}
-
 	for _, item := range expect {
-		rows = rows.AddRow(item.Id, item.Name, item.City, item.Address, item.Image_path, item.Slug, item.Min_price, item.Avg_price, item.Rating)
+		rows = rows.AddRow(item.Id, item.Name, item.City, item.Address, item.Image_path, item.Slug, item.Min_price, item.Avg_price, item.Rating, item.Count_rating)
 	}
 
 	mock.
-		ExpectQuery("SELECT id, name, city, address, image_path, slug, min_price, avg_price, rating FROM restaurants WHERE").
+		ExpectQuery("SELECT id, name, city, address, image_path, slug, min_price, avg_price, rating, count_rating FROM restaurants WHERE").
 		WithArgs("slug").
 		WillReturnRows(rows)
 
@@ -219,7 +216,7 @@ func TestGetRestaurantsBySlug(t *testing.T) {
 
 	// query error
 	mock.
-		ExpectQuery("SELECT id, name, city, address, image_path, slug, min_price, avg_price, rating FROM restaurants WHERE").
+		ExpectQuery("SELECT id, name, city, address, image_path, slug, min_price, avg_price, rating, count_rating FROM restaurants WHERE").
 		WithArgs("slug").
 		WillReturnError(fmt.Errorf("db_error"))
 	_, err = repo.GetRestaurantsBySlug("slug")
@@ -237,7 +234,7 @@ func TestGetRestaurantsBySlug(t *testing.T) {
 		AddRow(1, "name")
 
 	mock.
-		ExpectQuery("SELECT id, name, city, address, image_path, slug, min_price, avg_price, rating FROM restaurants WHERE").
+		ExpectQuery("SELECT id, name, city, address, image_path, slug, min_price, avg_price, rating, count_rating FROM restaurants WHERE").
 		WithArgs("slug").
 		WillReturnRows(rows)
 
@@ -266,26 +263,25 @@ func TestGetRestaurantsBySlugQ(t *testing.T) {
 	}
 
 	rows := sqlmock.
-		NewRows([]string{"id", "name", "city", "address", "image_path", "slug", "min_price", "avg_price", "rating"})
+		NewRows([]string{"id", "name", "city", "address", "image_path", "slug", "min_price", "avg_price", "rating", "count_rating"})
 	expect := []*models.RestaurantDataStorage{
-		{1, "name", "city", "address", "image_path", "slug", 101, 101, 3.1},
-		{2, "name2", "city2", "address2", "image_path2", "slug2", 102, 102, 3.2},
-		{3, "name3", "city3", "address3", "image_path3", "slug3", 103, 103, 3.3},
-		{4, "name4", "city4", "address4", "image_path4", "slug4", 104, 104, 3.4},
-		{5, "name5", "city5", "address5", "image_path5", "slug5", 105, 105, 3.5},
-		{6, "name6", "city6", "address6", "image_path6", "slug6", 106, 106, 3.6},
-		{7, "name7", "city7", "address7", "image_path7", "slug7", 107, 107, 3.7},
-		{8, "name8", "city8", "address8", "image_path8", "slug8", 108, 108, 3.8},
-		{9, "name9", "city9", "address9", "image_path9", "slug9", 109, 109, 3.9},
-		{10, "name10", "city10", "address10", "image_path10", "slug10", 110, 110, 4.0},
+		{1, "name", "city", "address", "image_path", "slug", 101, 101, 3, 1},
+		{2, "name2", "city2", "address2", "image_path2", "slug2", 102, 102, 3, 1},
+		{3, "name3", "city3", "address3", "image_path3", "slug3", 103, 103, 3, 1},
+		{4, "name4", "city4", "address4", "image_path4", "slug4", 104, 104, 3, 1},
+		{5, "name5", "city5", "address5", "image_path5", "slug5", 105, 105, 3, 1},
+		{6, "name6", "city6", "address6", "image_path6", "slug6", 106, 106, 3, 1},
+		{7, "name7", "city7", "address7", "image_path7", "slug7", 107, 107, 3, 1},
+		{8, "name8", "city8", "address8", "image_path8", "slug8", 108, 108, 3, 1},
+		{9, "name9", "city9", "address9", "image_path9", "slug9", 109, 109, 3, 1},
+		{10, "name10", "city10", "address10", "image_path10", "slug10", 110, 110, 3, 1},
 	}
-
 	for _, item := range expect {
-		rows = rows.AddRow(item.Id, item.Name, item.City, item.Address, item.Image_path, item.Slug, item.Min_price, item.Avg_price, item.Rating)
+		rows = rows.AddRow(item.Id, item.Name, item.City, item.Address, item.Image_path, item.Slug, item.Min_price, item.Avg_price, item.Rating, item.Count_rating)
 	}
 
 	mock.
-		ExpectQuery("SELECT id, name, city, address, image_path, slug, min_price, avg_price, rating FROM restaurants WHERE").
+		ExpectQuery("SELECT id, name, city, address, image_path, slug, min_price, avg_price, rating, count_rating FROM restaurants WHERE").
 		WithArgs("slug").
 		WillReturnRows(rows)
 
@@ -306,7 +302,7 @@ func TestGetRestaurantsBySlugQ(t *testing.T) {
 
 	// query error
 	mock.
-		ExpectQuery("SELECT id, name, city, address, image_path, slug, min_price, avg_price, rating FROM restaurants WHERE").
+		ExpectQuery("SELECT id, name, city, address, image_path, slug, min_price, avg_price, rating, count_rating FROM restaurants WHERE").
 		WithArgs("slug").
 		WillReturnError(fmt.Errorf("db_error"))
 	_, err = repo.GetRestaurantsBySlug("slug")
@@ -324,7 +320,7 @@ func TestGetRestaurantsBySlugQ(t *testing.T) {
 		AddRow(1, "name")
 
 	mock.
-		ExpectQuery("SELECT id, name, city, address, image_path, slug, min_price, avg_price, rating FROM restaurants WHERE").
+		ExpectQuery("SELECT id, name, city, address, image_path, slug, min_price, avg_price, rating, count_rating FROM restaurants WHERE").
 		WithArgs("slug").
 		WillReturnRows(rows)
 
@@ -353,7 +349,7 @@ func TestGetDishByRestaurants(t *testing.T) {
 	}
 
 	rows := sqlmock.
-		NewRows([]string{"id", "restaurant", "name", "description", "image_path", "calories", "price"})
+		NewRows([]string{"id", "restaurant", "name", "description", "image_path", "calories", "price", "weight"})
 
 	expect := []*models.DishDataStorage{
 		{1, 1, "name", "description", "image_path", 1, 1, 1},
@@ -369,11 +365,11 @@ func TestGetDishByRestaurants(t *testing.T) {
 	}
 
 	for _, item := range expect {
-		rows = rows.AddRow(item.Id, item.Restaurant, item.Name, item.Description, item.Image_path, item.Calories, item.Price)
+		rows = rows.AddRow(item.Id, item.Restaurant, item.Name, item.Description, item.Image_path, item.Calories, item.Price, item.Weight)
 	}
 
 	mock.
-		ExpectQuery("SELECT id, restaurant, name, description, image_path, calories, price FROM dish WHERE").
+		ExpectQuery("SELECT id, restaurant, name, description, image_path, calories, price, weight FROM dish WHERE").
 		WithArgs(1).
 		WillReturnRows(rows)
 
@@ -393,7 +389,7 @@ func TestGetDishByRestaurants(t *testing.T) {
 
 	// query error
 	mock.
-		ExpectQuery("SELECT id, restaurant, name, description, image_path, calories, price FROM dish WHERE").
+		ExpectQuery("SELECT id, restaurant, name, description, image_path, calories, price, weight FROM dish WHERE").
 		WithArgs(1).
 		WillReturnError(fmt.Errorf("db_error"))
 	_, err = repo.GetDishByRestaurants(1)
@@ -411,7 +407,7 @@ func TestGetDishByRestaurants(t *testing.T) {
 		AddRow(1, "name")
 
 	mock.
-		ExpectQuery("SELECT id, restaurant, name, description, image_path, calories, price FROM dish WHERE").
+		ExpectQuery("SELECT id, restaurant, name, description, image_path, calories, price, weight FROM dish WHERE").
 		WithArgs(1).
 		WillReturnRows(rows)
 
@@ -440,7 +436,7 @@ func TestGetDishByRestaurantsQ(t *testing.T) {
 	}
 
 	rows := sqlmock.
-		NewRows([]string{"id", "restaurant", "name", "description", "image_path", "calories", "price"})
+		NewRows([]string{"id", "restaurant", "name", "description", "image_path", "calories", "price", "weight"})
 
 	expect := []*models.DishDataStorage{
 		{1, 1, "name", "description", "image_path", 1, 1, 1},
@@ -456,11 +452,11 @@ func TestGetDishByRestaurantsQ(t *testing.T) {
 	}
 
 	for _, item := range expect {
-		rows = rows.AddRow(item.Id, item.Restaurant, item.Name, item.Description, item.Image_path, item.Calories, item.Price)
+		rows = rows.AddRow(item.Id, item.Restaurant, item.Name, item.Description, item.Image_path, item.Calories, item.Price, item.Weight)
 	}
 
 	mock.
-		ExpectQuery("SELECT id, restaurant, name, description, image_path, calories, price FROM dish WHERE").
+		ExpectQuery("SELECT id, restaurant, name, description, image_path, calories, price, weight FROM dish WHERE").
 		WithArgs(1).
 		WillReturnRows(rows)
 
@@ -481,7 +477,7 @@ func TestGetDishByRestaurantsQ(t *testing.T) {
 
 	// query error
 	mock.
-		ExpectQuery("SELECT id, restaurant, name, description, image_path, calories, price FROM dish WHERE").
+		ExpectQuery("SELECT id, restaurant, name, description, image_path, calories, price, weight FROM dish WHERE").
 		WithArgs(1).
 		WillReturnError(fmt.Errorf("db_error"))
 	_, err = repo.GetDishByRestaurants(1)
@@ -499,7 +495,7 @@ func TestGetDishByRestaurantsQ(t *testing.T) {
 		AddRow(1, "name")
 
 	mock.
-		ExpectQuery("SELECT id, restaurant, name, description, image_path, calories, price FROM dish WHERE").
+		ExpectQuery("SELECT id, restaurant, name, description, image_path, calories, price, weight FROM dish WHERE").
 		WithArgs(1).
 		WillReturnRows(rows)
 
@@ -512,4 +508,171 @@ func TestGetDishByRestaurantsQ(t *testing.T) {
 	//	t.Errorf("expected error, got nil")
 	//	return
 	//}
+}
+
+func TestGetCommentsRestaurantByRestaurants(t *testing.T) {
+	db, mock, err := sqlmock.New()
+	if err != nil {
+		t.Fatalf("cant create mock: %s", err)
+	}
+	defer db.Close()
+
+	sqlxDB := sqlx.NewDb(db, "sqlmock")
+
+	repo := RestaurantsRepo{
+		DB: sqlxDB,
+	}
+
+	rows := sqlmock.
+		NewRows([]string{"id", "restaurant", "user_id", "comment_text", "comment_rating"})
+	expect := []*models.CommentRestaurantDataStorage{
+		{1, 1, 1, "address", 3},
+		{2, 1, 2, "address", 4},
+		{3, 1, 3, "address", 5},
+	}
+	for _, item := range expect {
+		rows = rows.AddRow(item.Id, item.Restaurant, item.User_id, item.Comment_text, item.Comment_rating)
+	}
+
+	mock.
+		ExpectQuery(`SELECT id, restaurant, user_id, comment_text, comment_rating FROM comment_restaurants WHERE id`).
+		WithArgs(1).
+		WillReturnRows(rows)
+
+	item, err := repo.GetCommentsRestaurantByRestaurants(1)
+	if err != nil {
+		t.Errorf("unexpected err: %s", err)
+		return
+	}
+	if err := mock.ExpectationsWereMet(); err != nil {
+		t.Errorf("there were unfulfilled expectations: %s", err)
+		return
+	}
+	if !reflect.DeepEqual(item, expect) {
+		t.Errorf("results not match, want %v, have %v", expect, item)
+		return
+	}
+
+	// query error
+	mock.
+		ExpectQuery(`SELECT id, restaurant, user_id, comment_text, comment_rating FROM comment_restaurants WHERE id`).
+		WithArgs(1).
+		WillReturnError(fmt.Errorf("db_error"))
+	_, err = repo.GetCommentsRestaurantByRestaurants(1)
+	if err := mock.ExpectationsWereMet(); err != nil {
+		t.Errorf("there were unfulfilled expectations: %s", err)
+		return
+	}
+	if err == nil {
+		t.Errorf("expected error, got nil")
+		return
+	}
+
+	// row scan error
+	rows = sqlmock.NewRows([]string{"id", "name"}).
+		AddRow(1, "name")
+
+	mock.
+		ExpectQuery(`SELECT id, restaurant, user_id, comment_text, comment_rating FROM comment_restaurants WHERE id`).
+		WithArgs(1).
+		WillReturnRows(rows)
+
+	_, err = repo.GetCommentsRestaurantByRestaurants(1)
+	if err := mock.ExpectationsWereMet(); err != nil {
+		t.Errorf("there were unfulfilled expectations: %s", err)
+		return
+	}
+	//if err == nil {
+	//	t.Errorf("expected error, got nil")
+	//	return
+	//}
+}
+
+func TestAddCommentsRestaurantByRestaurants(t *testing.T) {
+	db, mock, err := sqlmock.New()
+	if err != nil {
+		t.Fatalf("cant create mock: %s", err)
+	}
+	defer db.Close()
+
+	sqlxDB := sqlx.NewDb(db, "sqlmock")
+
+	repo := RestaurantsRepo{
+		DB: sqlxDB,
+	}
+
+	//name := "Sergey"
+	//phone := "79166152595"
+	//email := "sergey@mail.ru"
+	//testItem := &models.UserAddDataStorage{
+	//	Name:  name,
+	//	Phone:  phone,
+	//	Email:  email,
+	//}
+	//
+	//rows := sqlmock.
+	//	NewRows([]string{"id", "name", "phone", "email", "avatar"})
+	//expect := []*models.UserDataStorage{
+	//	{Id: 1, Name: "Sergey", Phone: "89166152595", Email: "seregey@mail.ru", Avatar: sql.NullString{String: "avatar", Valid: true}},
+	//}
+	//for _, item := range expect {
+	//	rows = rows.AddRow(item.Id, item.Name, item.Phone, item.Email, item.Avatar.String)
+	//}
+
+	rows := sqlmock.
+		NewRows([]string{"id", "restaurant", "user_id", "comment_text", "comment_rating"})
+	expect := []*models.CommentRestaurantDataStorage{
+		{1, 1, 1, "address", 3},
+	}
+	for _, item := range expect {
+		rows = rows.AddRow(item.Id, item.Restaurant, item.User_id, item.Comment_text, item.Comment_rating)
+	}
+
+	testComment := &models.AddCommentRestaurantDataStorage{
+		Restaurant: 1,
+		User_id: 1,
+		Comment_text: "address",
+		Comment_rating: 3,
+	}
+
+	mock.
+		ExpectQuery(`INSERT INTO comment_restaurants`).
+		WithArgs(testComment.Restaurant, testComment.User_id, testComment.Comment_text, testComment.Comment_rating).
+		WillReturnRows(rows)
+
+	item, err := repo.AddCommentsRestaurantByRestaurants(testComment)
+
+	if err != nil {
+		t.Errorf("unexpected err: %s", err)
+		return
+	}
+	if item == nil {
+		t.Errorf("bad id: want %v, have %v", item, 0)
+		return
+	}
+
+	if err := mock.ExpectationsWereMet(); err != nil {
+		t.Errorf("there were unfulfilled expectations: %s", err)
+	}
+
+	if !reflect.DeepEqual(item, expect[0]) {
+		t.Errorf("results not match, want %v, have %v", item, expect[0])
+		return
+	}
+
+	mock.
+		ExpectQuery(`INSERT INTO comment_restaurants`).
+		WithArgs(testComment.Restaurant, testComment.User_id, testComment.Comment_text, testComment.Comment_rating).
+		WillReturnRows(rows)
+
+	_, err = repo.AddCommentsRestaurantByRestaurants(testComment)
+
+	if err := mock.ExpectationsWereMet(); err != nil {
+		t.Errorf("there were unfulfilled expectations: %s", err)
+		return
+	}
+	if err == nil {
+		t.Errorf("unexpected err: %s", err)
+		return
+	}
 }

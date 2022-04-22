@@ -9,7 +9,8 @@ type Restaurant struct {
 	Slug       string
 	Min_price  int
 	Avg_price  int
-	Rating     float64
+	Rating     int
+	Count_rating int
 }
 
 type RestaurantDataStorage struct {
@@ -21,7 +22,8 @@ type RestaurantDataStorage struct {
 	Slug 		string
 	Min_price 	int
 	Avg_price 	int
-	Rating 		float64
+	Rating     int
+	Count_rating int
 }
 
 type RestaurantsDataStorage struct {
@@ -37,7 +39,8 @@ type RestaurantUsecase struct {
 	Slug       string
 	Min_price  int
 	Avg_price  int
-	Rating     float64
+	Rating     int
+	Count_rating int
 }
 
 type RestaurantsUsecase struct {

@@ -145,7 +145,7 @@ func (u *UserUsecase) UpdateUser(updates *models.UpdateUserUsecase) (*models.Use
 			return nil, errors.Wrap(err, "error saving new avatar to server")
 		}
 	}
-	updUser, err := u.UserRepo.UpdateUser(&models.UpdateUserStorage{Id: updates.Id, Email: updates.Email, Name: updates.Name, Avatar: newAvatarName})
+	updUser, err := u.UserRepo.UpdateUser(&models.UpdateUserDataStorage{Id: updates.Id, Email: updates.Email, Name: updates.Name, Avatar: newAvatarName})
 	if err != nil {
 		if newAvatarName != "" {
 			u.StaticManager.RemoveAvatar(newAvatarName)

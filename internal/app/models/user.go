@@ -81,7 +81,7 @@ type UpdateUserUsecase struct {
 	AvatarImg io.Reader
 }
 
-type UpdateUserStorage struct {
+type UpdateUserDataStorage struct {
 	Id     UserId
 	Name   string
 	Email  string
