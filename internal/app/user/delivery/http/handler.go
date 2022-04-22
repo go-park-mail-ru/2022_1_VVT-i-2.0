@@ -3,6 +3,7 @@ package userHandler
 import (
 	"encoding/json"
 	"fmt"
+	"io"
 	"net"
 	"net/http"
 	"time"
@@ -271,6 +272,10 @@ func (h UserHandler) UpdateUser(ctx echo.Context) error {
 }
 
 func (h UserHandler) UpdateAvatar(ctx echo.Context) error {
+	b, _ := io.ReadAll(ctx.Request().Body)
+	fmt.Println(string(b))
+	fmt.Println(ctx.Request())
+	fmt.Println(ctx.Request())
 	user := middleware.GetUserFromCtx(ctx)
 	if user == nil {
 		return echo.NewHTTPError(http.StatusUnauthorized, httpErrDescr.AUTH_REQUIRED)
