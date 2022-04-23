@@ -2,8 +2,6 @@ package repository
 
 import (
 	"database/sql"
-	"fmt"
-
 	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/models"
 	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/tools/servErrors"
 	"github.com/jmoiron/sqlx"
@@ -20,8 +18,7 @@ func NewUserRepo(db *sqlx.DB) *UserRepo {
 func (r *UserRepo) GetUserByPhone(phone string) (*models.UserDataStorage, error) {
 	user := &models.UserDataStorage{}
 	err := r.DB.Get(user, `SELECT id, phone, email, name, avatar FROM users WHERE phone = $1`, phone)
-	fmt.Println(err)
-	fmt.Println(user)
+
 	switch err {
 	case nil:
 		return user, nil
@@ -51,6 +48,7 @@ func (r *UserRepo) AddUser(newUser *models.UserAddDataStorage) (*models.UserData
 func (r *UserRepo) AddUser1(newUser *models.UserAddDataStorage) (models.UserId, error) {
 	var newUserId int64
 	err := r.DB.QueryRow(`INSERT INTO users (name,phone,email) VALUES ($1,$2,$3) RETURNING id`, newUser.Name, newUser.Phone, newUser.Email).Scan(&newUserId)
+
 	if err != nil {
 		if err == sql.ErrConnDone || err == sql.ErrTxDone {
 			return 0, servErrors.NewError(servErrors.DB_ERROR, err.Error())
@@ -80,6 +78,7 @@ func (r *UserRepo) GetUserById(id models.UserId) (*models.UserDataStorage, error
 func (r *UserRepo) UpdateUser(updUser *models.UpdateUserDataStorage) (*models.UserDataStorage, error) {
 	var err error
 	user := &models.UserDataStorage{}
+
 	switch {
 	case updUser.Email != "" && updUser.Name != "" && updUser.Avatar != "":
 		err = r.DB.Get(user, `UPDATE users SET name=$1, email=$2, avatar=$3 WHERE id=$4 RETURNING id, name, email, phone, avatar`, updUser.Name, updUser.Email, updUser.Avatar, updUser.Id)
@@ -132,13 +131,12 @@ func (r *UserRepo) UpdateUser(updUser *models.UpdateUserDataStorage) (*models.Us
 func (r *UserRepo) HasUserByPhone(phone string) (bool, error) {
 	user := &models.UserDataStorage{}
 	err := r.DB.Get(user, `SELECT id FROM users WHERE phone = $1`, phone)
-	fmt.Println(err)
-	fmt.Println(user)
+
 	switch err {
 	case nil:
 		return true, nil
 	case sql.ErrNoRows:
-		return false, nil
+		return false, servErrors.NewError(servErrors.DB_ERROR, err.Error())
 	default:
 		return false, servErrors.NewError(servErrors.DB_ERROR, err.Error())
 	}

@@ -612,18 +612,6 @@ INSERT INTO dish(restaurant, name, description, image_path, calories, weight, pr
 (21, 'Том Ям с морепродуктами', 'Креветки тигровые, мидии, бульон Том Ям, рис, шампиньоны, кокосовое молоко, сливки, кинза, томаты черри', '9.jpeg', 100, 100, 500);
 --(1, '', '', '', 100, 500),
 
-INSERT INTO users(name,email,phone) VALUES
-('Наташа','nat-s.skv@mail.ru', 79015020456),
-('Кирилл','katashinsky-k@yandex.ru',79040666020),
-('Андрей','diakonovA@gmail.com',79877434370);
-
--- INSERT INTO users(name,email,phone) VALUES
--- ('Наташа','nat-s.skv@mail.ru', '79015020456'),
--- ('Кирилл','katashinsky-k@yandex.ru','79040666020'),
--- ('Андрей','diakonovA@gmail.com','79877434370');
-
-
-
 INSERT INTO comment_restaurants(restaurant, user_id, comment_text, comment_rating) VALUES
 (1, 1, 'привет, классный ресторан', 3),
 (1, 2, 'norm, very cute', 4);

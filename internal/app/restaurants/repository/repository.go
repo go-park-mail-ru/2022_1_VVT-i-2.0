@@ -83,6 +83,17 @@ func (r *RestaurantsRepo) AddCommentsRestaurantByRestaurants(newComment *models.
 	return comment, nil
 }
 
-//func (r *RestaurantsRepo) UpdateRestaurantRating(restId int, newRestRating int, countRating int) (*models.RestaurantDataStorage, error) {
-//
-//}
+func (r *RestaurantsRepo) UpdateRestaurantRating(restId int, newRestRating int, countRating int) (*models.RestaurantDataStorage, error) {
+	restaurant := &models.RestaurantDataStorage{}
+	err := r.DB.Get(restaurant, `UPDATE restaurants SET rating=$1, count_rating=$2 WHERE id=$3 RETURNING id, name, city, address, image_path, slug, min_price, avg_price, rating, count_rating`, newRestRating, countRating, restId)
+	if err != nil {
+		if err == sql.ErrConnDone || err == sql.ErrTxDone {
+			return nil, servErrors.NewError(servErrors.DB_ERROR, err.Error())
+		}
+		return nil, servErrors.NewError(servErrors.DB_INSERT, err.Error())
+	}
+	if restaurant == nil {
+		return nil, servErrors.NewError(servErrors.DB_INSERT, "")
+	}
+	return restaurant, nil
+}
