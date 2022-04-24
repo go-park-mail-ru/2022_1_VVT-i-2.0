@@ -262,6 +262,10 @@ func (h UserHandler) UpdateUser(ctx echo.Context) error {
 
 	avatarImage, _, _ := ctx.Request().FormFile("avatar")
 	if avatarImage != nil {
+		// b, _ := io.ReadAll(avatarImage)
+		// fmt.Println(string(b))
+		// fmt.Println(avatarImage)
+		// fmt.Println(del)
 		defer avatarImage.Close()
 	}
 

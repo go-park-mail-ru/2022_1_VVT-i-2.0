@@ -176,16 +176,15 @@ func (u *UserUsecase) UpdateUser(updates *models.UpdateUserUsecase) (*models.Use
 func (u *UserUsecase) saveNewAvatar(avatar io.Reader) (string, error) {
 	avatarImg, err := imaging.Decode(avatar)
 	if err != nil {
+		fmt.Println(err.Error())
 		return "", servErrors.NewError(servErrors.DECODE_IMG, err.Error())
 	}
-	var squareSide int
+
 	if avatarImg.Bounds().Max.X < avatarImg.Bounds().Max.Y {
-		squareSide = avatarImg.Bounds().Max.X
+		avatarImg = imaging.Resize(avatarImg, avatarSide, 0, imaging.Lanczos)
 	} else {
-		squareSide = avatarImg.Bounds().Max.Y
+		avatarImg = imaging.Resize(avatarImg, 0, avatarSide, imaging.Lanczos)
 	}
-	avatarImg = imaging.CropAnchor(avatarImg, squareSide, squareSide, imaging.Center)
-	avatarImg = imaging.Resize(avatarImg, avatarSide, avatarSide, imaging.Lanczos)
 
 	var avatarName string
 	for i := 0; i < 10; i++ {
