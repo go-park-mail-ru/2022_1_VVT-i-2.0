@@ -9,10 +9,10 @@ import (
 )
 
 type ServerHandlers struct {
-	UserHandler *userHandler.UserHandler
+	UserHandler        *userHandler.UserHandler
 	RestaurantsHandler *restaurantsHandler.RestaurantsHandler
-	SuggsHandler *suggestHandler.SuggsHandler
-	OrderHandler *orderHandler.OrderHandler
+	SuggsHandler       *suggestHandler.SuggsHandler
+	OrderHandler       *orderHandler.OrderHandler
 }
 
 const (
@@ -26,7 +26,7 @@ func (sh *ServerHandlers) ConfigureRouting(router *echo.Echo) {
 	router.GET(v1Prefix+"logout", sh.UserHandler.Logout)
 	router.POST(v1Prefix+"register", sh.UserHandler.Register)
 	// router.POST(v1Prefix+"update", sh.UserHandler.UpdateUser)
-	router.POST(v1Prefix+"update", sh.UserHandler.UpdateAvatar)
+	router.POST(v1Prefix+"update", sh.UserHandler.UpdateUser)
 	router.POST(v1Prefix+"send_code", sh.UserHandler.SendCode)
 	router.GET(v1Prefix+"user", sh.UserHandler.GetUser)
 	router.GET(v1Prefix+"restaurants", sh.RestaurantsHandler.GetAllRestaurants)

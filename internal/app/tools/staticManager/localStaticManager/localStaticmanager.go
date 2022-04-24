@@ -42,6 +42,9 @@ func (f *LocalFileManager) IsNotSuchAvatarExist(avatarName string) bool {
 }
 
 func (f *LocalFileManager) GetAvatarUrl(fileName string) string {
+	if fileName == "" {
+		return ""
+	}
 	return f.staticUrl + f.avatarPath + fileName
 }
 
