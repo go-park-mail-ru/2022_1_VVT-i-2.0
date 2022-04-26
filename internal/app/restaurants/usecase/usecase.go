@@ -35,6 +35,7 @@ func (u *RestaurantsUsecase) GetAllRestaurants() (*models.RestaurantsUsecase, er
 			Min_price:  rest.Min_price,
 			Avg_price:  rest.Avg_price,
 			Rating: rest.Rating,
+			Count_rating: rest.Count_rating,
 		}
 		restaurantsUC.Restaurants = append(restaurantsUC.Restaurants, *item)
 	}
@@ -57,6 +58,7 @@ func (u *RestaurantsUsecase) GetRestaurantBySluf(slug string) (*models.Restauran
 		Min_price:  restaurantData.Min_price,
 		Avg_price:  restaurantData.Avg_price,
 		Rating: restaurantData.Rating,
+		Count_rating: restaurantData.Count_rating,
 	}, nil
 }
 

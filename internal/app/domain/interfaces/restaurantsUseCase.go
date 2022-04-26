@@ -7,11 +7,11 @@ import (
 	"github.com/stretchr/testify/mock"
 )
 
-type ArticleUsecase struct {
+type RestaurantsUsecase struct {
 	mock.Mock
 }
 
-func (a ArticleUsecase) GetAllRestaurants() (*models.RestaurantsUsecase, error) {
+func (a *RestaurantsUsecase) GetAllRestaurants() (*models.RestaurantsUsecase, error) {
 	mockRestaurant := &models.RestaurantUsecase{}
 	err := faker.FakeData(&mockRestaurant)
 	if err != nil {
@@ -22,7 +22,7 @@ func (a ArticleUsecase) GetAllRestaurants() (*models.RestaurantsUsecase, error) 
 	return mockRestaurants, nil
 }
 
-func (a ArticleUsecase) GetRestaurantBySluf(slug string) (*models.RestaurantUsecase, error) {
+func (a *RestaurantsUsecase) GetRestaurantBySluf(slug string) (*models.RestaurantUsecase, error) {
 	if slug != "" {
 		return nil, nil
 	}
@@ -34,7 +34,7 @@ func (a ArticleUsecase) GetRestaurantBySluf(slug string) (*models.RestaurantUsec
 	return mockRestaurant, nil
 }
 
-func (a ArticleUsecase) GetDishByRestaurant(id int) (*models.DishesUseCase, error) {
+func (a *RestaurantsUsecase) GetDishByRestaurant(id int) (*models.DishesUseCase, error) {
 	if id == 0 {
 		return nil, nil
 	}
@@ -48,10 +48,10 @@ func (a ArticleUsecase) GetDishByRestaurant(id int) (*models.DishesUseCase, erro
 	return mockDishes, nil
 }
 
-func (a ArticleUsecase) GetCommentsRestaurantByRestaurants(id int) (*models.CommentsRestaurantUseCase, error) {
+func (a *RestaurantsUsecase) GetCommentsRestaurantByRestaurants(id int) (*models.CommentsRestaurantUseCase, error) {
 	panic("implement me")
 }
 
-func (a ArticleUsecase) AddCommentsRestaurantByRestaurants(item *models.AddCommentRestaurantUseCase) (*models.CommentRestaurantUseCase, error) {
+func (a *RestaurantsUsecase) AddCommentsRestaurantByRestaurants(item *models.AddCommentRestaurantUseCase) (*models.CommentRestaurantUseCase, error) {
 	panic("implement me")
 }
