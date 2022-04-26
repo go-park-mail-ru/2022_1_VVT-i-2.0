@@ -180,11 +180,11 @@ func (u *UserUsecase) saveNewAvatar(avatar io.Reader) (string, error) {
 		return "", servErrors.NewError(servErrors.DECODE_IMG, err.Error())
 	}
 
-	if avatarImg.Bounds().Max.X < avatarImg.Bounds().Max.Y {
-		avatarImg = imaging.Resize(avatarImg, avatarSide, 0, imaging.Lanczos)
-	} else {
-		avatarImg = imaging.Resize(avatarImg, 0, avatarSide, imaging.Lanczos)
-	}
+	// if avatarImg.Bounds().Max.X < avatarImg.Bounds().Max.Y {
+	// 	avatarImg = imaging.Resize(avatarImg, avatarSide, 0, imaging.Lanczos)
+	// } else {
+	// 	avatarImg = imaging.Resize(avatarImg, 0, avatarSide, imaging.Lanczos)
+	// }
 
 	var avatarName string
 	for i := 0; i < 10; i++ {
