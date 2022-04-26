@@ -30,30 +30,17 @@ type RestaurantsDataStorage struct {
 	Restaurants []RestaurantDataStorage
 }
 
-//type RestaurantUsecase struct {
-//	Id         int
-//	Name       string
-//	City       string
-//	Address    string
-//	Image_path string
-//	Slug       string
-//	Min_price  int
-//	Avg_price  int
-//	Rating     int
-//	Count_rating int
-//}
-
 type RestaurantUsecase struct {
-	Id            int     `json:"id"`
-	Name          string  `json:"restName"`
-	City          string  `json:"city"`
-	Address       string  `json:"address"`
-	Image_path    string  `json:"imgPath"`
-	Slug          string  `json:"slug"`
-	Min_price     int     `json:"minPrice"`
-	Avg_price     int     `json:"avgPrice"`
-	Rating        float64 `json:"rating"`
-	TimeToDeliver string  `json:"timeToDeliver"`
+	Id         int
+	Name       string
+	City       string
+	Address    string
+	Image_path string
+	Slug       string
+	Min_price  int
+	Avg_price  int
+	Rating     int
+	Count_rating int
 }
 
 type RestaurantsUsecase struct {

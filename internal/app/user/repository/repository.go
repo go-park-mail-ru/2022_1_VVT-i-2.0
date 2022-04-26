@@ -182,7 +182,7 @@ func (repo *RepoSqlx) GetByID(id int64) (*Item, error) {
 func (repo *RepoSqlx) Add(elem *Item) (int64, error) {
 	result, err := repo.DB.NamedExec(
 		`INSERT INTO person (first_name,last_name,email) VALUES (:title, :description)`,
-		map[string]interface{}{
+		map[string]interfaces{}{
 			"title":       elem.Title,
 			"description": elem.Description,
 		})
