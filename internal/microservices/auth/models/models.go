@@ -2,7 +2,6 @@ package models
 
 import (
 	"database/sql"
-	"io"
 )
 
 type UserId uint64
@@ -54,44 +53,18 @@ type RegisterReq struct {
 	Email string `json:"email" valid:"email,required"`
 }
 
-// type RegisterReq struct {
-// Phone string `json:"phone" valid:"phone, required"`
-// Code  string `json:"code" valid:"required"`
-// Name  string `json:"name" valid:"name,required"`
-// 	Email string `json:"email" valid:"email,required"`
-// }
-
-type SendCodeReq struct {
+type SendCodeUcaseReq struct {
 	Phone string `json:"phone" valid:"phone, required"`
 }
 
-type SendCodeResp struct {
+type SendCodeUcaseResp struct {
 	IsRegistered bool `json:"registered"`
 }
 
-type SendCodeUcaseReq struct {
-	Phone string
+type SendCodeRepoReq struct {
+	Phone string `json:"phone" valid:"phone, required"`
 }
 
-type SendCodeUcaseResp struct {
-	IsRegistered bool
-}
-
-type UpdateUserReq struct {
-	Name  string `json:"name" valid:"name"`
-	Email string `json:"email" valid:"email"`
-}
-
-type UpdateUserUsecase struct {
-	Id        UserId
-	Name      string
-	Email     string
-	AvatarImg io.Reader
-}
-
-type UpdateUserStorage struct {
-	Id     UserId
-	Name   string
-	Email  string
-	Avatar string
+type SendCodeRepoResp struct {
+	IsRegistered bool `json:"registered"`
 }

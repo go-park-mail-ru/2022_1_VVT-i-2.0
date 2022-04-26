@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+option go_package = "./;auth";
+package auth;
+
+message SendCodeReq {
+  string Phone = 1;
+}
+
+message IsRegistered {
+  bool IsRegistered = 1;
+}
+
+service AuthService {
+  rpc SendCode(SendCodeReq) returns (IsRegistered) {}
+}

@@ -15,6 +15,19 @@ type Config struct {
 	DatabaseCongig        DatabaseConfig    `toml:"database"`
 	CorsConfig            CorsConfig        `toml:"cors"`
 	CsrfConfig            CsrfConfig        `toml:"csrf"`
+	AuthMicroserverAddr   string            `toml:"authMicroserviceAddr"`
+}
+
+type AuthMicroserviceConfig struct {
+	AuthServConfig        AuthServerConfig  `toml:"server"`
+	AuthentificatorConfig AuthManagerConfig `toml:"authManager"`
+	NotificatorConfig     NotificatorConfig `toml:"notificator"`
+	CacherConfig          CachConfig        `toml:"cacher"`
+	DatabaseCongig        DatabaseConfig    `toml:"database"`
+}
+
+type AuthServerConfig struct {
+	BindAddr string `toml:"bindAddr"`
 }
 
 type ServerConfig struct {

@@ -4,7 +4,7 @@ import (
 	"time"
 
 	conf "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/config"
-	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/authManager"
+	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/tools/authManager"
 	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/tools/servErrors"
 	jwt "github.com/golang-jwt/jwt"
 	"github.com/pkg/errors"

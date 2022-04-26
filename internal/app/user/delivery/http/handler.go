@@ -7,10 +7,10 @@ import (
 	"time"
 
 	"github.com/asaskevich/govalidator"
-	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/authManager"
 	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/delivery/http/httpErrDescr"
 	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/delivery/http/middleware"
 	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/models"
+	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/tools/authManager"
 	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/tools/servErrors"
 	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/tools/staticManager"
 	_ "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/tools/validator"
@@ -208,12 +208,12 @@ func (h UserHandler) SendCode(ctx echo.Context) error {
 		fmt.Println(err, sendCodeReq)
 		return echo.NewHTTPError(http.StatusBadRequest, httpErrDescr.INVALID_DATA)
 	}
-	isRegistered, err := h.Usecase.SendCode(&sendCodeReq)
+	isRegistered, err := h.Usecase.SendCode(&models.SendCodeUcaseReq{Phone: sendCodeReq.Phone})
 	if err != nil {
 		logger.Error(requestId, "error sending code: "+err.Error())
 		return echo.NewHTTPError(http.StatusInternalServerError, httpErrDescr.SERVER_ERROR)
 	}
-	return ctx.JSON(http.StatusOK, models.SendCodeResp{IsRegistered: isRegistered})
+	return ctx.JSON(http.StatusOK, models.SendCodeResp{IsRegistered: isRegistered.IsRegistered})
 }
 
 func (h UserHandler) GetUser(ctx echo.Context) error {

@@ -8,12 +8,13 @@ import (
 
 	"github.com/labstack/echo/v4"
 	"github.com/pkg/errors"
+	"google.golang.org/grpc"
 
 	conf "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/config"
 	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/config/configRouting"
 
-	jwt "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/authManager/jwtManager"
 	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/delivery/http/middleware"
+	jwt "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/tools/authManager/jwtManager"
 
 	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/tools/cacher/memcacher"
 	servLog "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/tools/logger"
@@ -21,6 +22,8 @@ import (
 	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/tools/notification/flashcall"
 	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/tools/postgresqlx"
 	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/tools/staticManager/localStaticManager"
+
+	authProto "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/tools/proto/auth"
 
 	suggsHandler "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/address/delivery/http"
 	suggsRepo "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/address/repository"
@@ -80,11 +83,22 @@ func main() {
 
 	staticManager := localStaticManager.NewLocalFileManager(config.ServConfig.StaticUrl, config.ServConfig.StaticPath)
 
+	authGrpcConn, err := grpc.Dial(
+		config.ServConfig.AuthMicroserverAddr,
+		grpc.WithInsecure(),
+	)
+	if err != nil {
+		log.Fatal(errors.Wrap(err, "error connecting to grpc-auth-microserver"))
+	}
+	defer authGrpcConn.Close()
+
+	authorizerCli := authProto.NewAuthServiceClient(authGrpcConn)
+
 	userRepo := userRepo.NewUserRepo(pgxManager)
 	suggsRepo := suggsRepo.NewAddrRepo(pgxManager)
 	orderRepo := orderRepo.NewOrderRepo(pgxManager)
 
-	userUcase := userUcase.NewUsecase(flashcaller, memcacher, userRepo, staticManager)
+	userUcase := userUcase.NewUsecase(flashcaller, memcacher, userRepo, staticManager, authorizerCli)
 	suggsUcase := suggsUcase.NewAddrUsecase(suggsRepo)
 	orderUcase := orderUcase.NewUsecase(orderRepo)
 

@@ -1,16 +1,15 @@
 package usecase
 
 import (
-	"crypto/rand"
+	"context"
 	"fmt"
 	"io"
-	"math/big"
-	"strconv"
 
 	"github.com/disintegration/imaging"
 	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/models"
 	cacher "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/tools/cacher"
 	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/tools/notification"
+	authProto "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/tools/proto/auth"
 	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/tools/servErrors"
 	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/tools/staticManager"
 	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/user"
@@ -24,9 +23,8 @@ var LOGIN_CODE string
 const (
 	codeUpBound          = 10000 // > 0
 	codeExpiration int32 = 300   // 5 min
-	avatarSide           = 100
-	codeSendMsg          = "Ваш код для входа в Foobrinto: "
-	msgEncoding          = "unicode"
+	// avatarSide           = 300
+	// avatarSide = 30
 )
 
 type UserUsecase struct {
@@ -34,41 +32,22 @@ type UserUsecase struct {
 	Cacher        cacher.Cacher
 	UserRepo      user.Repository
 	StaticManager staticManager.FileManager
+	Authorizer    authProto.AuthServiceClient
 }
 
-func NewUsecase(notificator notification.Notificator, cacher cacher.Cacher, userRepo user.Repository, staticManager staticManager.FileManager) *UserUsecase {
+func NewUsecase(notificator notification.Notificator, cacher cacher.Cacher, userRepo user.Repository, staticManager staticManager.FileManager, authorizer authProto.AuthServiceClient) *UserUsecase {
 	return &UserUsecase{
 		Notificator:   notificator,
 		Cacher:        cacher,
 		UserRepo:      userRepo,
 		StaticManager: staticManager,
+		Authorizer:    authorizer,
 	}
 }
 
-func generateLoginCode() string {
-	randNum, _ := rand.Int(rand.Reader, big.NewInt(codeUpBound))
-	return strconv.Itoa(int(randNum.Int64()) + codeUpBound)[1:]
-}
-
-func (u *UserUsecase) SendCode(req *models.SendCodeReq) (bool, error) {
-	loginCode := generateLoginCode()
-	LOGIN_CODE = loginCode //TODO: удалить
-	fmt.Printf("~~~~~~~code: %s ~~~~~~~~\n", loginCode)
-	err := u.Cacher.Set(cacher.NewItem(req.Phone, []byte(loginCode), codeExpiration))
-	if err != nil {
-		return false, errors.Wrap(err, "error saving [auth code destination]-code item to cach")
-	}
-
-	// err = u.Notificator.SendCode(req.Phone, loginCode)
-	// if err != nil {
-	// 	return false, errors.Wrap(err, "error sending message e with code to auth code destination")
-	// }
-
-	hasSuchUser, err := u.UserRepo.HasUserByPhone(req.Phone)
-	if err != nil {
-		return false, errors.Wrap(err, "error finding out if there is such user in database")
-	}
-	return hasSuchUser, nil
+func (u *UserUsecase) SendCode(req *models.SendCodeUcaseReq) (models.SendCodeUcaseResp, error) {
+	isRegistered, err := u.Authorizer.SendCode(context.Background(), &authProto.SendCodeReq{Phone: req.Phone})
+	return models.SendCodeUcaseResp{IsRegistered: isRegistered.IsRegistered}, err
 }
 
 func (u *UserUsecase) isCodeCorrect(codeDst string, code string) (bool, error) {
