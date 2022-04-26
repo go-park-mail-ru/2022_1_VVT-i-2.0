@@ -14,4 +14,5 @@ const (
 	WRONG_AUTH_CODE          = "неверный код для входа"
 	INVALID_DATA             = "переданы невалидные данные"
 	ALREADY_AUTHORIZED       = "пользователь уже авторизован"
+	INVALID_CSRF             = "невалидный csrf-токен"
 )
