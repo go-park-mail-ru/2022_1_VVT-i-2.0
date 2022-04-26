@@ -59,10 +59,10 @@ func (u *UserUsecase) SendCode(req *models.SendCodeReq) (bool, error) {
 		return false, errors.Wrap(err, "error saving [auth code destination]-code item to cach")
 	}
 
-	// err = u.Notificator.SendCode(req.Phone, loginCode)
-	// if err != nil {
-	// 	return false, errors.Wrap(err, "error sending message e with code to auth code destination")
-	// }
+	err = u.Notificator.SendCode(req.Phone, loginCode)
+	if err != nil {
+		return false, errors.Wrap(err, "error sending message e with code to auth code destination")
+	}
 
 	hasSuchUser, err := u.UserRepo.HasUserByPhone(req.Phone)
 	if err != nil {
