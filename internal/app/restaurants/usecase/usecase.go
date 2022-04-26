@@ -26,15 +26,15 @@ func (u *RestaurantsUsecase) GetAllRestaurants() (*models.RestaurantsUsecase, er
 
 	for _, rest := range restaurantsData {
 		item := &models.RestaurantUsecase{
-			Id: rest.Id,
-			Name: rest.Name,
-			City: rest.City,
-			Address: rest.Address,
+			Id:         rest.Id,
+			Name:       rest.Name,
+			City:       rest.City,
+			Address:    rest.Address,
 			Image_path: rest.Image_path,
-			Slug: rest.Slug,
-			Min_price: rest.Min_price,
-			Avg_price: rest.Avg_price,
-			Rating: rest.Rating,
+			Slug:       rest.Slug,
+			Min_price:  rest.Min_price,
+			Avg_price:  rest.Avg_price,
+			Rating: float64(rest.Rating),
 		}
 		restaurantsUC.Restaurants = append(restaurantsUC.Restaurants, *item)
 	}
@@ -48,15 +48,15 @@ func (u *RestaurantsUsecase) GetRestaurantBySluf(slug string) (*models.Restauran
 		return nil, errors.Wrapf(err, "error getting restaurants")
 	}
 	return &models.RestaurantUsecase{
-		Id: restaurantData.Id,
-		Name: restaurantData.Name,
-		City: restaurantData.City,
-		Address: restaurantData.Address,
+		Id:         restaurantData.Id,
+		Name:       restaurantData.Name,
+		City:       restaurantData.City,
+		Address:    restaurantData.Address,
 		Image_path: restaurantData.Image_path,
-		Slug: restaurantData.Slug,
-		Min_price: restaurantData.Min_price,
-		Avg_price: restaurantData.Avg_price,
-		Rating: restaurantData.Rating,
+		Slug:       restaurantData.Slug,
+		Min_price:  restaurantData.Min_price,
+		Avg_price:  restaurantData.Avg_price,
+		Rating: float64(restaurantData.Rating),
 	}, nil
 }
 
