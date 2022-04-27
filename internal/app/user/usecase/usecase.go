@@ -46,67 +46,44 @@ func NewUsecase(notificator notification.Notificator, cacher cacher.Cacher, user
 }
 
 func (u *UserUsecase) SendCode(req *models.SendCodeUcaseReq) (models.SendCodeUcaseResp, error) {
+	fmt.Println("send-code-u")
 	isRegistered, err := u.Authorizer.SendCode(context.Background(), &authProto.SendCodeReq{Phone: req.Phone})
+	fmt.Println("send-code-eu")
+	fmt.Println(isRegistered, err)
+	if err != nil {
+		return models.SendCodeUcaseResp{IsRegistered: false}, err
+	}
 	return models.SendCodeUcaseResp{IsRegistered: isRegistered.IsRegistered}, err
 }
 
-func (u *UserUsecase) isCodeCorrect(codeDst string, code string) (bool, error) {
-	cachItem, err := u.Cacher.Get(codeDst)
-
-	if err != nil || string(cachItem.Value) != code {
-		return false, errors.Wrap(err, "code validation error")
+func (u *UserUsecase) Register(req *models.RegisterUcaseReq) (*models.UserDataUcase, error) {
+	fmt.Println("reg-u")
+	userData, err := u.Authorizer.Register(context.Background(), &authProto.RegisterReq{Phone: req.Phone, Code: req.Code, Name: req.Name, Email: req.Email})
+	fmt.Println("reg-eu")
+	fmt.Println(userData, err)
+	if err != nil {
+		return nil, err
 	}
-	return true, nil
+	return &models.UserDataUcase{Id: models.UserId(userData.Id), Phone: userData.Phone, Name: userData.Name, Email: userData.Email, Avatar: userData.Avatar}, err
 }
 
-func (u *UserUsecase) Login(req *models.LoginReq) (*models.UserDataUsecase, error) {
-	isCorrect, err := u.isCodeCorrect(req.Phone, req.Code)
+func (u *UserUsecase) Login(req *models.LoginUcaseReq) (*models.UserDataUcase, error) {
+	fmt.Println("reg-u")
+	userData, err := u.Authorizer.Login(context.Background(), &authProto.LoginReq{Phone: req.Phone, Code: req.Code})
+	fmt.Println("reg-eu")
+	fmt.Println(userData, err)
 	if err != nil {
-		return nil, errors.Wrap(err, "code check failed")
+		return nil, err
 	}
-	if !isCorrect {
-		return nil, servErrors.NewError(servErrors.WRONG_AUTH_CODE, servErrors.WRONG_AUTH_CODE_DESCR)
-	}
-	userData, err := u.UserRepo.GetUserByPhone(req.Phone)
-	if err != nil {
-		return nil, errors.Wrap(err, "error getting user by phone")
-	}
-	return &models.UserDataUsecase{
-		Id:     userData.Id,
-		Phone:  userData.Phone,
-		Name:   userData.Name,
-		Email:  userData.Email,
-		Avatar: userData.Avatar.String,
-	}, nil
+	return &models.UserDataUcase{Id: models.UserId(userData.Id), Phone: userData.Phone, Name: userData.Name, Email: userData.Email, Avatar: userData.Avatar}, err
 }
 
-func (u *UserUsecase) Register(req *models.RegisterReq) (*models.UserDataUsecase, error) {
-	isCorrect, err := u.isCodeCorrect(req.Phone, req.Code)
-	if err != nil {
-		return nil, errors.Wrap(err, "code check failed")
-	}
-	if !isCorrect {
-		return nil, servErrors.NewError(servErrors.WRONG_AUTH_CODE, servErrors.WRONG_AUTH_CODE_DESCR)
-	}
-
-	userDataStorage, err := u.UserRepo.AddUser(&models.UserAddDataStorage{Phone: req.Phone, Email: req.Email, Name: req.Name})
-	if err != nil {
-		return nil, errors.Wrap(err, "error adding user to storage")
-	}
-	return &models.UserDataUsecase{
-		Id:    userDataStorage.Id,
-		Phone: userDataStorage.Phone,
-		Name:  userDataStorage.Name,
-		Email: userDataStorage.Email,
-	}, nil
-}
-
-func (u *UserUsecase) GetUser(id models.UserId) (*models.UserDataUsecase, error) {
+func (u *UserUsecase) GetUser(id models.UserId) (*models.UserDataUcase, error) {
 	userData, err := u.UserRepo.GetUserById(id)
 	if err != nil {
 		return nil, errors.Wrapf(err, "error getting user by id %d", id)
 	}
-	return &models.UserDataUsecase{
+	return &models.UserDataUcase{
 		Id:     userData.Id,
 		Phone:  userData.Phone,
 		Name:   userData.Name,
@@ -115,7 +92,7 @@ func (u *UserUsecase) GetUser(id models.UserId) (*models.UserDataUsecase, error)
 	}, nil
 }
 
-func (u *UserUsecase) UpdateUser(updates *models.UpdateUserUsecase) (*models.UserDataUsecase, error) {
+func (u *UserUsecase) UpdateUser(updates *models.UpdateUserUsecase) (*models.UserDataUcase, error) {
 	var newAvatarName string
 	var err error
 	if updates.AvatarImg != nil {
@@ -142,7 +119,7 @@ func (u *UserUsecase) UpdateUser(updates *models.UpdateUserUsecase) (*models.Use
 			return nil, errors.Wrapf(err, "error getting user by id %d", updates.Id)
 		}
 	}
-	return &models.UserDataUsecase{
+	return &models.UserDataUcase{
 		Id:     updUser.Id,
 		Phone:  updUser.Phone,
 		Name:   updUser.Name,
@@ -177,7 +154,6 @@ func (u *UserUsecase) saveNewAvatar(avatar io.Reader) (string, error) {
 		return "", servErrors.NewError(servErrors.CANT_CREATE_AVATAR_NAME, "")
 	}
 
-	// err = imaging.Save(avatarImg, staticPath+avatarPath+avatarName)
 	err = u.StaticManager.SafeAvatar(avatarImg, avatarName)
 	fmt.Println(err)
 	fmt.Println(avatarName)

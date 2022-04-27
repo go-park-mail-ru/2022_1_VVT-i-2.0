@@ -5,8 +5,7 @@ import (
 )
 
 type Usecase interface {
-	// Login(req *models.LoginReq) (*models.UserDataUsecase, error)
-	// Register(req *models.RegisterReq) (*models.UserDataUsecase, error)
-	// SendCode(req *models.SendCodeReq) (bool, error)
+	Login(req *models.LoginUcaseReq) (*models.UserDataUcase, error)
+	Register(req *models.RegisterUcaseReq) (*models.UserDataUcase, error)
 	SendCode(*models.SendCodeUcaseReq) (models.SendCodeUcaseResp, error)
 }

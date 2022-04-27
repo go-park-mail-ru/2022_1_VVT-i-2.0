@@ -6,7 +6,7 @@ import (
 
 type UserId uint64
 
-type UserDataStorage struct {
+type UserDataRepo struct {
 	Id     UserId
 	Name   string
 	Phone  string
@@ -14,14 +14,14 @@ type UserDataStorage struct {
 	Avatar sql.NullString
 }
 
-type UserAddDataStorage struct {
+type AddUserRepoReq struct {
 	Name   string
 	Phone  string
 	Email  string
 	Avatar string
 }
 
-type UserDataUsecase struct {
+type UserDataUcase struct {
 	Id     UserId
 	Name   string
 	Phone  string
@@ -35,36 +35,36 @@ type UpdateAvatarRepo struct {
 }
 
 type UserDataResp struct {
-	Name   string `json:"name"`
-	Phone  string `json:"phone"`
-	Email  string `json:"email"`
-	Avatar string `json:"avatar"`
+	Name   string
+	Phone  string
+	Email  string
+	Avatar string
 }
 
-type LoginReq struct {
-	Phone string `json:"phone" valid:"phone, required"`
-	Code  string `json:"code" valid:"required"`
+type LoginUcaseReq struct {
+	Phone string
+	Code  string
 }
 
-type RegisterReq struct {
-	Phone string `json:"phone" valid:"phone, required"`
-	Code  string `json:"code" valid:"required"`
-	Name  string `json:"name" valid:"name,required"`
-	Email string `json:"email" valid:"email,required"`
+type RegisterUcaseReq struct {
+	Phone string
+	Code  string
+	Name  string
+	Email string
 }
 
 type SendCodeUcaseReq struct {
-	Phone string `json:"phone" valid:"phone, required"`
+	Phone string
 }
 
 type SendCodeUcaseResp struct {
-	IsRegistered bool `json:"registered"`
+	IsRegistered bool
 }
 
-type SendCodeRepoReq struct {
-	Phone string `json:"phone" valid:"phone, required"`
+type UserByPhoneRepoReq struct {
+	Phone string
 }
 
-type SendCodeRepoResp struct {
-	IsRegistered bool `json:"registered"`
+type HasSuchUserRepoResp struct {
+	IsRegistered bool
 }

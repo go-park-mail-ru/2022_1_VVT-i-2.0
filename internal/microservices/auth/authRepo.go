@@ -5,8 +5,7 @@ import (
 )
 
 type Repository interface {
-	// AddUser(newUser *models.UserAddDataStorage) (*models.UserDataStorage, error)
-	// GetUserByPhone(phone string) (*models.UserDataStorage, error)
-	// GetUserById(id models.UserId) (*models.UserDataStorage, error)
-	HasUserByPhone(phone models.SendCodeRepoReq) (models.SendCodeRepoResp, error)
+	AddUser(newUser *models.AddUserRepoReq) (*models.UserDataRepo, error)
+	HasUserByPhone(phone models.UserByPhoneRepoReq) (models.HasSuchUserRepoResp, error)
+	GetUserByPhone(phone models.UserByPhoneRepoReq) (*models.UserDataRepo, error)
 }

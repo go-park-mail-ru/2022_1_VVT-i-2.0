@@ -1,7 +1,6 @@
 package middleware
 
 import (
-	"fmt"
 	"net/http"
 	"time"
 
@@ -66,14 +65,12 @@ func CSRFWithConfig(config CSRFConfig) echo.MiddlewareFunc {
 			} else {
 				token = tokenCookie.Value
 			}
-			fmt.Println(token)
 
 			switch {
 			case config.SetterTokenInUnsafeMethod(ctx), ctx.Request().Method == http.MethodGet, ctx.Request().Method == http.MethodHead, ctx.Request().Method == http.MethodOptions, ctx.Request().Method == http.MethodTrace:
 			default:
 				// Validate token only for requests which are not defined as 'safe' by RFC7231
 				clientToken := ctx.Request().Header.Get(echo.HeaderXCSRFToken)
-				fmt.Println(clientToken)
 				if clientToken != token {
 					return echo.NewHTTPError(http.StatusForbidden, httpErrDescr.INVALID_CSRF)
 				}

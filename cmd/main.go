@@ -9,6 +9,7 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/pkg/errors"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
 
 	conf "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/config"
 	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/config/configRouting"
@@ -84,8 +85,9 @@ func main() {
 	staticManager := localStaticManager.NewLocalFileManager(config.ServConfig.StaticUrl, config.ServConfig.StaticPath)
 
 	authGrpcConn, err := grpc.Dial(
-		config.ServConfig.AuthMicroserverAddr,
-		grpc.WithInsecure(),
+		config.AuthMicroserverAddr,
+		// grpc.WithInsecure(),
+		grpc.WithTransportCredentials(insecure.NewCredentials()),
 	)
 	if err != nil {
 		log.Fatal(errors.Wrap(err, "error connecting to grpc-auth-microserver"))

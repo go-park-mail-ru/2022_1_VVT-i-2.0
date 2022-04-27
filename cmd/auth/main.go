@@ -22,7 +22,7 @@ import (
 )
 
 func main() {
-	configPath := flag.String("config", "../../config/serv.toml", "path to config file")
+	configPath := flag.String("config", "../../config/auth.toml", "path to config file")
 	flag.Parse()
 
 	config := conf.NewConfig()
@@ -56,7 +56,7 @@ func main() {
 
 	authHandler := authHandler.NewAuthHandler(authUcase)
 
-	lis, err := net.Listen("tcp", config.ServConfig.AuthMicroserverAddr)
+	lis, err := net.Listen("tcp", config.ServConfig.BindAddr)
 	if err != nil {
 		log.Fatalln("cant listen port", err)
 	}

@@ -1,6 +1,7 @@
+authMicroserviceAddr = "localhost:8081"
+
 [server]
 bindAddr = ":8080"
-authMicroserviceAddr = "localhost:8081"
 readTimeout = 10
 writeTimeout= 10
 staticUrl="http://localhost:8080/static/"

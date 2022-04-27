@@ -2,12 +2,13 @@ package repository
 
 import (
 	"fmt"
-	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/models"
-	"github.com/jmoiron/sqlx"
-	"gopkg.in/DATA-DOG/go-sqlmock.v1"
 	"reflect"
 	"regexp"
 	"testing"
+
+	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/models"
+	"github.com/jmoiron/sqlx"
+	"gopkg.in/DATA-DOG/go-sqlmock.v1"
 )
 
 func TestGetUserByPhone(t *testing.T) {
@@ -25,7 +26,7 @@ func TestGetUserByPhone(t *testing.T) {
 
 	rows := sqlmock.
 		NewRows([]string{"id", "name", "phone", "email"})
-	expect := []*models.UserDataStorage{
+	expect := []*models.UserDataRepo{
 		{1, "Sergey", "89166152595", "seregey@mail.ru"},
 	}
 	for _, item := range expect {
@@ -103,13 +104,13 @@ func TestAddUser(t *testing.T) {
 	email := "sergey@mail.ru"
 	testItem := &models.UserAddDataStorage{
 		Name:  name,
-		Phone:  phone,
-		Email:  email,
+		Phone: phone,
+		Email: email,
 	}
 
 	rows := sqlmock.
 		NewRows([]string{"id", "name", "phone", "email"})
-	expect := []*models.UserDataStorage{
+	expect := []*models.UserDataRepo{
 		{1, "Sergey", "89166152595", "seregey@mail.ru"},
 	}
 	for _, item := range expect {
@@ -176,8 +177,8 @@ func TestAddUser1(t *testing.T) {
 	email := "sergey@mail.ru"
 	testItem := &models.UserAddDataStorage{
 		Name:  name,
-		Phone:  phone,
-		Email:  email,
+		Phone: phone,
+		Email: email,
 	}
 
 	var expect models.UserId = 1
@@ -317,7 +318,7 @@ func TestGetUserById(t *testing.T) {
 
 	rows := sqlmock.
 		NewRows([]string{"id", "name", "phone", "email"})
-	expect := []*models.UserDataStorage{
+	expect := []*models.UserDataRepo{
 		{1, "Sergey", "89166152595", "seregey@mail.ru"},
 	}
 	for _, item := range expect {
@@ -392,7 +393,7 @@ func TestHasUserByPhone(t *testing.T) {
 
 	rows := sqlmock.
 		NewRows([]string{"id", "name", "phone", "email"})
-	expect := []*models.UserDataStorage{
+	expect := []*models.UserDataRepo{
 		{1, "Sergey", "89166152595", "seregey@mail.ru"},
 	}
 	for _, item := range expect {

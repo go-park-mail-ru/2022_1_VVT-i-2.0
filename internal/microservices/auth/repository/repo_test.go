@@ -26,7 +26,7 @@ func TestGetUserByPhone(t *testing.T) {
 
 	rows := sqlmock.
 		NewRows([]string{"id", "name", "phone", "email"})
-	expect := []*models.UserDataStorage{
+	expect := []*models.UserDataRepo{
 		{1, "Sergey", "89166152595", "seregey@mail.ru"},
 	}
 	for _, item := range expect {
@@ -110,7 +110,7 @@ func TestAddUser(t *testing.T) {
 
 	rows := sqlmock.
 		NewRows([]string{"id", "name", "phone", "email"})
-	expect := []*models.UserDataStorage{
+	expect := []*models.UserDataRepo{
 		{1, "Sergey", "89166152595", "seregey@mail.ru"},
 	}
 	for _, item := range expect {
@@ -318,7 +318,7 @@ func TestGetUserById(t *testing.T) {
 
 	rows := sqlmock.
 		NewRows([]string{"id", "name", "phone", "email"})
-	expect := []*models.UserDataStorage{
+	expect := []*models.UserDataRepo{
 		{1, "Sergey", "89166152595", "seregey@mail.ru"},
 	}
 	for _, item := range expect {
@@ -393,7 +393,7 @@ func TestHasUserByPhone(t *testing.T) {
 
 	rows := sqlmock.
 		NewRows([]string{"id", "name", "phone", "email"})
-	expect := []*models.UserDataStorage{
+	expect := []*models.UserDataRepo{
 		{1, "Sergey", "89166152595", "seregey@mail.ru"},
 	}
 	for _, item := range expect {

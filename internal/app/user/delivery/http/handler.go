@@ -68,7 +68,7 @@ func (h UserHandler) Login(ctx echo.Context) error {
 		return echo.NewHTTPError(http.StatusBadRequest, httpErrDescr.INVALID_DATA)
 	}
 
-	userDataUcase, err := h.Usecase.Login(&loginReq)
+	userDataUcase, err := h.Usecase.Login(&models.LoginUcaseReq{Phone: loginReq.Phone, Code: loginReq.Code})
 	if err != nil {
 		cause := servErrors.ErrorAs(err)
 		if cause == nil {
@@ -132,7 +132,7 @@ func (h UserHandler) Register(ctx echo.Context) error {
 		return echo.NewHTTPError(http.StatusBadRequest, httpErrDescr.INVALID_DATA)
 	}
 
-	userDataUcase, err := h.Usecase.Register(&registerReq)
+	userDataUcase, err := h.Usecase.Register(&models.RegisterUcaseReq{Phone: registerReq.Phone, Code: registerReq.Code, Name: registerReq.Name, Email: registerReq.Email})
 	if err != nil {
 		cause := servErrors.ErrorAs(err)
 		if cause == nil {
