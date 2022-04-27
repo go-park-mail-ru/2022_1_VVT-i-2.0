@@ -15,5 +15,4 @@ func ConfigureCommonMiddleware(router *echo.Echo, mwChain *middleware.CommonMidd
 	router.Use(mwChain.AuthMiddleware)
 	router.Use(echoMiddleware.CORSWithConfig(getCorsConfig(corsCfg)))
 	router.Use(middleware.CSRFWithConfig(getCsrfConfig(csrfCfg)))
-	router.Use(middleware.CsrfSetHeader)
 }

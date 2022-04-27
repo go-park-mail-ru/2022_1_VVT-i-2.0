@@ -1,6 +1,7 @@
 package middleware
 
 import (
+	"fmt"
 	"net/http"
 	"time"
 
@@ -8,6 +9,8 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/gommon/random"
 )
+
+const csrfCtxKey = "csrf"
 
 type (
 	// CSRFConfig defines the config for CSRF middleware.
@@ -58,18 +61,20 @@ func CSRFWithConfig(config CSRFConfig) echo.MiddlewareFunc {
 			}
 
 			token := ""
-			if tokenCookie, err := ctx.Cookie(config.CookieName); err != nil {
-				token = random.String(config.TokenLength) // Generate token
+			if tokenCookie, err := ctx.Cookie(config.CookieName); err != nil || tokenCookie.Value == "" {
+				token = random.String(config.TokenLength)
 			} else {
-				token = tokenCookie.Value // Reuse token
+				token = tokenCookie.Value
 			}
+			fmt.Println(token)
 
 			switch {
 			case config.SetterTokenInUnsafeMethod(ctx), ctx.Request().Method == http.MethodGet, ctx.Request().Method == http.MethodHead, ctx.Request().Method == http.MethodOptions, ctx.Request().Method == http.MethodTrace:
 			default:
 				// Validate token only for requests which are not defined as 'safe' by RFC7231
-				clientHeader := ctx.Request().Header.Get(echo.HeaderXCSRFToken)
-				if clientHeader != token {
+				clientToken := ctx.Request().Header.Get(echo.HeaderXCSRFToken)
+				fmt.Println(clientToken)
+				if clientToken != token {
 					return echo.NewHTTPError(http.StatusForbidden, httpErrDescr.INVALID_CSRF)
 				}
 			}
@@ -89,9 +94,18 @@ func CSRFWithConfig(config CSRFConfig) echo.MiddlewareFunc {
 			}
 			ctx.SetCookie(cookie)
 
+			ctx.Set(csrfCtxKey, token)
+
 			ctx.Response().Header().Add(echo.HeaderVary, echo.HeaderCookie)
-			ctx.Response().Header().Add(echo.HeaderXCSRFToken, token)
 			return next(ctx)
 		}
 	}
+}
+
+func GetCSRFTokenromCtx(ctx echo.Context) string {
+	token, ok := ctx.Get(csrfCtxKey).(string)
+	if !ok {
+		return ""
+	}
+	return token
 }

@@ -107,6 +107,10 @@ func (h UserHandler) Login(ctx echo.Context) error {
 
 		return ctx.JSON(http.StatusOK, models.UserDataResp{Phone: userDataUcase.Phone, Email: userDataUcase.Email, Name: userDataUcase.Name, Avatar: ""})
 	}
+	csrfToken := middleware.GetCSRFTokenromCtx(ctx)
+	if csrfToken != "" {
+		ctx.Response().Header().Add(echo.HeaderXCSRFToken, csrfToken)
+	}
 	return ctx.JSON(http.StatusOK, models.UserDataResp{Phone: userDataUcase.Phone, Email: userDataUcase.Email, Name: userDataUcase.Name, Avatar: h.StaticManager.GetAvatarUrl(userDataUcase.Avatar)})
 }
 
@@ -162,8 +166,9 @@ func (h UserHandler) Register(ctx echo.Context) error {
 	tokenCookie := createTokenCookie(token, host, h.AuthManager.GetEpiryTime())
 
 	ctx.SetCookie(tokenCookie)
-	if userDataUcase.Avatar == "" {
-		return ctx.JSON(http.StatusOK, models.UserDataResp{Phone: userDataUcase.Phone, Email: userDataUcase.Email, Name: userDataUcase.Name, Avatar: ""})
+	csrfToken := middleware.GetCSRFTokenromCtx(ctx)
+	if csrfToken != "" {
+		ctx.Response().Header().Add(echo.HeaderXCSRFToken, csrfToken)
 	}
 	return ctx.JSON(http.StatusOK, models.UserDataResp{Phone: userDataUcase.Phone, Email: userDataUcase.Email, Name: userDataUcase.Name, Avatar: h.StaticManager.GetAvatarUrl(userDataUcase.Avatar)})
 }
@@ -236,9 +241,9 @@ func (h UserHandler) GetUser(ctx echo.Context) error {
 		return echo.NewHTTPError(http.StatusInternalServerError, httpErrDescr.SERVER_ERROR)
 	}
 
-	if userDataUcase.Avatar == "" {
-
-		return ctx.JSON(http.StatusOK, models.UserDataResp{Phone: userDataUcase.Phone, Email: userDataUcase.Email, Name: userDataUcase.Name})
+	csrfToken := middleware.GetCSRFTokenromCtx(ctx)
+	if csrfToken != "" {
+		ctx.Response().Header().Add(echo.HeaderXCSRFToken, csrfToken)
 	}
 	return ctx.JSON(http.StatusOK, models.UserDataResp{Phone: userDataUcase.Phone, Email: userDataUcase.Email, Name: userDataUcase.Name, Avatar: h.StaticManager.GetAvatarUrl(userDataUcase.Avatar)})
 }
@@ -305,40 +310,9 @@ func (h UserHandler) UpdateUser(ctx echo.Context) error {
 		return echo.NewHTTPError(http.StatusInternalServerError, httpErrDescr.SERVER_ERROR)
 	}
 
+	csrfToken := middleware.GetCSRFTokenromCtx(ctx)
+	if csrfToken != "" {
+		ctx.Response().Header().Add(echo.HeaderXCSRFToken, csrfToken)
+	}
 	return ctx.JSON(http.StatusOK, models.UserDataResp{Phone: userDataUcase.Phone, Email: userDataUcase.Email, Name: userDataUcase.Name, Avatar: h.StaticManager.GetAvatarUrl(userDataUcase.Avatar)})
 }
-
-/*
-func (h *UserHandler) UploadPhoto(w http.ResponseWriter, r *http.Request) {
-	err := r.ParseMultipartForm(maxPhotoSize)
-	if err != nil {
-		responses.SendError(w, models.HTTPError{
-			Code:    http.StatusBadRequest,
-			Message: err,
-		}, h.Logger.ErrorLogging)
-		return
-	}
-
-	uploadedPhoto, fileHeader, err := r.FormFile("photo")
-	if err != nil {
-		responses.SendError(w, models.HTTPError{
-			Code:    http.StatusBadRequest,
-			Message: err,
-		}, h.Logger.ErrorLogging)
-		return
-	}
-	defer uploadedPhoto.Close()
-
-	photo, err := h.UserUCase.AddPhoto(r.Context(), uploadedPhoto, fileHeader.Filename)
-	if err != nil {
-		responses.SendError(w, models.HTTPError{
-			Code:    http.StatusInternalServerError,
-			Message: err,
-		}, h.Logger.ErrorLogging)
-		return
-	}
-
-	responses.SendData(w, photo)
-}
-
-*/
