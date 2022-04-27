@@ -41,6 +41,19 @@ func (r *RestaurantsRepo) GetRestaurantsBySlug(slug string) (*models.RestaurantD
 	}
 }
 
+func (r *RestaurantsRepo) GetRestaurantsByID(id int) (*models.RestaurantDataStorage, error) {
+	restaurant := &models.RestaurantDataStorage{}
+	err := r.DB.Get(restaurant, "SELECT id, name, city, address, image_path, slug, min_price, avg_price, rating, count_rating FROM restaurants WHERE id = $1", id)
+	switch err {
+	case nil:
+		return restaurant, nil
+	case sql.ErrNoRows:
+		return nil, servErrors.NewError(servErrors.NO_SUCH_ENTITY_IN_DB, err.Error())
+	default:
+		return nil, servErrors.NewError(servErrors.DB_ERROR, err.Error())
+	}
+}
+
 func (r *RestaurantsRepo) GetDishByRestaurants(id int) ([]*models.DishDataStorage, error) {
 	dishes := make([]*models.DishDataStorage, 0, 21)
 	err := r.DB.Select(&dishes, "SELECT id, restaurant, name, description, image_path, calories, price, weight FROM dish WHERE restaurant = $1", id)
@@ -56,7 +69,7 @@ func (r *RestaurantsRepo) GetDishByRestaurants(id int) ([]*models.DishDataStorag
 
 func (r *RestaurantsRepo) GetCommentsRestaurantByRestaurants(id int) ([]*models.CommentRestaurantDataStorage, error) {
 	comments := make([]*models.CommentRestaurantDataStorage, 0, 2)
-	err := r.DB.Select(&comments, `SELECT id, restaurant, user_id, comment_text, comment_rating FROM comment_restaurants WHERE id = $1`, id)
+	err := r.DB.Select(&comments, `SELECT id, restaurant, user_id, comment_text, comment_rating FROM comment_restaurants WHERE restaurant = $1`, id)
 
 	switch err {
 	case nil:

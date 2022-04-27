@@ -2,7 +2,7 @@ package restaurantsHandler
 
 import (
 	"encoding/json"
-
+	"fmt"
 	"net/http"
 	"strconv"
 
@@ -60,7 +60,7 @@ func (h RestaurantsHandler) GetAllRestaurants(ctx echo.Context) error {
 			Slug:           rest.Slug,
 			Min_price:      rest.Min_price,
 			Avg_price:      rest.Avg_price,
-			Rating:         float64(int(rest.Rating*10)) / 10,
+			Rating:         float64(rest.Rating)/float64(rest.Count_rating),
 			TimeToDelivery: "25 - 30",
 		}
 		restaurantsD.Restaurants = append(restaurantsD.Restaurants, *item)
@@ -139,6 +139,104 @@ func (h RestaurantsHandler) GetDishesByRestaurants(ctx echo.Context) error {
 	}
 
 	result, _ := json.Marshal(restaurantD)
+	// fmt.Printf("json string: %s\n", string(result))
+	ctx.Response().Header().Add(echo.HeaderContentLength, strconv.Itoa(len(result)))
+	return ctx.JSONBlob(http.StatusOK, result)
+}
+
+func (h RestaurantsHandler) GetCommentsRestaurantByRestaurants(ctx echo.Context) error {
+	logger := middleware.GetLoggerFromCtx(ctx)
+	requestId := middleware.GetRequestIdFromCtx(ctx)
+
+	item := ctx.Param("id")
+	id, err := strconv.ParseInt(item, 16, 32)
+	commetsDataDelivery, err := h.Usecase.GetCommentsRestaurantByRestaurants(int(id))
+
+	if err != nil {
+		cause := servErrors.ErrorAs(err)
+		if cause != nil && cause.Code == servErrors.NO_SUCH_ENTITY_IN_DB {
+			return echo.NewHTTPError(http.StatusForbidden, httpErrDescr.NO_SUCH_USER)
+		}
+		logger.Error(requestId, err.Error())
+		return echo.NewHTTPError(http.StatusInternalServerError, httpErrDescr.SERVER_ERROR)
+	}
+
+	if commetsDataDelivery == nil {
+		logger.Error(requestId, "from user-usecase-get-user returned userData==nil and err==nil, unknown error")
+		return echo.NewHTTPError(http.StatusInternalServerError, httpErrDescr.SERVER_ERROR)
+	}
+
+	commentsD := &models.CommentsDataDelivery{}
+
+	for _, comment := range commetsDataDelivery.Comment {
+		item := &models.CommentDataDelivery{
+			Id:         comment.Id,
+			Restaurant: comment.Restaurant,
+			User_id: comment.User_id,
+			Comment_text: comment.Comment_text,
+			Comment_rating: comment.Comment_rating,
+		}
+		commentsD.Comment = append(commentsD.Comment, *item)
+	}
+
+	result, _ := json.Marshal(commentsD.Comment)
+	// fmt.Printf("json string: %s\n", string(result))
+	ctx.Response().Header().Add(echo.HeaderContentLength, strconv.Itoa(len(result)))
+	return ctx.JSONBlob(http.StatusOK, result)
+}
+
+func (h RestaurantsHandler) AddCommentsRestaurantByRestaurants(ctx echo.Context) error {
+	fmt.Println("че бля")
+	if middleware.GetUserFromCtx(ctx) != nil {
+		return echo.NewHTTPError(http.StatusConflict, httpErrDescr.ALREADY_AUTHORIZED)
+	}
+
+	logger := middleware.GetLoggerFromCtx(ctx)
+	requestId := middleware.GetRequestIdFromCtx(ctx)
+
+	var AddCommentRestaurantUseCaseReq models.AddCommentRestaurant
+	if err := ctx.Bind(&AddCommentRestaurantUseCaseReq); err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, httpErrDescr.BAD_REQUEST_BODY)
+	}
+	fmt.Println(AddCommentRestaurantUseCaseReq)
+
+	commetsDataDelivery, err := h.Usecase.AddCommentsRestaurantByRestaurants(&models.AddCommentRestaurantUseCase{
+		Restaurant: AddCommentRestaurantUseCaseReq.Restaurant,
+		User_id: AddCommentRestaurantUseCaseReq.User_id,
+		Comment_text: AddCommentRestaurantUseCaseReq.Comment_text,
+		Comment_rating: AddCommentRestaurantUseCaseReq.Comment_rating,
+	})
+	if err != nil {
+		cause := servErrors.ErrorAs(err)
+		if cause == nil {
+			logger.Error(requestId, err.Error())
+			return echo.NewHTTPError(http.StatusInternalServerError, httpErrDescr.SERVER_ERROR)
+		}
+		switch cause.Code {
+		case servErrors.WRONG_AUTH_CODE:
+			return echo.NewHTTPError(http.StatusForbidden, httpErrDescr.WRONG_AUTH_CODE)
+		case servErrors.CACH_MISS_CODE, servErrors.NO_SUCH_ENTITY_IN_DB:
+			return echo.NewHTTPError(http.StatusNotFound, httpErrDescr.NO_SUCH_CODE_INFO)
+		default:
+			logger.Error(requestId, err.Error())
+			return echo.NewHTTPError(http.StatusInternalServerError, httpErrDescr.SERVER_ERROR)
+		}
+	}
+
+	if commetsDataDelivery == nil {
+		logger.Error(requestId, "from user-usecase-register returned userData==nil and err==nil, unknown error")
+		return echo.NewHTTPError(http.StatusInternalServerError, httpErrDescr.SERVER_ERROR)
+	}
+
+	comment := &models.CommentDataDelivery{
+		Id:         commetsDataDelivery.Id,
+		Restaurant: commetsDataDelivery.Restaurant,
+		User_id: commetsDataDelivery.User_id,
+		Comment_text: commetsDataDelivery.Comment_text,
+		Comment_rating: commetsDataDelivery.Comment_rating,
+	}
+
+	result, _ := json.Marshal(comment)
 	// fmt.Printf("json string: %s\n", string(result))
 	ctx.Response().Header().Add(echo.HeaderContentLength, strconv.Itoa(len(result)))
 	return ctx.JSONBlob(http.StatusOK, result)
