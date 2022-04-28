@@ -45,7 +45,7 @@ func (u *RestaurantsUsecase) GetAllRestaurants() (*models.RestaurantsUsecase, er
 }
 
 func (u *RestaurantsUsecase) GetRestaurantBySluf(slug string) (*models.RestaurantUsecase, error) {
-	restaurantData, err := u.RestaurantsRepo.GetRestaurantsBySlug(slug)
+	restaurantData, err := u.RestaurantsRepo.GetRestaurantBySlug(slug)
 	if err != nil {
 		return nil, errors.Wrapf(err, "error getting restaurants")
 	}
@@ -118,21 +118,18 @@ func (u *RestaurantsUsecase) AddCommentsRestaurantByRestaurants(item *models.Add
 		Comment_rating: item.Comment_rating,
 	})
 	if err != nil {
-		fmt.Println("я упал1")
 		return nil, errors.Wrap(err, "error adding user to storage")
 	}
 	fmt.Println(comment)
 
-	restaurant, err := u.RestaurantsRepo.GetRestaurantsByID(comment.Restaurant)
+	restaurant, err := u.RestaurantsRepo.GetRestaurantByID(comment.Restaurant)
 	if err != nil {
-		fmt.Println("я упал2")
 		return nil, errors.Wrap(err, "error adding user to storage")
 	}
 	fmt.Println(restaurant)
 
 	restaurant, err = u.RestaurantsRepo.UpdateRestaurantRating(comment.Restaurant, comment.Comment_rating + restaurant.Rating, restaurant.Count_rating + 1)
 	if err != nil {
-		fmt.Println("я упал3")
 		return nil, errors.Wrap(err, "error adding user to storage")
 	}
 	fmt.Println(restaurant)
@@ -145,3 +142,4 @@ func (u *RestaurantsUsecase) AddCommentsRestaurantByRestaurants(item *models.Add
 		Comment_rating: comment.Comment_rating,
 	}, nil
 }
+

@@ -58,3 +58,12 @@ type AddCommentRestaurant struct {
 	Comment_text 	string	`json:"commentText"`
 	Comment_rating 	int		`json:"commentRating"`
 }
+
+type Comment struct {
+	Id 			int
+	Restaurant	int
+	User_id		int
+	Comment_text string
+	Comment_rating int
+}
+

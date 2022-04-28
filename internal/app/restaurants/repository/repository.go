@@ -28,7 +28,7 @@ func (r *RestaurantsRepo) GetRestaurants() ([]*models.RestaurantDataStorage, err
 	}
 }
 
-func (r *RestaurantsRepo) GetRestaurantsBySlug(slug string) (*models.RestaurantDataStorage, error) {
+func (r *RestaurantsRepo) GetRestaurantBySlug(slug string) (*models.RestaurantDataStorage, error) {
 	restaurant := &models.RestaurantDataStorage{}
 	err := r.DB.Get(restaurant, "SELECT id, name, city, address, image_path, slug, min_price, avg_price, rating, count_rating FROM restaurants WHERE slug = $1", slug)
 	switch err {
@@ -41,7 +41,7 @@ func (r *RestaurantsRepo) GetRestaurantsBySlug(slug string) (*models.RestaurantD
 	}
 }
 
-func (r *RestaurantsRepo) GetRestaurantsByID(id int) (*models.RestaurantDataStorage, error) {
+func (r *RestaurantsRepo) GetRestaurantByID(id int) (*models.RestaurantDataStorage, error) {
 	restaurant := &models.RestaurantDataStorage{}
 	err := r.DB.Get(restaurant, "SELECT id, name, city, address, image_path, slug, min_price, avg_price, rating, count_rating FROM restaurants WHERE id = $1", id)
 	switch err {
@@ -68,7 +68,7 @@ func (r *RestaurantsRepo) GetDishByRestaurants(id int) ([]*models.DishDataStorag
 }
 
 func (r *RestaurantsRepo) GetCommentsRestaurantByRestaurants(id int) ([]*models.CommentRestaurantDataStorage, error) {
-	comments := make([]*models.CommentRestaurantDataStorage, 0, 2)
+	comments := make([]*models.CommentRestaurantDataStorage, 0, 3)
 	err := r.DB.Select(&comments, `SELECT id, restaurant, user_id, comment_text, comment_rating FROM comment_restaurants WHERE restaurant = $1`, id)
 
 	switch err {

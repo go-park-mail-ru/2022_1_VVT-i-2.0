@@ -1,38 +1,6 @@
 package models
 
-type RestaurantUsecase struct {
-	Id            int     `json:"id"`
-	Name          string  `json:"restName"`
-	City          string  `json:"city"`
-	Address       string  `json:"address"`
-	Image_path    string  `json:"imgPath"`
-	Slug          string  `json:"slug"`
-	Min_price     int     `json:"minPrice"`
-	Avg_price     int     `json:"avgPrice"`
-	Rating        int 	  `json:"rating"`
-	TimeToDeliver string  `json:"timeToDeliver"`
-}
-
-type RestaurantsUsecase struct {
-	Restaurants []RestaurantUsecase
-}
-
-type DishUseCase struct {
-	Id 			int		`json:"id"`
-	Restaurant 	int		`json:"restaurany"`
-	Name 		string	`json:"productName"`
-	Description string	`json:"description"`
-	Image_path 	string	`json:"imgPath"`
-	Calories 	int		`json:"info"`
-	Price 		int		`json:"price"`
-	Weight		int		`json:"weight"`
-}
-
-type DishesUseCase struct {
-	Dishes []DishUseCase
-}
-
-type RestaurantDataStorage struct {
+type mockRestaurant struct {
 	Id   		int
 	Name 		string
 	City 		string
@@ -45,7 +13,7 @@ type RestaurantDataStorage struct {
 	Count_rating int
 }
 
-var Rest = &RestaurantDataStorage{
+var Rest = &mockRestaurant{
 	Id: 1,
 	Name: "Name",
 	City: "City",
@@ -58,11 +26,7 @@ var Rest = &RestaurantDataStorage{
 	Count_rating: 1,
 }
 
-type RestaurantsDataStorage struct {
-	Restaurants []RestaurantDataStorage
-}
-
-type DishDataStorage struct {
+type mockDish struct {
 	Id 			int
 	Restaurant 	int
 	Name 		string
@@ -73,7 +37,7 @@ type DishDataStorage struct {
 	Weight		int
 }
 
-var Dish = &DishDataStorage{
+var Dish = &mockDish{
 	Id: 1,
 	Restaurant: 1,
 	Name: "Name",
@@ -84,6 +48,19 @@ var Dish = &DishDataStorage{
 	Weight: 1,
 }
 
-type DishesDataStorage struct {
-	Dishes []DishDataStorage
+type mockCommentRestaurant struct {
+	Id 			int
+	Restaurant	int
+	User_id		int
+	Comment_text string
+	Comment_rating int
 }
+
+var CommentRestaurant = &mockCommentRestaurant{
+	Id: 1,
+	Restaurant: 1,
+	User_id: 1,
+	Comment_text: "comment",
+	Comment_rating: 5,
+}
+

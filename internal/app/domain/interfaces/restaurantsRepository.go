@@ -18,8 +18,17 @@ func (r *RestaurantsRepository) GetRestaurants() ([]*models.RestaurantDataStorag
 	return restaurantsDS, nil
 }
 
-func (r *RestaurantsRepository) GetRestaurantsBySlug(slug string) (*models.RestaurantDataStorage, error) {
+func (r *RestaurantsRepository) GetRestaurantBySlug(slug string) (*models.RestaurantDataStorage, error) {
 	if slug == "" {
+		return nil, nil
+	}
+	restaurant := &models.RestaurantDataStorage{}
+	restaurant = (*models.RestaurantDataStorage)(data.Rest)
+	return restaurant, nil
+}
+
+func (r *RestaurantsRepository) GetRestaurantByID(id int) (*models.RestaurantDataStorage, error) {
+	if id == 0 {
 		return nil, nil
 	}
 	restaurant := &models.RestaurantDataStorage{}
@@ -39,9 +48,27 @@ func (r *RestaurantsRepository) GetDishByRestaurants(id int) ([]*models.DishData
 }
 
 func (r *RestaurantsRepository) GetCommentsRestaurantByRestaurants(id int) ([]*models.CommentRestaurantDataStorage, error) {
-	panic("implement me")
+	commentRestaurant := &models.CommentRestaurantDataStorage{}
+	commentRestaurant = (*models.CommentRestaurantDataStorage)(data.CommentRestaurant)
+	commentRestaurantsDS := make([]*models.CommentRestaurantDataStorage, 0)
+	commentRestaurantsDS = append(commentRestaurantsDS, commentRestaurant)
+	return commentRestaurantsDS, nil
 }
 
 func (r *RestaurantsRepository) AddCommentsRestaurantByRestaurants(item *models.AddCommentRestaurantDataStorage) (*models.CommentRestaurantDataStorage, error) {
-	panic("implement me")
+	if item == nil {
+		return nil,nil
+	}
+	commentRestaurant := &models.CommentRestaurantDataStorage{}
+	commentRestaurant = (*models.CommentRestaurantDataStorage)(data.CommentRestaurant)
+	return commentRestaurant, nil
+}
+
+func (r *RestaurantsRepository) UpdateRestaurantRating(restId int, newRestRating int, countRating int) (*models.RestaurantDataStorage, error) {
+	if restId == 0 && newRestRating == 0 && countRating == 0 {
+		return nil, nil
+	}
+	restaurant := &models.RestaurantDataStorage{}
+	restaurant = (*models.RestaurantDataStorage)(data.Rest)
+	return restaurant, nil
 }

@@ -12,7 +12,7 @@ import (
 	sqlmock "gopkg.in/DATA-DOG/go-sqlmock.v1"
 )
 
-func TestGetRestaurants1(t *testing.T) {
+func TestRestaurantsRepo_GetRestaurants1(t *testing.T) {
 	t.Parallel()
 
 	db, mock, err := sqlmock.New()
@@ -97,7 +97,7 @@ func TestGetRestaurants1(t *testing.T) {
 	})
 }
 
-func TestGetRestaurantsBySlug1(t *testing.T) {
+func TestRestaurantsRepo_GetRestaurantsBySlug1(t *testing.T) {
 	t.Parallel()
 
 	db, mock, err := sqlmock.New()
@@ -188,7 +188,88 @@ func TestGetRestaurantsBySlug1(t *testing.T) {
 	})
 }
 
-func TestGetDishByRestaurants1(t *testing.T) {
+func TestRestaurantsRepo_GetRestaurantsByID1(t *testing.T) {
+	t.Parallel()
+
+	db, mock, err := sqlmock.New()
+	if err != nil {
+		t.Fatalf("cant create mock: %s", err)
+	}
+	defer db.Close()
+
+	sqlxDB := sqlx.NewDb(db, "sqlmock")
+
+	repo := RestaurantsRepo{
+		DB: sqlxDB,
+	}
+
+	rows := sqlmock.
+		NewRows([]string{"id", "name", "city", "address", "image_path", "slug", "min_price", "avg_price", "rating", "count_rating"})
+	expect := []*models.RestaurantDataStorage{
+		{1, "name", "city", "address", "image_path", "slug", 101, 101, 3, 1},
+	}
+	for _, item := range expect {
+		rows = rows.AddRow(item.Id, item.Name, item.City, item.Address, item.Image_path, item.Slug, item.Min_price, item.Avg_price, item.Rating, item.Count_rating)
+	}
+
+	t.Run("good query", func(t *testing.T) {
+		// good query
+		mock.
+			ExpectQuery("SELECT id, name, city, address, image_path, slug, min_price, avg_price, rating, count_rating FROM restaurants WHERE").
+			WithArgs(1).
+			WillReturnRows(rows)
+		item, err := repo.GetRestaurantsByID(1)
+		if err != nil {
+			t.Errorf("unexpected err: %s", err)
+			return
+		}
+		if err := mock.ExpectationsWereMet(); err != nil {
+			t.Errorf("there were unfulfilled expectations: %s", err)
+			return
+		}
+		if !reflect.DeepEqual(item, expect[0]) {
+			t.Errorf("results not match, want %v, have %v", expect[0], item)
+			return
+		}
+	})
+	t.Run("query error", func(t *testing.T) {
+		// query error
+		mock.
+			ExpectQuery("SELECT id, name, city, address, image_path, slug, min_price, avg_price, rating, count_rating FROM restaurants WHERE").
+			WithArgs("slug").
+			WillReturnError(fmt.Errorf("db_error"))
+		_, err = repo.GetRestaurantsBySlug("slug")
+		if err := mock.ExpectationsWereMet(); err != nil {
+			t.Errorf("there were unfulfilled expectations: %s", err)
+			return
+		}
+		if err == nil {
+			t.Errorf("expected error, got nil")
+			return
+		}
+	})
+	t.Run("row scan error", func(t *testing.T) {
+		// row scan error
+		rows = sqlmock.NewRows([]string{"id", "name"}).
+			AddRow(1, "name")
+		mock.
+			ExpectQuery("SELECT id, name, city, address, image_path, slug, min_price, avg_price, rating, count_rating FROM restaurants WHERE").
+			WithArgs("slug").
+			WillReturnError(sql.ErrNoRows)
+
+		_, err = repo.GetRestaurantsBySlug("slug")
+		if err := mock.ExpectationsWereMet(); err != nil {
+			t.Errorf("there were unfulfilled expectations: %s", err)
+			return
+		}
+		if err == nil {
+			t.Errorf("expected error, got nil")
+			return
+		}
+	})
+}
+
+func TestRestaurantsRepo_GetDishByRestaurants1(t *testing.T) {
 	t.Parallel()
 
 	db, mock, err := sqlmock.New()
@@ -277,7 +358,7 @@ func TestGetDishByRestaurants1(t *testing.T) {
 	})
 }
 
-func TestGetCommentsRestaurantByRestaurants1(t *testing.T) {
+func TestRestaurantsRepo_GetCommentsRestaurantByRestaurants1(t *testing.T) {
 	t.Parallel()
 
 	db, mock, err := sqlmock.New()
@@ -306,7 +387,7 @@ func TestGetCommentsRestaurantByRestaurants1(t *testing.T) {
 	t.Run("good query", func(t *testing.T) {
 		// good query
 		mock.
-			ExpectQuery(`SELECT id, restaurant, user_id, comment_text, comment_rating FROM comment_restaurants WHERE id`).
+			ExpectQuery(`SELECT`).
 			WithArgs(1).
 			WillReturnRows(rows)
 		item, err := repo.GetCommentsRestaurantByRestaurants(1)
@@ -326,7 +407,7 @@ func TestGetCommentsRestaurantByRestaurants1(t *testing.T) {
 	t.Run("query error", func(t *testing.T) {
 		// query error
 		mock.
-			ExpectQuery(`SELECT id, restaurant, user_id, comment_text, comment_rating FROM comment_restaurants WHERE id`).
+			ExpectQuery(`SELECT`).
 			WithArgs(1).
 			WillReturnError(fmt.Errorf("db_error"))
 		_, err = repo.GetCommentsRestaurantByRestaurants(1)
@@ -344,7 +425,7 @@ func TestGetCommentsRestaurantByRestaurants1(t *testing.T) {
 		rows = sqlmock.NewRows([]string{"id", "name"}).
 			AddRow(1, "name")
 		mock.
-			ExpectQuery(`SELECT id, restaurant, user_id, comment_text, comment_rating FROM comment_restaurants WHERE id`).
+			ExpectQuery(`SELECT`).
 			WithArgs(1).
 			WillReturnError(sql.ErrNoRows)
 		_, err = repo.GetCommentsRestaurantByRestaurants(1)
@@ -359,7 +440,7 @@ func TestGetCommentsRestaurantByRestaurants1(t *testing.T) {
 	})
 }
 
-func TestAddCommentsRestaurantByRestaurants1(t *testing.T) {
+func TestRestaurantsRepo_AddCommentsRestaurantByRestaurants1(t *testing.T) {
 	t.Parallel()
 
 	db, mock, err := sqlmock.New()
@@ -436,6 +517,86 @@ func TestAddCommentsRestaurantByRestaurants1(t *testing.T) {
 			WithArgs(testComment.Restaurant, testComment.User_id, testComment.Comment_text, testComment.Comment_rating).
 			WillReturnError(fmt.Errorf("db_error"))
 		_, err = repo.AddCommentsRestaurantByRestaurants(testComment)
+		if err := mock.ExpectationsWereMet(); err != nil {
+			t.Errorf("there were unfulfilled expectations: %s", err)
+			return
+		}
+		if err == nil {
+			t.Errorf("expected error, got nil")
+			return
+		}
+	})
+}
+
+func TestRestaurantsRepo_UpdateRestaurantRating1(t *testing.T) {
+	t.Parallel()
+
+	db, mock, err := sqlmock.New()
+	if err != nil {
+		t.Fatalf("cant create mock: %s", err)
+	}
+	defer db.Close()
+
+	sqlxDB := sqlx.NewDb(db, "sqlmock")
+
+	repo := RestaurantsRepo{
+		DB: sqlxDB,
+	}
+
+	rows := sqlmock.
+		NewRows([]string{"id", "name", "city", "address", "image_path", "slug", "min_price", "avg_price", "rating", "count_rating"})
+	expect := []*models.RestaurantDataStorage{
+		{1, "name", "city", "address", "image_path", "slug", 101, 101, 10, 2},
+	}
+	for _, item := range expect {
+		rows = rows.AddRow(item.Id, item.Name, item.City, item.Address, item.Image_path, item.Slug, item.Min_price, item.Avg_price, item.Rating, item.Count_rating)
+	}
+
+	t.Run("good query", func(t *testing.T) {
+		// good query
+		mock.
+			ExpectQuery(`UPDATE`).
+			WithArgs(10, 2, 1).
+			WillReturnRows(rows)
+		item, err := repo.UpdateRestaurantRating(1, 10, 2)
+		if err != nil {
+			t.Errorf("unexpected err: %s", err)
+			return
+		}
+		if err := mock.ExpectationsWereMet(); err != nil {
+			t.Errorf("there were unfulfilled expectations: %s", err)
+			return
+		}
+		if !reflect.DeepEqual(item, expect[0]) {
+			t.Errorf("results not match, want %v, have %v", expect[0], item)
+			return
+		}
+	})
+	t.Run("query error", func(t *testing.T) {
+		// query error
+		mock.
+			ExpectQuery(`UPDATE`).
+			WithArgs(10, 2, 1).
+			WillReturnError(fmt.Errorf("db_error"))
+		_, err = repo.UpdateRestaurantRating(1, 10, 2)
+		if err := mock.ExpectationsWereMet(); err != nil {
+			t.Errorf("there were unfulfilled expectations: %s", err)
+			return
+		}
+		if err == nil {
+			t.Errorf("expected error, got nil")
+			return
+		}
+	})
+	t.Run("row scan error", func(t *testing.T) {
+		// row scan error
+		rows = sqlmock.NewRows([]string{"id", "name"}).
+			AddRow(1, "name")
+		mock.
+			ExpectQuery(`UPDATE`).
+			WithArgs(10, 2, 1).
+			WillReturnError(sql.ErrNoRows)
+		_, err = repo.UpdateRestaurantRating(1, 10, 2)
 		if err := mock.ExpectationsWereMet(); err != nil {
 			t.Errorf("there were unfulfilled expectations: %s", err)
 			return
