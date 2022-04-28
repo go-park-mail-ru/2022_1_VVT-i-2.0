@@ -19,14 +19,8 @@ func TestRestaurantsHandler_GetAllRestaurants(t *testing.T) {
 
 	staticManager := localStaticManager.NewLocalFileManager(config.ServConfig.StaticUrl, config.ServConfig.StaticPath)
 
-	//mockRestaurant := &models.RestaurantUsecase{}
-	//err = faker.FakeData(&mockRestaurant)
-	//assert.NoError(t, err)
-	//mockRestaurants := &models.RestaurantsUsecase{}
-	//mockRestaurants.Restaurants = append(mockRestaurants.Restaurants, *mockRestaurant)
 
 	mockUCase := new(interfaces.RestaurantsUsecase)
-	//mockUCase.On("GetAllRestaurants", mock.Anything).Return(mockRestaurants)
 
 	e := echo.New()
 
@@ -52,20 +46,6 @@ func TestRestaurantsHandler_GetDishesByRestaurants(t *testing.T) {
 
 	staticManager := localStaticManager.NewLocalFileManager(config.ServConfig.StaticUrl, config.ServConfig.StaticPath)
 
-	//mockRestaurant := &models.RestaurantUsecase{}
-	//err = faker.FakeData(&mockRestaurant)
-	//assert.NoError(t, err)
-	//
-	//mockUCase := new(interfaces.RestaurantsUsecase)
-	//mockUCase.On("GetRestaurantBySluf", mock.Anything, "slug").Return(mockRestaurant)
-	//
-	//mockDish := &models.DishUseCase{}
-	//err = faker.FakeData(&mockDish)
-	//assert.NoError(t, err)
-	//mockDishes := &models.DishesUseCase{}
-	//mockDishes.Dishes = append(mockDishes.Dishes, *mockDish)
-	//
-	//mockUCase.On("GetDishByRestaurant", mock.Anything, 1).Return(mockDishes)
 	mockUCase := new(interfaces.RestaurantsUsecase)
 	e := echo.New()
 	req, err := http.NewRequest(echo.GET, "restaurant/" + slug, strings.NewReader(""))
@@ -80,5 +60,52 @@ func TestRestaurantsHandler_GetDishesByRestaurants(t *testing.T) {
 	}
 
 	err = handler.GetDishesByRestaurants(c)
+	require.NoError(t, err)
+}
+
+func TestNewRestaurantsHandler_GetCommentsRestaurantByRestaurants(t *testing.T) {
+	id := "1"
+
+	config := conf.NewConfig()
+	err := conf.ReadConfigFile("../config/serv.toml", config)
+
+	staticManager := localStaticManager.NewLocalFileManager(config.ServConfig.StaticUrl, config.ServConfig.StaticPath)
+
+	mockUCase := new(interfaces.RestaurantsUsecase)
+	e := echo.New()
+	req, err := http.NewRequest(echo.GET, "comments/" + id, strings.NewReader(""))
+	assert.NoError(t, err)
+
+	rec := httptest.NewRecorder()
+	c := e.NewContext(req, rec)
+	c.Set("id", id)
+	handler := RestaurantsHandler{
+		Usecase:       mockUCase,
+		StaticManager: staticManager,
+	}
+
+	err = handler.GetCommentsRestaurantByRestaurants(c)
+	require.NoError(t, err)
+}
+
+func TestNewRestaurantsHandler_AddCommentsRestaurantByRestaurants(t *testing.T) {
+	config := conf.NewConfig()
+	err := conf.ReadConfigFile("../config/serv.toml", config)
+
+	staticManager := localStaticManager.NewLocalFileManager(config.ServConfig.StaticUrl, config.ServConfig.StaticPath)
+
+	mockUCase := new(interfaces.RestaurantsUsecase)
+	e := echo.New()
+	req, err := http.NewRequest(echo.GET, "comment/", strings.NewReader(""))
+	assert.NoError(t, err)
+
+	rec := httptest.NewRecorder()
+	c := e.NewContext(req, rec)
+	handler := RestaurantsHandler{
+		Usecase:       mockUCase,
+		StaticManager: staticManager,
+	}
+
+	err = handler.GetCommentsRestaurantByRestaurants(c)
 	require.NoError(t, err)
 }

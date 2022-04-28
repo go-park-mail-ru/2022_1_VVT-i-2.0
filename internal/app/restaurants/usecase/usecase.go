@@ -1,7 +1,6 @@
 package usecase
 
 import (
-	"fmt"
 	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/models"
 	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/restaurants"
 	"github.com/pkg/errors"
@@ -120,19 +119,16 @@ func (u *RestaurantsUsecase) AddCommentsRestaurantByRestaurants(item *models.Add
 	if err != nil {
 		return nil, errors.Wrap(err, "error adding user to storage")
 	}
-	fmt.Println(comment)
 
 	restaurant, err := u.RestaurantsRepo.GetRestaurantByID(comment.Restaurant)
 	if err != nil {
 		return nil, errors.Wrap(err, "error adding user to storage")
 	}
-	fmt.Println(restaurant)
 
 	restaurant, err = u.RestaurantsRepo.UpdateRestaurantRating(comment.Restaurant, comment.Comment_rating + restaurant.Rating, restaurant.Count_rating + 1)
 	if err != nil {
 		return nil, errors.Wrap(err, "error adding user to storage")
 	}
-	fmt.Println(restaurant)
 
 	return &models.CommentRestaurantUseCase{
 		Id: comment.Id,

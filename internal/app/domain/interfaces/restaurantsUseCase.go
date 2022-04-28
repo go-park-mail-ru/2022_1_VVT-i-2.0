@@ -49,7 +49,17 @@ func (a *RestaurantsUsecase) GetDishByRestaurant(id int) (*models.DishesUseCase,
 }
 
 func (a *RestaurantsUsecase) GetCommentsRestaurantByRestaurants(id int) (*models.CommentsRestaurantUseCase, error) {
-	panic("implement me")
+	if id != 0 {
+		return nil, nil
+	}
+	mockCommentRestaurant := &models.CommentRestaurantUseCase{}
+	err := faker.FakeData(&mockCommentRestaurant)
+	if err != nil {
+		return nil, errors.Wrap(err, "error")
+	}
+	mockmockCommentRestaurants := &models.CommentsRestaurantUseCase{}
+	mockmockCommentRestaurants.Comment = append(mockmockCommentRestaurants.Comment, *mockCommentRestaurant)
+	return mockmockCommentRestaurants, nil
 }
 
 func (a *RestaurantsUsecase) AddCommentsRestaurantByRestaurants(item *models.AddCommentRestaurantUseCase) (*models.CommentRestaurantUseCase, error) {

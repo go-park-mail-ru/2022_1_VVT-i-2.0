@@ -117,7 +117,7 @@ func TestRestaurantsRepo_GetRestaurantsBySlug(t *testing.T) {
 		ExpectQuery("SELECT id, name, city, address, image_path, slug, min_price, avg_price, rating, count_rating FROM restaurants WHERE").
 		WithArgs("slug").
 		WillReturnRows(rows)
-	item, err := repo.GetRestaurantsBySlug("slug")
+	item, err := repo.GetRestaurantBySlug("slug")
 	if err != nil {
 		t.Errorf("unexpected err: %s", err)
 		return
@@ -136,7 +136,7 @@ func TestRestaurantsRepo_GetRestaurantsBySlug(t *testing.T) {
 		ExpectQuery("SELECT id, name, city, address, image_path, slug, min_price, avg_price, rating, count_rating FROM restaurants WHERE").
 		WithArgs("slug").
 		WillReturnError(fmt.Errorf("db_error"))
-	_, err = repo.GetRestaurantsBySlug("slug")
+	_, err = repo.GetRestaurantBySlug("slug")
 	if err := mock.ExpectationsWereMet(); err != nil {
 		t.Errorf("there were unfulfilled expectations: %s", err)
 		return
@@ -155,7 +155,7 @@ func TestRestaurantsRepo_GetRestaurantsBySlug(t *testing.T) {
 		WithArgs("slug").
 		WillReturnError(sql.ErrNoRows)
 
-	_, err = repo.GetRestaurantsBySlug("slug")
+	_, err = repo.GetRestaurantBySlug("slug")
 	if err := mock.ExpectationsWereMet(); err != nil {
 		t.Errorf("there were unfulfilled expectations: %s", err)
 		return
@@ -193,7 +193,7 @@ func TestRestaurantsRepo_GetRestaurantsByID(t *testing.T) {
 		ExpectQuery("SELECT id, name, city, address, image_path, slug, min_price, avg_price, rating, count_rating FROM restaurants WHERE").
 		WithArgs(1).
 		WillReturnRows(rows)
-	item, err := repo.GetRestaurantsByID(1)
+	item, err := repo.GetRestaurantByID(1)
 	if err != nil {
 		t.Errorf("unexpected err: %s", err)
 		return
@@ -212,7 +212,7 @@ func TestRestaurantsRepo_GetRestaurantsByID(t *testing.T) {
 		ExpectQuery("SELECT id, name, city, address, image_path, slug, min_price, avg_price, rating, count_rating FROM restaurants WHERE").
 		WithArgs("slug").
 		WillReturnError(fmt.Errorf("db_error"))
-	_, err = repo.GetRestaurantsBySlug("slug")
+	_, err = repo.GetRestaurantBySlug("slug")
 	if err := mock.ExpectationsWereMet(); err != nil {
 		t.Errorf("there were unfulfilled expectations: %s", err)
 		return
@@ -230,7 +230,7 @@ func TestRestaurantsRepo_GetRestaurantsByID(t *testing.T) {
 		WithArgs("slug").
 		WillReturnError(sql.ErrNoRows)
 
-	_, err = repo.GetRestaurantsBySlug("slug")
+	_, err = repo.GetRestaurantBySlug("slug")
 	if err := mock.ExpectationsWereMet(); err != nil {
 		t.Errorf("there were unfulfilled expectations: %s", err)
 		return

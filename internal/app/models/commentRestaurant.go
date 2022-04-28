@@ -28,12 +28,20 @@ type AddCommentsRestaurantDataStorage struct {
 
 type CommentRestaurantId int64
 
+//type CommentRestaurantUseCase struct {
+//	Id 			int
+//	Restaurant	int
+//	User_id		int
+//	Comment_text string
+//	Comment_rating int
+//}
+
 type CommentRestaurantUseCase struct {
-	Id 			int
-	Restaurant	int
-	User_id		int
-	Comment_text string
-	Comment_rating int
+	Id 			int `json:"id"`
+	Restaurant	int `json:"restaurants"`
+	User_id		int `json:"userId"`
+	Comment_text string `json:"commentText"`
+	Comment_rating int `json:"commentRating"`
 }
 
 type CommentsRestaurantUseCase struct {
