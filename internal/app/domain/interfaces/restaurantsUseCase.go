@@ -1,9 +1,8 @@
 package interfaces
 
 import (
-	"github.com/bxcodec/faker"
+	data "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/domain/models"
 	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/models"
-	"github.com/pkg/errors"
 	"github.com/stretchr/testify/mock"
 )
 
@@ -13,10 +12,7 @@ type RestaurantsUsecase struct {
 
 func (a *RestaurantsUsecase) GetAllRestaurants() (*models.RestaurantsUsecase, error) {
 	mockRestaurant := &models.RestaurantUsecase{}
-	err := faker.FakeData(&mockRestaurant)
-	if err != nil {
-		return nil, errors.Wrap(err, "error")
-	}
+	mockRestaurant = (*models.RestaurantUsecase)(data.Rest)
 	mockRestaurants := &models.RestaurantsUsecase{}
 	mockRestaurants.Restaurants = append(mockRestaurants.Restaurants, *mockRestaurant)
 	return mockRestaurants, nil
@@ -27,10 +23,7 @@ func (a *RestaurantsUsecase) GetRestaurantBySluf(slug string) (*models.Restauran
 		return nil, nil
 	}
 	mockRestaurant := &models.RestaurantUsecase{}
-	err := faker.FakeData(&mockRestaurant)
-	if err != nil {
-		return nil, errors.Wrap(err, "error")
-	}
+	mockRestaurant = (*models.RestaurantUsecase)(data.Rest)
 	return mockRestaurant, nil
 }
 
@@ -39,10 +32,7 @@ func (a *RestaurantsUsecase) GetDishByRestaurant(id int) (*models.DishesUseCase,
 		return nil, nil
 	}
 	mockDish := &models.DishUseCase{}
-	err := faker.FakeData(&mockDish)
-	if err != nil {
-		return nil, errors.Wrap(err, "error")
-	}
+	mockDish = (*models.DishUseCase)(data.Dish)
 	mockDishes := &models.DishesUseCase{}
 	mockDishes.Dishes = append(mockDishes.Dishes, *mockDish)
 	return mockDishes, nil
@@ -53,15 +43,17 @@ func (a *RestaurantsUsecase) GetCommentsRestaurantByRestaurants(id int) (*models
 		return nil, nil
 	}
 	mockCommentRestaurant := &models.CommentRestaurantUseCase{}
-	err := faker.FakeData(&mockCommentRestaurant)
-	if err != nil {
-		return nil, errors.Wrap(err, "error")
-	}
+	mockCommentRestaurant = (*models.CommentRestaurantUseCase)(data.CommentRestaurant)
 	mockmockCommentRestaurants := &models.CommentsRestaurantUseCase{}
 	mockmockCommentRestaurants.Comment = append(mockmockCommentRestaurants.Comment, *mockCommentRestaurant)
 	return mockmockCommentRestaurants, nil
 }
 
 func (a *RestaurantsUsecase) AddCommentsRestaurantByRestaurants(item *models.AddCommentRestaurantUseCase) (*models.CommentRestaurantUseCase, error) {
-	panic("implement me")
+	if item == nil {
+		return nil, nil
+	}
+	mockCommentRestaurant := &models.CommentRestaurantUseCase{}
+	mockCommentRestaurant = (*models.CommentRestaurantUseCase)(data.CommentRestaurant)
+	return mockCommentRestaurant, nil
 }

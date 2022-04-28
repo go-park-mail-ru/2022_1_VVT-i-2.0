@@ -2,7 +2,6 @@ package restaurantsHandler
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"strconv"
 
@@ -67,7 +66,6 @@ func (h RestaurantsHandler) GetAllRestaurants(ctx echo.Context) error {
 	}
 
 	result, _ := json.Marshal(restaurantsD.Restaurants)
-	// fmt.Printf("json string: %s\n", string(result))
 	ctx.Response().Header().Add(echo.HeaderContentLength, strconv.Itoa(len(result)))
 	return ctx.JSONBlob(http.StatusOK, result)
 }
@@ -139,7 +137,6 @@ func (h RestaurantsHandler) GetDishesByRestaurants(ctx echo.Context) error {
 	}
 
 	result, _ := json.Marshal(restaurantD)
-	// fmt.Printf("json string: %s\n", string(result))
 	ctx.Response().Header().Add(echo.HeaderContentLength, strconv.Itoa(len(result)))
 	return ctx.JSONBlob(http.StatusOK, result)
 }
@@ -148,8 +145,9 @@ func (h RestaurantsHandler) GetCommentsRestaurantByRestaurants(ctx echo.Context)
 	logger := middleware.GetLoggerFromCtx(ctx)
 	requestId := middleware.GetRequestIdFromCtx(ctx)
 
-	item := ctx.Param("id")
-	id, err := strconv.ParseInt(item, 16, 32)
+	//item := ctx.Param("id")
+	//id, err := strconv.ParseInt(item, 16, 32)
+	id, err := strconv.Atoi(ctx.Param("id"))
 	commetsDataDelivery, err := h.Usecase.GetCommentsRestaurantByRestaurants(int(id))
 
 	if err != nil {
@@ -180,13 +178,11 @@ func (h RestaurantsHandler) GetCommentsRestaurantByRestaurants(ctx echo.Context)
 	}
 
 	result, _ := json.Marshal(commentsD.Comment)
-	// fmt.Printf("json string: %s\n", string(result))
 	ctx.Response().Header().Add(echo.HeaderContentLength, strconv.Itoa(len(result)))
 	return ctx.JSONBlob(http.StatusOK, result)
 }
 
 func (h RestaurantsHandler) AddCommentsRestaurantByRestaurants(ctx echo.Context) error {
-	fmt.Println("че бля")
 	if middleware.GetUserFromCtx(ctx) != nil {
 		return echo.NewHTTPError(http.StatusConflict, httpErrDescr.ALREADY_AUTHORIZED)
 	}
@@ -198,7 +194,6 @@ func (h RestaurantsHandler) AddCommentsRestaurantByRestaurants(ctx echo.Context)
 	if err := ctx.Bind(&AddCommentRestaurantUseCaseReq); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, httpErrDescr.BAD_REQUEST_BODY)
 	}
-	fmt.Println(AddCommentRestaurantUseCaseReq)
 
 	commetsDataDelivery, err := h.Usecase.AddCommentsRestaurantByRestaurants(&models.AddCommentRestaurantUseCase{
 		Restaurant: AddCommentRestaurantUseCaseReq.Restaurant,
@@ -237,7 +232,6 @@ func (h RestaurantsHandler) AddCommentsRestaurantByRestaurants(ctx echo.Context)
 	}
 
 	result, _ := json.Marshal(comment)
-	// fmt.Printf("json string: %s\n", string(result))
 	ctx.Response().Header().Add(echo.HeaderContentLength, strconv.Itoa(len(result)))
 	return ctx.JSONBlob(http.StatusOK, result)
 }
