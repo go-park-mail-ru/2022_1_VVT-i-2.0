@@ -26,6 +26,14 @@ func NewRestaurantsHandler(usecase restaurants.Usecase, staticManager staticMana
 	}
 }
 
+// GetAllRestaurants Restaurants godoc
+// @Summary      List restaurants
+// @Description  Get restaurants
+// @Tags         Restaurants
+// @Accept       json
+// @Produce      json
+// @Success      200  {object} []models.RestaurantJsonForKirill
+// @Router       /restaurants [get]
 func (h RestaurantsHandler) GetAllRestaurants(ctx echo.Context) error {
 	logger := middleware.GetLoggerFromCtx(ctx)
 	requestId := middleware.GetRequestIdFromCtx(ctx)
@@ -54,8 +62,8 @@ func (h RestaurantsHandler) GetAllRestaurants(ctx echo.Context) error {
 			Name:       rest.Name,
 			City:       rest.City,
 			Address:    rest.Address,
-			//Image_path: h.StaticManager.GetRestaurantUrl(rest.Image_path),
-			Image_path:     "http://127.0.0.1:8080/static/static/" + rest.Image_path,
+			Image_path: h.StaticManager.GetRestaurantUrl(rest.Image_path),
+			//Image_path:     "http://127.0.0.1:8080/restaurants/restaurants/" + rest.Image_path,
 			Slug:           rest.Slug,
 			Min_price:      rest.Min_price,
 			Avg_price:      rest.Avg_price,
@@ -70,6 +78,14 @@ func (h RestaurantsHandler) GetAllRestaurants(ctx echo.Context) error {
 	return ctx.JSONBlob(http.StatusOK, result)
 }
 
+// GetDishesByRestaurants Get dishes by restaurant godoc
+// @Summary      List dishes by restaurant
+// @Description  get dishes by restaurant
+// @Tags         Restaurants
+// @Accept       json
+// @Produce      json
+// @Success      200  {object}   models.RestaurantsDishesJsonForKirill
+// @Router       /restaurant/:slug [get]
 func (h RestaurantsHandler) GetDishesByRestaurants(ctx echo.Context) error {
 	logger := middleware.GetLoggerFromCtx(ctx)
 	requestId := middleware.GetRequestIdFromCtx(ctx)
@@ -141,6 +157,14 @@ func (h RestaurantsHandler) GetDishesByRestaurants(ctx echo.Context) error {
 	return ctx.JSONBlob(http.StatusOK, result)
 }
 
+// GetCommentsRestaurantByRestaurants Get comments by restaurant godoc
+// @Summary      List comments by restaurant
+// @Description  get comments by restaurant
+// @Tags         Comments
+// @Accept       json
+// @Produce      json
+// @Success      200  {object}   models.CommentsDataDelivery
+// @Router       /comments/:id [get]
 func (h RestaurantsHandler) GetCommentsRestaurantByRestaurants(ctx echo.Context) error {
 	logger := middleware.GetLoggerFromCtx(ctx)
 	requestId := middleware.GetRequestIdFromCtx(ctx)
@@ -182,6 +206,14 @@ func (h RestaurantsHandler) GetCommentsRestaurantByRestaurants(ctx echo.Context)
 	return ctx.JSONBlob(http.StatusOK, result)
 }
 
+// AddCommentsRestaurantByRestaurants Add comments by restaurant godoc
+// @Summary      Add comments by restaurant
+// @Description  Add comments by restaurant
+// @Tags         Comments
+// @Accept       json
+// @Produce      json
+// @Success      200  {object}   models.CommentDataDelivery
+// @Router       /comment [post]
 func (h RestaurantsHandler) AddCommentsRestaurantByRestaurants(ctx echo.Context) error {
 	if middleware.GetUserFromCtx(ctx) != nil {
 		return echo.NewHTTPError(http.StatusConflict, httpErrDescr.ALREADY_AUTHORIZED)
