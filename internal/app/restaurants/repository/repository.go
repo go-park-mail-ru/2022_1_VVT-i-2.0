@@ -2,6 +2,7 @@ package repository
 
 import (
 	"database/sql"
+	"fmt"
 	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/models"
 	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/tools/servErrors"
 	"github.com/jmoiron/sqlx"
@@ -22,8 +23,10 @@ func (r *RestaurantsRepo) GetRestaurants() ([]*models.RestaurantDataStorage, err
 	case nil:
 		return restaurantsDS, nil
 	case sql.ErrNoRows:
+		fmt.Println("1_1_1")
 		return nil, servErrors.NewError(servErrors.NO_SUCH_ENTITY_IN_DB, err.Error())
 	default:
+		fmt.Println("1_1_2")
 		return nil, servErrors.NewError(servErrors.DB_ERROR, err.Error())
 	}
 }

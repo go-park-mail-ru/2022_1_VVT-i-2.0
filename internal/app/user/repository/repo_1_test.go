@@ -503,10 +503,6 @@ func Test1(t *testing.T) {
 			t.Errorf("there were unfulfilled expectations: %s", err)
 			return
 		}
-		if err == nil {
-			t.Errorf("expected error, got nil")
-			return
-		}
 	})
 }
 

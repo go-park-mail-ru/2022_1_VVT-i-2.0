@@ -2,6 +2,7 @@ package restaurantsHandler
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"strconv"
 
@@ -41,6 +42,7 @@ func (h RestaurantsHandler) GetAllRestaurants(ctx echo.Context) error {
 	restaurantsDataDelivery, err := h.Usecase.GetAllRestaurants()
 
 	if err != nil {
+		fmt.Println("1")
 		cause := servErrors.ErrorAs(err)
 		if cause != nil && cause.Code == servErrors.NO_SUCH_ENTITY_IN_DB {
 			return echo.NewHTTPError(http.StatusForbidden, httpErrDescr.NO_SUCH_USER)
@@ -50,6 +52,7 @@ func (h RestaurantsHandler) GetAllRestaurants(ctx echo.Context) error {
 	}
 
 	if restaurantsDataDelivery == nil {
+		fmt.Println("2")
 		logger.Error(requestId, "from user-usecase-get-user returned userData==nil and err==nil, unknown error")
 		return echo.NewHTTPError(http.StatusInternalServerError, httpErrDescr.SERVER_ERROR)
 	}
@@ -63,7 +66,6 @@ func (h RestaurantsHandler) GetAllRestaurants(ctx echo.Context) error {
 			City:       rest.City,
 			Address:    rest.Address,
 			Image_path: h.StaticManager.GetRestaurantUrl(rest.Image_path),
-			//Image_path:     "http://127.0.0.1:8080/restaurants/restaurants/" + rest.Image_path,
 			Slug:           rest.Slug,
 			Min_price:      rest.Min_price,
 			Avg_price:      rest.Avg_price,

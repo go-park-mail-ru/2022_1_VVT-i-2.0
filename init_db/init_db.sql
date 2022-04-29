@@ -16,7 +16,8 @@ create table restaurants
     slug varchar(20) UNIQUE,
     min_price int,
     avg_price int,
-    rating float4 check(1.0 <= rating and rating <= 5.0)
+    rating int,
+    count_rating int
 );
 
 create table dish
@@ -144071,28 +144072,28 @@ CREATE TABLE orders (
 CREATE TRIGGER cost_and_restaurant_id BEFORE UPDATE OR INSERT ON orders
  FOR EACH ROW EXECUTE FUNCTION total_cost();
 
-INSERT INTO restaurants(name, city, address, image_path, slug, min_price, avg_price, rating) VALUES
-('Шоколадница','Москва','Братиславская 3', 'shokoladiza.png', 'shokoladiza', 500, 650, 4.8),
-('Smekalca FooD','Москва','Братиславская 3', 'smekalca_food.png', 'smekalca_food', 500, 570, 4.7),
-('Subway','Москва','Братиславская 3', 'subway.png', 'subway', 500, 1050, 4.6),
-('Шаурма','Москва','Братиславская 3', 'shaurma.png', 'shaurma', 500, 350, 4.5),
-('Макдональдс','Москва','Братиславская 3', 'mac.png', 'mac', 500, 650, 4.4),
-('KFC','Москва','Братиславская 3', 'KFC.png', 'KFC', 500, 550, 4.3),
-('Burger King','Москва','Братиславская 3', 'BK.png', 'BK', 500, 770, 4.2),
-('Теремок','Москва','Братиславская 3', 'terem.png', 'terem', 500, 665, 5.0),
-('Zotmann Pizza','Москва','Братиславская 3', 'zotman.png', 'zotman', 500, 2340, 4.1),
-('Tuk Tuk','Москва','Братиславская 3', 'tuktuk.png', 'tuktuk', 500, 1000, 4.0),
-('BO','Москва','Братиславская 3', 'Bo.png', 'Bo', 500, 550, 4.8),
-('Крошка картошка','Москва','Братиславская 3', 'paple.png', 'paple', 500, 750, 4.8),
-('Якитория','Москва','Братиславская 3', 'yaki.png', 'yaki', 500, 850, 5.0),
-('Мама джанс','Москва','Братиславская 3', 'dad.png', 'dad', 500, 500, 4.7),
-('Варламов.сесть','Москва','Братиславская 3', 'carlamov.png', 'carlamov', 500, 950, 4.8),
-('Алло!Пицца','Москва','Братиславская 3', 'allo.png', 'allo', 500, 550, 4.6),
-('Fo 98','Москва','Братиславская 3', 'fo89.png', 'fo89', 350, 450, 4.7),
-('Pizza Express 25/8','Москва','Братиславская 3', 'pizzaexp.png', 'pizzaexp', 500, 656, 4.8),
-('Tanuki','Москва','Братиславская 3', 'tanuki.png', 'tanuki', 500, 770, 4.7),
-('Чайона №2','Москва','Братиславская 3', 'chay.png', 'chay', 500, 777, 4.6),
-('Sakura','Москва','Братиславская 3', 'sakura.png', 'sakura', 500, 770, 4.8);
+INSERT INTO restaurants(name, city, address, image_path, slug, min_price, avg_price, rating, count_rating) VALUES
+('Шоколадница','Москва','Братиславская 3', 'shokoladiza.png', 'shokoladiza', 500, 650, 5, 1),
+('Smekalca FooD','Москва','Братиславская 3', 'smekalca_food.png', 'smekalca_food', 500, 570, 5, 1),
+('Subway','Москва','Братиславская 3', 'subway.png', 'subway', 500, 1050, 5, 1),
+('Шаурма','Москва','Братиславская 3', 'shaurma.png', 'shaurma', 500, 350, 5, 1),
+('Макдональдс','Москва','Братиславская 3', 'mac.png', 'mac', 500, 650, 5, 1),
+('KFC','Москва','Братиславская 3', 'KFC.png', 'KFC', 500, 550, 5, 1),
+('Burger King','Москва','Братиславская 3', 'BK.png', 'BK', 500, 770, 5, 1),
+('Теремок','Москва','Братиславская 3', 'terem.png', 'terem', 500, 665, 5, 1),
+('Zotmann Pizza','Москва','Братиславская 3', 'zotman.png', 'zotman', 500, 2340, 5, 1),
+('Tuk Tuk','Москва','Братиславская 3', 'tuktuk.png', 'tuktuk', 500, 1000, 5, 1),
+('BO','Москва','Братиславская 3', 'Bo.png', 'Bo', 500, 550, 5, 1),
+('Крошка картошка','Москва','Братиславская 3', 'paple.png', 'paple', 500, 750, 5, 1),
+('Якитория','Москва','Братиславская 3', 'yaki.png', 'yaki', 500, 850, 5, 1),
+('Мама джанс','Москва','Братиславская 3', 'dad.png', 'dad', 500, 500, 5, 1),
+('Варламов.сесть','Москва','Братиславская 3', 'carlamov.png', 'carlamov', 500, 950, 5, 1),
+('Алло!Пицца','Москва','Братиславская 3', 'allo.png', 'allo', 500, 550, 5, 1),
+('Fo 98','Москва','Братиславская 3', 'fo89.png', 'fo89', 350, 450, 5, 1),
+('Pizza Express 25/8','Москва','Братиславская 3', 'pizzaexp.png', 'pizzaexp', 500, 656, 5, 1),
+('Tanuki','Москва','Братиславская 3', 'tanuki.png', 'tanuki', 500, 770, 5, 1),
+('Чайона №2','Москва','Братиславская 3', 'chay.png', 'chay', 500, 777, 5, 1),
+('Sakura','Москва','Братиславская 3', 'sakura.png', 'sakura', 500, 770, 5, 1);
 -- 21
 --('','Москва','Братиславская 3' ,'', , , )
 

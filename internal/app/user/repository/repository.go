@@ -77,43 +77,6 @@ func (r *UserRepo) GetUserById(id models.UserId) (*models.UserDataStorage, error
 	}
 }
 
-func (r *UserRepo) UpdateUser(updUser *models.UpdateUserStorage) (*models.UserDataStorage, error) {
-	var err error
-	user := &models.UserDataStorage{}
-	switch {
-	case updUser.Email != "" && updUser.Name != "" && updUser.Avatar != "":
-		err = r.DB.Get(user, `UPDATE users SET name=$1, email=$2, avatar=$3 WHERE id=$4 RETURNING id, name, email, phone, avatar`, updUser.Name, updUser.Email, updUser.Avatar, updUser.Id)
-	case updUser.Email != "" && updUser.Name == "" && updUser.Avatar == "":
-		err = r.DB.Get(user, `UPDATE users SET email=$1 WHERE id=$2 RETURNING id, name, email, phone, avatar`, updUser.Email, updUser.Id)
-	case updUser.Email == "" && updUser.Name != "" && updUser.Avatar == "":
-		err = r.DB.Get(user, `UPDATE users SET name=$1 WHERE id=$2 RETURNING id, name, email, phone, avatar`, updUser.Name, updUser.Id)
-	case updUser.Email == "" && updUser.Name == "" && updUser.Avatar != "":
-		err = r.DB.Get(user, `UPDATE users SET avatar=$1 WHERE id=$2 RETURNING id, name, email, phone, avatar`, updUser.Avatar, updUser.Id)
-	case updUser.Email != "" && updUser.Name != "" && updUser.Avatar == "":
-		err = r.DB.Get(user, `UPDATE users SET name=$1, email=$2 WHERE id=$3 RETURNING id, name, email, phone, avatar`, updUser.Name, updUser.Email, updUser.Id)
-	case updUser.Email != "" && updUser.Name == "" && updUser.Avatar != "":
-		err = r.DB.Get(user, `UPDATE users SET email=$1, avatar=$2 WHERE id=$3 RETURNING id, name, email, phone, avatar`, updUser.Email, updUser.Avatar, updUser.Id)
-	case updUser.Email == "" && updUser.Name != "" && updUser.Avatar != "":
-		err = r.DB.Get(user, `UPDATE users SET name=$1, avatar=$2 WHERE id=$3 RETURNING id, name, email, phone, avatar`, updUser.Name, updUser.Avatar, updUser.Id)
-	default:
-		return nil, nil
-	}
-
-	if err != nil {
-		if err == sql.ErrConnDone || err == sql.ErrTxDone {
-			return nil, servErrors.NewError(servErrors.DB_ERROR, err.Error())
-		}
-		if err == sql.ErrNoRows {
-			return nil, servErrors.NewError(servErrors.NO_SUCH_ENTITY_IN_DB, err.Error())
-		}
-		return nil, servErrors.NewError(servErrors.DB_UPDATE, err.Error())
-	}
-	//if count, _ := result.RowsAffected(); count != 1 {
-	//	return nil, servErrors.NewError(servErrors.DB_UPDATE, "")
-	//}
-	return user, nil
-}
-
 //func (r *UserRepo) UpdateUser(updUser *models.UpdateUserStorage) (*models.UserDataStorage, error) {
 //	var err error
 //	var result sql.Result
@@ -151,6 +114,44 @@ func (r *UserRepo) UpdateUser(updUser *models.UpdateUserStorage) (*models.UserDa
 //	return r.GetUserById(updUser.Id)
 //}
 
+func (r *UserRepo) UpdateUser(updUser *models.UpdateUserStorage) (*models.UserDataStorage, error) {
+	var err error
+	user := &models.UserDataStorage{}
+
+	switch {
+	case updUser.Email != "" && updUser.Name != "" && updUser.Avatar != "":
+		err = r.DB.Get(user, `UPDATE users SET name=$1, email=$2, avatar=$3 WHERE id=$4 RETURNING id, name, email, phone, avatar`, updUser.Name, updUser.Email, updUser.Avatar, updUser.Id)
+	case updUser.Email != "" && updUser.Name == "" && updUser.Avatar == "":
+		err = r.DB.Get(user, `UPDATE users SET email=$1 WHERE id=$2 RETURNING id, name, email, phone, avatar`, updUser.Email, updUser.Id)
+	case updUser.Email == "" && updUser.Name != "" && updUser.Avatar == "":
+		err = r.DB.Get(user, `UPDATE users SET name=$1 WHERE id=$2 RETURNING id, name, email, phone, avatar`, updUser.Name, updUser.Id)
+	case updUser.Email == "" && updUser.Name == "" && updUser.Avatar != "":
+		err = r.DB.Get(user, `UPDATE users SET avatar=$1 WHERE id=$2 RETURNING id, name, email, phone, avatar`, updUser.Avatar, updUser.Id)
+	case updUser.Email != "" && updUser.Name != "" && updUser.Avatar == "":
+		err = r.DB.Get(user, `UPDATE users SET name=$1, email=$2 WHERE id=$3 RETURNING id, name, email, phone, avatar`, updUser.Name, updUser.Email, updUser.Id)
+	case updUser.Email != "" && updUser.Name == "" && updUser.Avatar != "":
+		err = r.DB.Get(user, `UPDATE users SET email=$1, avatar=$2 WHERE id=$3 RETURNING id, name, email, phone, avatar`, updUser.Email, updUser.Avatar, updUser.Id)
+	case updUser.Email == "" && updUser.Name != "" && updUser.Avatar != "":
+		err = r.DB.Get(user, `UPDATE users SET name=$1, avatar=$2 WHERE id=$3 RETURNING id, name, email, phone, avatar`, updUser.Name, updUser.Avatar, updUser.Id)
+	default:
+		return nil, nil
+	}
+
+	if err != nil {
+		if err == sql.ErrConnDone || err == sql.ErrTxDone {
+			return nil, servErrors.NewError(servErrors.DB_ERROR, err.Error())
+		}
+		if err == sql.ErrNoRows {
+			return nil, servErrors.NewError(servErrors.NO_SUCH_ENTITY_IN_DB, err.Error())
+		}
+		return nil, servErrors.NewError(servErrors.DB_UPDATE, err.Error())
+	}
+	//if count, _ := result.RowsAffected(); count != 1 {
+	//	return nil, servErrors.NewError(servErrors.DB_UPDATE, "")
+	//}
+	return user, nil
+}
+
 // func (r *UserRepo) UpdateAvatar(req *models.UpdateAvatarRepo) error {
 // 	result, err := r.DB.Exec(`UPDATE users SET avatar=$1 WHERE id=$2`, req.ImgPath, req.UserId)
 
@@ -175,7 +176,7 @@ func (r *UserRepo) HasUserByPhone(phone string) (bool, error) {
 	case nil:
 		return true, nil
 	case sql.ErrNoRows:
-		return false, servErrors.NewError(servErrors.DB_ERROR, err.Error())
+		return false, nil
 	default:
 		return false, servErrors.NewError(servErrors.DB_ERROR, err.Error())
 	}

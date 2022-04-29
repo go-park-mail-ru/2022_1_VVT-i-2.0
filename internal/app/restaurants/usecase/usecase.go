@@ -1,6 +1,7 @@
 package usecase
 
 import (
+	"fmt"
 	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/models"
 	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/restaurants"
 	"github.com/pkg/errors"
@@ -19,6 +20,7 @@ func NewRestaurantsUsecase(restaurantsRepo restaurants.Repository) *RestaurantsU
 func (u *RestaurantsUsecase) GetAllRestaurants() (*models.RestaurantsUsecase, error) {
 	restaurantsData, err := u.RestaurantsRepo.GetRestaurants()
 	if err != nil {
+		fmt.Println("1_1")
 		return nil, errors.Wrapf(err, "error getting restaurants")
 	}
 
