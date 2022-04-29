@@ -36,6 +36,7 @@ const (
 	CANT_SAVE_AVATAR
 	DECODE_IMG
 	UNKNOWN_STATIC_TYPE
+	TEST_ERROR
 )
 
 const (
@@ -55,12 +56,14 @@ const (
 	CANT_CREATE_AVATAR_NAME_DESCR = "не получается сгенерировать имя аватарки"
 	CANT_SAVE_AVATAR_DESCR        = "не получается сохранить аватарку"
 	UNKNOWN_STATIC_TYPE_DESCR     = "неизвестный тип статики, невозможно определить расположение"
+	TEST_ERROR_DESCR					  = "test"
 )
 
 var codeDescr = map[int]string{
 	NO_SUCH_RESTAURANT: NO_SUCH_RESTAURANT_DESCR,
 	CACH_MISS_CODE:     CACH_MISS_DESCR,
 	NO_SUCH_USER:       NO_SUCH_USER_DESCR,
+	TEST_ERROR: 		TEST_ERROR_DESCR,
 }
 
 type Error struct {
