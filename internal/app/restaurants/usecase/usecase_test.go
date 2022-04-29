@@ -1,13 +1,13 @@
 package usecase
 
 import (
+	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/domain/interfaces"
 	data "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/domain/models"
 	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/models"
 	"github.com/stretchr/testify/require"
 	"reflect"
 	"testing"
 )
-import "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/domain/interfaces"
 
 func TestRestaurantsUsecase_GetAllRestaurants(t *testing.T) {
 	mockRestaurantsRepo := new(interfaces.RestaurantsRepository)
