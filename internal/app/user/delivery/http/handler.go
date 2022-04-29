@@ -91,7 +91,7 @@ func (h UserHandler) Login(ctx echo.Context) error {
 		return echo.NewHTTPError(http.StatusInternalServerError, httpErrDescr.SERVER_ERROR)
 	}
 
-	token, err := h.AuthManager.CreateToken(*authManager.NewTokenPayload(userDataUcase.Id))
+	token, err := h.AuthManager.CreateToken(authManager.NewTokenPayload(userDataUcase.Id))
 	if err != nil {
 		logger.Error(requestId, "error creating token: "+err.Error())
 		return echo.NewHTTPError(http.StatusInternalServerError, httpErrDescr.SERVER_ERROR)
@@ -102,7 +102,6 @@ func (h UserHandler) Login(ctx echo.Context) error {
 
 	ctx.SetCookie(tokenCookie)
 	if userDataUcase.Avatar == "" {
-
 		return ctx.JSON(http.StatusOK, models.UserDataResp{Phone: userDataUcase.Phone, Email: userDataUcase.Email, Name: userDataUcase.Name, Avatar: ""})
 	}
 	return ctx.JSON(http.StatusOK, models.UserDataResp{Phone: userDataUcase.Phone, Email: userDataUcase.Email, Name: userDataUcase.Name, Avatar: h.StaticManager.GetAvatarUrl(userDataUcase.Avatar)})
@@ -150,7 +149,7 @@ func (h UserHandler) Register(ctx echo.Context) error {
 		return echo.NewHTTPError(http.StatusInternalServerError, httpErrDescr.SERVER_ERROR)
 	}
 
-	token, err := h.AuthManager.CreateToken(*authManager.NewTokenPayload(userDataUcase.Id))
+	token, err := h.AuthManager.CreateToken(authManager.NewTokenPayload(userDataUcase.Id))
 	if err != nil {
 		logger.Error(requestId, "error creating token: "+err.Error())
 		return echo.NewHTTPError(http.StatusInternalServerError, httpErrDescr.SERVER_ERROR)
