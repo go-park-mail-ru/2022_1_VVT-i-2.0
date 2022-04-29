@@ -20,6 +20,7 @@ import (
 
 const (
 	tokenCookieKey    = "token"
+	CSRFCookieName    = "_csrf"
 	avatarMaxSize     = 4000000
 	updateUserMaxSize = 1000
 )
@@ -77,8 +78,10 @@ func (h UserHandler) Login(ctx echo.Context) error {
 		switch cause.Code {
 		case servErrors.WRONG_AUTH_CODE:
 			return echo.NewHTTPError(http.StatusForbidden, httpErrDescr.WRONG_AUTH_CODE)
-		case servErrors.CACH_MISS_CODE, servErrors.NO_SUCH_ENTITY_IN_DB:
+		case servErrors.CACH_MISS_CODE:
 			return echo.NewHTTPError(http.StatusNotFound, httpErrDescr.NO_SUCH_CODE_INFO)
+		case servErrors.NO_SUCH_ENTITY_IN_DB:
+			return echo.NewHTTPError(http.StatusNotFound, httpErrDescr.NO_SUCH_USER)
 		default:
 			logger.Error(requestId, err.Error())
 			return echo.NewHTTPError(http.StatusInternalServerError, httpErrDescr.SERVER_ERROR)
@@ -100,9 +103,9 @@ func (h UserHandler) Login(ctx echo.Context) error {
 	tokenCookie := createTokenCookie(token, host, h.AuthManager.GetEpiryTime())
 
 	ctx.SetCookie(tokenCookie)
-	if userDataUcase.Avatar == "" {
-
-		return ctx.JSON(http.StatusOK, models.UserDataResp{Phone: userDataUcase.Phone, Email: userDataUcase.Email, Name: userDataUcase.Name, Avatar: ""})
+	csrfToken := middleware.GetCSRFTokenromCtx(ctx)
+	if csrfToken != "" {
+		ctx.Response().Header().Add(echo.HeaderXCSRFToken, csrfToken)
 	}
 	return ctx.JSON(http.StatusOK, models.UserDataResp{Phone: userDataUcase.Phone, Email: userDataUcase.Email, Name: userDataUcase.Name, Avatar: h.StaticManager.GetAvatarUrl(userDataUcase.Avatar)})
 }
@@ -159,8 +162,9 @@ func (h UserHandler) Register(ctx echo.Context) error {
 	tokenCookie := createTokenCookie(token, host, h.AuthManager.GetEpiryTime())
 
 	ctx.SetCookie(tokenCookie)
-	if userDataUcase.Avatar == "" {
-		return ctx.JSON(http.StatusOK, models.UserDataResp{Phone: userDataUcase.Phone, Email: userDataUcase.Email, Name: userDataUcase.Name, Avatar: ""})
+	csrfToken := middleware.GetCSRFTokenromCtx(ctx)
+	if csrfToken != "" {
+		ctx.Response().Header().Add(echo.HeaderXCSRFToken, csrfToken)
 	}
 	return ctx.JSON(http.StatusOK, models.UserDataResp{Phone: userDataUcase.Phone, Email: userDataUcase.Email, Name: userDataUcase.Name, Avatar: h.StaticManager.GetAvatarUrl(userDataUcase.Avatar)})
 }
@@ -170,9 +174,17 @@ func (h UserHandler) Logout(ctx echo.Context) error {
 		return echo.NewHTTPError(http.StatusUnauthorized, httpErrDescr.AUTH_REQUIRED)
 	}
 	host, _, _ := net.SplitHostPort(ctx.Request().Host)
-	tokenCookie := createTokenCookie("", host, -time.Hour)
+	resetTokenCookie := createTokenCookie("", host, -time.Hour)
 
-	ctx.SetCookie(tokenCookie)
+	resetCsrfCookie := &http.Cookie{
+		Name:    CSRFCookieName,
+		Expires: time.Now().Add(-time.Hour),
+		Domain:  host,
+		Path:    "/",
+	}
+
+	ctx.SetCookie(resetTokenCookie)
+	ctx.SetCookie(resetCsrfCookie)
 	return ctx.NoContent(http.StatusOK)
 }
 
