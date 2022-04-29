@@ -9,10 +9,10 @@ import (
 	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/models"
 	cacher "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/tools/cacher"
 	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/tools/notification"
-	authProto "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/tools/proto/auth"
 	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/tools/servErrors"
 	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/tools/staticManager"
 	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/user"
+	authProto "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/microservices/auth/proto"
 	"github.com/google/uuid"
 	"github.com/pkg/errors"
 )
@@ -20,12 +20,10 @@ import (
 // TODO: удалить
 var LOGIN_CODE string
 
-const (
-	codeUpBound          = 10000 // > 0
-	codeExpiration int32 = 300   // 5 min
-	// avatarSide           = 300
-	// avatarSide = 30
-)
+// const (
+// avatarSide           = 300
+// avatarSide = 30
+// )
 
 type UserUsecase struct {
 	Notificator   notification.Notificator

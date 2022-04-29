@@ -4,9 +4,9 @@ import (
 	"context"
 	"fmt"
 
-	proto "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/tools/proto/auth"
 	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/microservices/auth"
 	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/microservices/auth/models"
+	proto "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/microservices/auth/proto"
 )
 
 type grpcAuthHandler struct {

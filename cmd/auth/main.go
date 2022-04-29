@@ -18,7 +18,7 @@ import (
 	authRepo "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/microservices/auth/repository"
 	authUcase "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/microservices/auth/usecase"
 
-	authProto "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/tools/proto/auth"
+	authProto "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/microservices/auth/proto"
 )
 
 func main() {

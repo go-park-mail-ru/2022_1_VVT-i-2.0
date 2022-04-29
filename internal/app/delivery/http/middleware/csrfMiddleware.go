@@ -106,3 +106,13 @@ func GetCSRFTokenromCtx(ctx echo.Context) string {
 	}
 	return token
 }
+
+func CsrfSetHeader(next echo.HandlerFunc) echo.HandlerFunc {
+	return func(ctx echo.Context) error {
+		k, ok := ctx.Get("csrf").(string)
+		if ok && ctx.Request().Method == http.MethodGet || ctx.Request().Method == http.MethodHead || ctx.Request().Method == http.MethodOptions || ctx.Request().Method == http.MethodTrace {
+			ctx.Response().Header().Add("X-CSRF-Token", k)
+		}
+		return next(ctx)
+	}
+}
