@@ -430,7 +430,7 @@ func TestGetUserById1(t *testing.T) {
 	})
 }
 
-func Test1(t *testing.T) {
+func TestHasUserByPhone1(t *testing.T) {
 	t.Parallel()
 
 	db, mock, err := sqlmock.New()
