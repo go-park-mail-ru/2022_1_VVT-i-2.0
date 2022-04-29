@@ -37,7 +37,7 @@ func TestRestaurantsHandler_GetAllRestaurants(t *testing.T) {
 		StaticManager: staticManager,
 	}
 
-	json := `[{"id":1,"restName":"Name","city":"City","address":"Address","imgPath":"http://127.0.0.1:8080/restaurants/restaurants/imgPath","slug":"slug","min_price":1,"price":1,"rating":1,"timeToDeliver":"25 - 30"}]`
+	json := `[{"id":1,"restName":"Name","city":"City","address":"Address","imgPath":"restaurants/imgPath","slug":"slug","min_price":1,"price":1,"rating":1,"timeToDeliver":"25 - 30"}]`
 
 	err = handler.GetAllRestaurants(c)
 	require.NoError(t, err)

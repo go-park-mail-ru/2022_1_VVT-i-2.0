@@ -53,7 +53,7 @@ func (u UserRepository) GetUserById(id models.UserId) (*models.UserDataStorage, 
 	return mockUser, nil
 }
 
-func (u UserRepository) UpdateUser(updUser *models.UpdateUserDataStorage) (*models.UserDataStorage, error) {
+func (u UserRepository) UpdateUser(updUser *models.UpdateUserStorage) (*models.UserDataStorage, error) {
 	if updUser == nil {
 		return nil, servErrors.NewError(servErrors.TEST_ERROR, "")
 	}

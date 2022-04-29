@@ -266,11 +266,11 @@ func TestUpdateUser(t *testing.T) {
 	for _, item := range expect {
 		rows = rows.AddRow(item.Id, item.Name, item.Phone, item.Email, item.Avatar.String)
 	}
-	test := &models.UpdateUserDataStorage{Id: models.UserId(1), Name: "name", Email: "email", Avatar: "avatar"}
+	test := &models.UpdateUserStorage{Id: models.UserId(1), Name: "name", Email: "email", Avatar: "avatar"}
 
 	// good query
 	mock.
-		ExpectQuery(regexp.QuoteMeta(`UPDATE users SET name=$1, email=$2, avatar=$3 WHERE id=$4 RETURNING id, name, email, phone, avatar`)).
+		ExpectQuery(`UPDATE`).
 		WithArgs(test.Name, test.Email, test.Avatar, test.Id).
 		WillReturnRows(rows)
 	item, err := repo.UpdateUser(test)
@@ -289,7 +289,7 @@ func TestUpdateUser(t *testing.T) {
 
 	// query error
 	mock.
-		ExpectQuery(regexp.QuoteMeta(`UPDATE users SET name=$1, email=$2, avatar=$3 WHERE id=$4 RETURNING id, name, email, phone, avatar`)).
+		ExpectQuery(regexp.QuoteMeta(`UPDATE`)).
 		WithArgs(test.Name, test.Email, test.Avatar, test.Id).
 		WillReturnError(fmt.Errorf("db_error"))
 	_, err = repo.UpdateUser(test)
@@ -304,7 +304,7 @@ func TestUpdateUser(t *testing.T) {
 
 	// row scan error
 	mock.
-		ExpectQuery(regexp.QuoteMeta(`UPDATE users SET name=$1, email=$2, avatar=$3 WHERE id=$4 RETURNING id, name, email, phone, avatar`)).
+		ExpectQuery(`UPDATE`).
 		WithArgs(test.Name, test.Email, test.Avatar, test.Id).
 		WillReturnError(sql.ErrNoRows)
 	_, err = repo.UpdateUser(test)

@@ -93,7 +93,7 @@ func (h UserHandler) Login(ctx echo.Context) error {
 		return echo.NewHTTPError(http.StatusInternalServerError, httpErrDescr.SERVER_ERROR)
 	}
 
-	token, err := h.AuthManager.CreateToken(*authManager.NewTokenPayload(userDataUcase.Id))
+	token, err := h.AuthManager.CreateToken(authManager.NewTokenPayload(userDataUcase.Id))
 	if err != nil {
 		logger.Error(requestId, "error creating token: "+err.Error())
 		return echo.NewHTTPError(http.StatusInternalServerError, httpErrDescr.SERVER_ERROR)
@@ -152,7 +152,7 @@ func (h UserHandler) Register(ctx echo.Context) error {
 		return echo.NewHTTPError(http.StatusInternalServerError, httpErrDescr.SERVER_ERROR)
 	}
 
-	token, err := h.AuthManager.CreateToken(*authManager.NewTokenPayload(userDataUcase.Id))
+	token, err := h.AuthManager.CreateToken(authManager.NewTokenPayload(userDataUcase.Id))
 	if err != nil {
 		logger.Error(requestId, "error creating token: "+err.Error())
 		return echo.NewHTTPError(http.StatusInternalServerError, httpErrDescr.SERVER_ERROR)
