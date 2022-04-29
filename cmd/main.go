@@ -6,11 +6,10 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/labstack/echo/v4"
-	"github.com/pkg/errors"
-
 	conf "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/config"
 	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/config/configRouting"
+	"github.com/labstack/echo/v4"
+	"github.com/pkg/errors"
 
 	jwt "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/authManager/jwtManager"
 	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/delivery/http/middleware"
@@ -35,6 +34,21 @@ import (
 	userRepo "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/user/repository"
 	userUcase "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/user/usecase"
 )
+
+// @title           Swagger Example API
+// @version         1.0
+// @description     This is a sample server celler server.
+// @termsOfService  http://swagger.io/terms/
+
+// @contact.name   API Support
+// @contact.url    http://www.swagger.io/support
+// @contact.email  support@swagger.io
+
+// @license.name  Apache 2.0
+// @license.url   http://www.apache.org/licenses/LICENSE-2.0.html
+
+// @host      localhost:8080
+// @BasePath  /api/v1
 
 func main() {
 	configPath := flag.String("config", "../config/serv.toml", "path to config file")

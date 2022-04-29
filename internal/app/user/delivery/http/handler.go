@@ -93,7 +93,7 @@ func (h UserHandler) Login(ctx echo.Context) error {
 		return echo.NewHTTPError(http.StatusInternalServerError, httpErrDescr.SERVER_ERROR)
 	}
 
-	token, err := h.AuthManager.CreateToken(*authManager.NewTokenPayload(userDataUcase.Id))
+	token, err := h.AuthManager.CreateToken(authManager.NewTokenPayload(userDataUcase.Id))
 	if err != nil {
 		logger.Error(requestId, "error creating token: "+err.Error())
 		return echo.NewHTTPError(http.StatusInternalServerError, httpErrDescr.SERVER_ERROR)
@@ -152,7 +152,7 @@ func (h UserHandler) Register(ctx echo.Context) error {
 		return echo.NewHTTPError(http.StatusInternalServerError, httpErrDescr.SERVER_ERROR)
 	}
 
-	token, err := h.AuthManager.CreateToken(*authManager.NewTokenPayload(userDataUcase.Id))
+	token, err := h.AuthManager.CreateToken(authManager.NewTokenPayload(userDataUcase.Id))
 	if err != nil {
 		logger.Error(requestId, "error creating token: "+err.Error())
 		return echo.NewHTTPError(http.StatusInternalServerError, httpErrDescr.SERVER_ERROR)
@@ -319,7 +319,6 @@ func (h *UserHandler) UploadPhoto(w http.ResponseWriter, r *http.Request) {
 		}, h.Logger.ErrorLogging)
 		return
 	}
-
 	uploadedPhoto, fileHeader, err := r.FormFile("photo")
 	if err != nil {
 		responses.SendError(w, models.HTTPError{
@@ -329,7 +328,6 @@ func (h *UserHandler) UploadPhoto(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	defer uploadedPhoto.Close()
-
 	photo, err := h.UserUCase.AddPhoto(r.Context(), uploadedPhoto, fileHeader.Filename)
 	if err != nil {
 		responses.SendError(w, models.HTTPError{
@@ -338,8 +336,6 @@ func (h *UserHandler) UploadPhoto(w http.ResponseWriter, r *http.Request) {
 		}, h.Logger.ErrorLogging)
 		return
 	}
-
 	responses.SendData(w, photo)
 }
-
 */
