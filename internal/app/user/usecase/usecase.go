@@ -145,7 +145,7 @@ func (u *UserUsecase) UpdateUser(updates *models.UpdateUserUsecase) (*models.Use
 			return nil, errors.Wrap(err, "error saving new avatar to server")
 		}
 	}
-	updUser, err := u.UserRepo.UpdateUser(&models.UpdateUserDataStorage{Id: updates.Id, Email: updates.Email, Name: updates.Name, Avatar: newAvatarName})
+	updUser, err := u.UserRepo.UpdateUser(&models.UpdateUserStorage{Id: updates.Id, Email: updates.Email, Name: updates.Name, Avatar: newAvatarName})
 	if err != nil {
 		if newAvatarName != "" {
 			u.StaticManager.RemoveAvatar(newAvatarName)
@@ -176,16 +176,15 @@ func (u *UserUsecase) UpdateUser(updates *models.UpdateUserUsecase) (*models.Use
 func (u *UserUsecase) saveNewAvatar(avatar io.Reader) (string, error) {
 	avatarImg, err := imaging.Decode(avatar)
 	if err != nil {
+		fmt.Println(err.Error())
 		return "", servErrors.NewError(servErrors.DECODE_IMG, err.Error())
 	}
-	var squareSide int
-	if avatarImg.Bounds().Max.X < avatarImg.Bounds().Max.Y {
-		squareSide = avatarImg.Bounds().Max.X
-	} else {
-		squareSide = avatarImg.Bounds().Max.Y
-	}
-	avatarImg = imaging.CropAnchor(avatarImg, squareSide, squareSide, imaging.Center)
-	avatarImg = imaging.Resize(avatarImg, avatarSide, avatarSide, imaging.Lanczos)
+
+	// if avatarImg.Bounds().Max.X < avatarImg.Bounds().Max.Y {
+	// 	avatarImg = imaging.Resize(avatarImg, avatarSide, 0, imaging.Lanczos)
+	// } else {
+	// 	avatarImg = imaging.Resize(avatarImg, 0, avatarSide, imaging.Lanczos)
+	// }
 
 	var avatarName string
 	for i := 0; i < 10; i++ {

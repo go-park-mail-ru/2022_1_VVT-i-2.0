@@ -1,7 +1,6 @@
 package userHandler
 
 import (
-	"encoding/json"
 	"fmt"
 	"net"
 	"net/http"
@@ -21,6 +20,7 @@ import (
 
 const (
 	tokenCookieKey    = "token"
+	CSRFCookieName    = "_csrf"
 	avatarMaxSize     = 4000000
 	updateUserMaxSize = 1000
 )
@@ -78,8 +78,10 @@ func (h UserHandler) Login(ctx echo.Context) error {
 		switch cause.Code {
 		case servErrors.WRONG_AUTH_CODE:
 			return echo.NewHTTPError(http.StatusForbidden, httpErrDescr.WRONG_AUTH_CODE)
-		case servErrors.CACH_MISS_CODE, servErrors.NO_SUCH_ENTITY_IN_DB:
+		case servErrors.CACH_MISS_CODE:
 			return echo.NewHTTPError(http.StatusNotFound, httpErrDescr.NO_SUCH_CODE_INFO)
+		case servErrors.NO_SUCH_ENTITY_IN_DB:
+			return echo.NewHTTPError(http.StatusNotFound, httpErrDescr.NO_SUCH_USER)
 		default:
 			logger.Error(requestId, err.Error())
 			return echo.NewHTTPError(http.StatusInternalServerError, httpErrDescr.SERVER_ERROR)
@@ -91,7 +93,7 @@ func (h UserHandler) Login(ctx echo.Context) error {
 		return echo.NewHTTPError(http.StatusInternalServerError, httpErrDescr.SERVER_ERROR)
 	}
 
-	token, err := h.AuthManager.CreateToken(authManager.NewTokenPayload(userDataUcase.Id))
+	token, err := h.AuthManager.CreateToken(*authManager.NewTokenPayload(userDataUcase.Id))
 	if err != nil {
 		logger.Error(requestId, "error creating token: "+err.Error())
 		return echo.NewHTTPError(http.StatusInternalServerError, httpErrDescr.SERVER_ERROR)
@@ -101,8 +103,9 @@ func (h UserHandler) Login(ctx echo.Context) error {
 	tokenCookie := createTokenCookie(token, host, h.AuthManager.GetEpiryTime())
 
 	ctx.SetCookie(tokenCookie)
-	if userDataUcase.Avatar == "" {
-		return ctx.JSON(http.StatusOK, models.UserDataResp{Phone: userDataUcase.Phone, Email: userDataUcase.Email, Name: userDataUcase.Name, Avatar: ""})
+	csrfToken := middleware.GetCSRFTokenromCtx(ctx)
+	if csrfToken != "" {
+		ctx.Response().Header().Add(echo.HeaderXCSRFToken, csrfToken)
 	}
 	return ctx.JSON(http.StatusOK, models.UserDataResp{Phone: userDataUcase.Phone, Email: userDataUcase.Email, Name: userDataUcase.Name, Avatar: h.StaticManager.GetAvatarUrl(userDataUcase.Avatar)})
 }
@@ -149,7 +152,7 @@ func (h UserHandler) Register(ctx echo.Context) error {
 		return echo.NewHTTPError(http.StatusInternalServerError, httpErrDescr.SERVER_ERROR)
 	}
 
-	token, err := h.AuthManager.CreateToken(authManager.NewTokenPayload(userDataUcase.Id))
+	token, err := h.AuthManager.CreateToken(*authManager.NewTokenPayload(userDataUcase.Id))
 	if err != nil {
 		logger.Error(requestId, "error creating token: "+err.Error())
 		return echo.NewHTTPError(http.StatusInternalServerError, httpErrDescr.SERVER_ERROR)
@@ -159,8 +162,9 @@ func (h UserHandler) Register(ctx echo.Context) error {
 	tokenCookie := createTokenCookie(token, host, h.AuthManager.GetEpiryTime())
 
 	ctx.SetCookie(tokenCookie)
-	if userDataUcase.Avatar == "" {
-		return ctx.JSON(http.StatusOK, models.UserDataResp{Phone: userDataUcase.Phone, Email: userDataUcase.Email, Name: userDataUcase.Name, Avatar: ""})
+	csrfToken := middleware.GetCSRFTokenromCtx(ctx)
+	if csrfToken != "" {
+		ctx.Response().Header().Add(echo.HeaderXCSRFToken, csrfToken)
 	}
 	return ctx.JSON(http.StatusOK, models.UserDataResp{Phone: userDataUcase.Phone, Email: userDataUcase.Email, Name: userDataUcase.Name, Avatar: h.StaticManager.GetAvatarUrl(userDataUcase.Avatar)})
 }
@@ -170,9 +174,17 @@ func (h UserHandler) Logout(ctx echo.Context) error {
 		return echo.NewHTTPError(http.StatusUnauthorized, httpErrDescr.AUTH_REQUIRED)
 	}
 	host, _, _ := net.SplitHostPort(ctx.Request().Host)
-	tokenCookie := createTokenCookie("", host, -time.Hour)
+	resetTokenCookie := createTokenCookie("", host, -time.Hour)
 
-	ctx.SetCookie(tokenCookie)
+	resetCsrfCookie := &http.Cookie{
+		Name:    CSRFCookieName,
+		Expires: time.Now().Add(-time.Hour),
+		Domain:  host,
+		Path:    "/",
+	}
+
+	ctx.SetCookie(resetTokenCookie)
+	ctx.SetCookie(resetCsrfCookie)
 	return ctx.NoContent(http.StatusOK)
 }
 
@@ -233,43 +245,8 @@ func (h UserHandler) GetUser(ctx echo.Context) error {
 }
 
 func (h UserHandler) UpdateUser(ctx echo.Context) error {
-	fmt.Println(ctx.Request())
-	user := middleware.GetUserFromCtx(ctx)
-	if user == nil {
-		return echo.NewHTTPError(http.StatusUnauthorized, httpErrDescr.AUTH_REQUIRED)
-	}
-
-	logger := middleware.GetLoggerFromCtx(ctx)
-	requestId := middleware.GetRequestIdFromCtx(ctx)
-
-	var updateReq models.UpdateUserReq
-	if err := ctx.Bind(&updateReq); err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, httpErrDescr.BAD_REQUEST_BODY)
-	}
-	if _, err := govalidator.ValidateStruct(updateReq); err != nil || (updateReq.Email == "" && updateReq.Name == "") {
-		return echo.NewHTTPError(http.StatusBadRequest, httpErrDescr.INVALID_DATA)
-	}
-
-	userDataUcase, err := h.Usecase.UpdateUser(&models.UpdateUserUsecase{Id: user.Id, Email: updateReq.Email, Name: updateReq.Name})
-
-	if err != nil {
-		cause := servErrors.ErrorAs(err)
-		if cause != nil && cause.Code == servErrors.DB_UPDATE {
-			return echo.NewHTTPError(http.StatusConflict, httpErrDescr.SUCH_USER_ALREADY_EXISTS)
-		}
-		logger.Error(requestId, err.Error())
-		return echo.NewHTTPError(http.StatusInternalServerError, httpErrDescr.SERVER_ERROR)
-	}
-
-	if userDataUcase == nil {
-		logger.Error(requestId, "from user-usecase-get-user returned userData==nil and err==nil, unknown error")
-		return echo.NewHTTPError(http.StatusInternalServerError, httpErrDescr.SERVER_ERROR)
-	}
-
-	return ctx.JSON(http.StatusOK, models.UserDataResp{Phone: userDataUcase.Phone, Email: userDataUcase.Email, Name: userDataUcase.Name})
-}
-
-func (h UserHandler) UpdateAvatar(ctx echo.Context) error {
+	// b, _ := io.ReadAll(ctx.Request().Body)
+	// fmt.Println(string(b))
 	user := middleware.GetUserFromCtx(ctx)
 	if user == nil {
 		return echo.NewHTTPError(http.StatusUnauthorized, httpErrDescr.AUTH_REQUIRED)
@@ -282,13 +259,9 @@ func (h UserHandler) UpdateAvatar(ctx echo.Context) error {
 	logger := middleware.GetLoggerFromCtx(ctx)
 	requestId := middleware.GetRequestIdFromCtx(ctx)
 
-	ctx.MultipartForm()
-	uploadUserData := ctx.Request().FormValue("newData")
-	fmt.Println(uploadUserData)
-	var updateReq models.UpdateUserReq
-	if err := json.Unmarshal([]byte(uploadUserData), &updateReq); err != nil {
-		fmt.Println(err)
-		return echo.NewHTTPError(http.StatusBadRequest, httpErrDescr.BAD_REQUEST_BODY)
+	updateReq := models.UpdateUserReq{
+		Name:  ctx.Request().FormValue("name"),
+		Email: ctx.Request().FormValue("email"),
 	}
 
 	fmt.Println(updateReq.Email)
@@ -300,9 +273,17 @@ func (h UserHandler) UpdateAvatar(ctx echo.Context) error {
 	}
 
 	avatarImage, _, _ := ctx.Request().FormFile("avatar")
-	defer avatarImage.Close()
+	if avatarImage != nil {
+		// b, _ := io.ReadAll(avatarImage)
+		// fmt.Println(string(b))
+		// fmt.Println(avatarImage)
+		// fmt.Println(del)
+		defer avatarImage.Close()
+	}
 
+	fmt.Println("1")
 	userDataUcase, err := h.Usecase.UpdateUser(&models.UpdateUserUsecase{Id: user.Id, Email: updateReq.Email, Name: updateReq.Name, AvatarImg: avatarImage})
+	fmt.Println("2")
 
 	if err != nil {
 		cause := servErrors.ErrorAs(err)
@@ -338,7 +319,6 @@ func (h *UserHandler) UploadPhoto(w http.ResponseWriter, r *http.Request) {
 		}, h.Logger.ErrorLogging)
 		return
 	}
-
 	uploadedPhoto, fileHeader, err := r.FormFile("photo")
 	if err != nil {
 		responses.SendError(w, models.HTTPError{
@@ -348,7 +328,6 @@ func (h *UserHandler) UploadPhoto(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	defer uploadedPhoto.Close()
-
 	photo, err := h.UserUCase.AddPhoto(r.Context(), uploadedPhoto, fileHeader.Filename)
 	if err != nil {
 		responses.SendError(w, models.HTTPError{
@@ -357,8 +336,6 @@ func (h *UserHandler) UploadPhoto(w http.ResponseWriter, r *http.Request) {
 		}, h.Logger.ErrorLogging)
 		return
 	}
-
 	responses.SendData(w, photo)
 }
-
 */

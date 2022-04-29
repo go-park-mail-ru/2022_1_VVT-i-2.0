@@ -2,6 +2,8 @@ package repository
 
 import (
 	"database/sql"
+	"fmt"
+
 	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/models"
 	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/tools/servErrors"
 	"github.com/jmoiron/sqlx"
@@ -18,7 +20,8 @@ func NewUserRepo(db *sqlx.DB) *UserRepo {
 func (r *UserRepo) GetUserByPhone(phone string) (*models.UserDataStorage, error) {
 	user := &models.UserDataStorage{}
 	err := r.DB.Get(user, `SELECT id, phone, email, name, avatar FROM users WHERE phone = $1`, phone)
-
+	fmt.Println(err)
+	fmt.Println(user)
 	switch err {
 	case nil:
 		return user, nil
@@ -48,7 +51,6 @@ func (r *UserRepo) AddUser(newUser *models.UserAddDataStorage) (*models.UserData
 func (r *UserRepo) AddUser1(newUser *models.UserAddDataStorage) (models.UserId, error) {
 	var newUserId int64
 	err := r.DB.QueryRow(`INSERT INTO users (name,phone,email) VALUES ($1,$2,$3) RETURNING id`, newUser.Name, newUser.Phone, newUser.Email).Scan(&newUserId)
-
 	if err != nil {
 		if err == sql.ErrConnDone || err == sql.ErrTxDone {
 			return 0, servErrors.NewError(servErrors.DB_ERROR, err.Error())
@@ -75,25 +77,24 @@ func (r *UserRepo) GetUserById(id models.UserId) (*models.UserDataStorage, error
 	}
 }
 
-func (r *UserRepo) UpdateUser(updUser *models.UpdateUserDataStorage) (*models.UserDataStorage, error) {
+func (r *UserRepo) UpdateUser(updUser *models.UpdateUserStorage) (*models.UserDataStorage, error) {
 	var err error
-	user := &models.UserDataStorage{}
-
+	var result sql.Result
 	switch {
 	case updUser.Email != "" && updUser.Name != "" && updUser.Avatar != "":
-		err = r.DB.Get(user, `UPDATE users SET name=$1, email=$2, avatar=$3 WHERE id=$4 RETURNING id, name, email, phone, avatar`, updUser.Name, updUser.Email, updUser.Avatar, updUser.Id)
+		result, err = r.DB.Exec(`UPDATE users SET name=$1, email=$2, avatar=$3 WHERE id=$4`, updUser.Name, updUser.Email, updUser.Avatar, updUser.Id)
 	case updUser.Email != "" && updUser.Name == "" && updUser.Avatar == "":
-		err = r.DB.Get(user, `UPDATE users SET email=$1 WHERE id=$2 RETURNING id, name, email, phone, avatar`, updUser.Email, updUser.Id)
+		result, err = r.DB.Exec(`UPDATE users SET email=$1 WHERE id=$2`, updUser.Email, updUser.Id)
 	case updUser.Email == "" && updUser.Name != "" && updUser.Avatar == "":
-		err = r.DB.Get(user, `UPDATE users SET name=$1 WHERE id=$2 RETURNING id, name, email, phone, avatar`, updUser.Name, updUser.Id)
+		result, err = r.DB.Exec(`UPDATE users SET name=$1 WHERE id=$2`, updUser.Name, updUser.Id)
 	case updUser.Email == "" && updUser.Name == "" && updUser.Avatar != "":
-		err = r.DB.Get(user, `UPDATE users SET avatar=$1 WHERE id=$2 RETURNING id, name, email, phone, avatar`, updUser.Avatar, updUser.Id)
+		result, err = r.DB.Exec(`UPDATE users SET avatar=$1 WHERE id=$2`, updUser.Avatar, updUser.Id)
 	case updUser.Email != "" && updUser.Name != "" && updUser.Avatar == "":
-		err = r.DB.Get(user, `UPDATE users SET name=$1, email=$2 WHERE id=$3 RETURNING id, name, email, phone, avatar`, updUser.Name, updUser.Email, updUser.Id)
+		result, err = r.DB.Exec(`UPDATE users SET name=$1, email=$2 WHERE id=$3`, updUser.Name, updUser.Email, updUser.Id)
 	case updUser.Email != "" && updUser.Name == "" && updUser.Avatar != "":
-		err = r.DB.Get(user, `UPDATE users SET email=$1, avatar=$2 WHERE id=$3 RETURNING id, name, email, phone, avatar`, updUser.Email, updUser.Avatar, updUser.Id)
+		result, err = r.DB.Exec(`UPDATE users SET email=$1, avatar=$2 WHERE id=$3`, updUser.Email, updUser.Avatar, updUser.Id)
 	case updUser.Email == "" && updUser.Name != "" && updUser.Avatar != "":
-		err = r.DB.Get(user, `UPDATE users SET name=$1, avatar=$2 WHERE id=$3 RETURNING id, name, email, phone, avatar`, updUser.Name, updUser.Avatar, updUser.Id)
+		result, err = r.DB.Exec(`UPDATE users SET name=$1, avatar=$2 WHERE id=$3`, updUser.Name, updUser.Avatar, updUser.Id)
 	default:
 		return nil, nil
 	}
@@ -107,10 +108,10 @@ func (r *UserRepo) UpdateUser(updUser *models.UpdateUserDataStorage) (*models.Us
 		}
 		return nil, servErrors.NewError(servErrors.DB_UPDATE, err.Error())
 	}
-	//if count, _ := result.RowsAffected(); count != 1 {
-	//	return nil, servErrors.NewError(servErrors.DB_UPDATE, "")
-	//}
-	return user, nil
+	if count, _ := result.RowsAffected(); count != 1 {
+		return nil, servErrors.NewError(servErrors.DB_UPDATE, "")
+	}
+	return r.GetUserById(updUser.Id)
 }
 
 // func (r *UserRepo) UpdateAvatar(req *models.UpdateAvatarRepo) error {
@@ -131,12 +132,13 @@ func (r *UserRepo) UpdateUser(updUser *models.UpdateUserDataStorage) (*models.Us
 func (r *UserRepo) HasUserByPhone(phone string) (bool, error) {
 	user := &models.UserDataStorage{}
 	err := r.DB.Get(user, `SELECT id FROM users WHERE phone = $1`, phone)
-
+	fmt.Println(err)
+	fmt.Println(user)
 	switch err {
 	case nil:
 		return true, nil
 	case sql.ErrNoRows:
-		return false, servErrors.NewError(servErrors.DB_ERROR, err.Error())
+		return false, nil
 	default:
 		return false, servErrors.NewError(servErrors.DB_ERROR, err.Error())
 	}
@@ -182,7 +184,7 @@ func (repo *RepoSqlx) GetByID(id int64) (*Item, error) {
 func (repo *RepoSqlx) Add(elem *Item) (int64, error) {
 	result, err := repo.DB.NamedExec(
 		`INSERT INTO person (first_name,last_name,email) VALUES (:title, :description)`,
-		map[string]interfaces{}{
+		map[string]interface{}{
 			"title":       elem.Title,
 			"description": elem.Description,
 		})
