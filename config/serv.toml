@@ -2,9 +2,9 @@
 bindAddr = ":8080"
 readTimeout = 10
 writeTimeout= 10
-staticUrl="http://localhost:8080/static/"
+# staticUrl="http://localhost:8080/static/"
 staticPath="static/"
-# staticUrl="http://tavide.xyz:8080/static/"
+staticUrl="http://tavide.xyz:8080/static/"
 
 [cors]
 allowOrigins=["", "http://localhost:3000", "http://tavide.xyz:3000"]
@@ -39,11 +39,13 @@ email="nat-s.skv@yandex.ru"
 user = "yutfut" # TODO установить норм имя
 password = "example"
 port = 5432
-host = "127.0.0.1"
+host = "db"
+# host = "127.0.0.1"
 connectionMax = 500
 dbname = "vvti"
 # dbname = "test"
 
 [cacher]
-host = "127.0.0.1"
+host = "memcached"
+# host = "127.0.0.1"
 port = 11211
