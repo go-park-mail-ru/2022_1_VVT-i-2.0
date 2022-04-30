@@ -4,10 +4,4 @@ import "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/models"
 
 type Repository interface {
 	GetRestaurants() ([]*models.RestaurantDataStorage, error)
-	GetRestaurantBySlug(slug string) (*models.RestaurantDataStorage, error)
-	GetRestaurantByID(id int) (*models.RestaurantDataStorage, error)
-	GetDishByRestaurants(id int) ([]*models.DishDataStorage, error)
-	GetCommentsRestaurantByRestaurants(id int) ([]*models.CommentRestaurantDataStorage, error)
-	AddCommentsRestaurantByRestaurants(item *models.AddCommentRestaurantDataStorage) (*models.CommentRestaurantDataStorage, error)
-	UpdateRestaurantRating(restId int, newRestRating int, countRating int) (*models.RestaurantDataStorage, error)
 }
