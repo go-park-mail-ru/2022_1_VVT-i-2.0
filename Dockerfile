@@ -15,4 +15,4 @@ FROM alpine:latest
 COPY --from=build /project/app /bin/
 COPY --from=build /project/config/serv_deploy.toml /
 
-CMD app -config=../serv.toml
+CMD app -config=../serv_deploy.toml
