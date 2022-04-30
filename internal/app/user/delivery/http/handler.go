@@ -245,8 +245,6 @@ func (h UserHandler) GetUser(ctx echo.Context) error {
 }
 
 func (h UserHandler) UpdateUser(ctx echo.Context) error {
-	// b, _ := io.ReadAll(ctx.Request().Body)
-	// fmt.Println(string(b))
 	user := middleware.GetUserFromCtx(ctx)
 	if user == nil {
 		return echo.NewHTTPError(http.StatusUnauthorized, httpErrDescr.AUTH_REQUIRED)
@@ -274,16 +272,10 @@ func (h UserHandler) UpdateUser(ctx echo.Context) error {
 
 	avatarImage, _, _ := ctx.Request().FormFile("avatar")
 	if avatarImage != nil {
-		// b, _ := io.ReadAll(avatarImage)
-		// fmt.Println(string(b))
-		// fmt.Println(avatarImage)
-		// fmt.Println(del)
 		defer avatarImage.Close()
 	}
 
-	fmt.Println("1")
 	userDataUcase, err := h.Usecase.UpdateUser(&models.UpdateUserUsecase{Id: user.Id, Email: updateReq.Email, Name: updateReq.Name, AvatarImg: avatarImage})
-	fmt.Println("2")
 
 	if err != nil {
 		cause := servErrors.ErrorAs(err)
@@ -306,36 +298,10 @@ func (h UserHandler) UpdateUser(ctx echo.Context) error {
 		return echo.NewHTTPError(http.StatusInternalServerError, httpErrDescr.SERVER_ERROR)
 	}
 
+	csrfToken := middleware.GetCSRFTokenromCtx(ctx)
+	if csrfToken != "" {
+		ctx.Response().Header().Add(echo.HeaderXCSRFToken, csrfToken)
+	}
+
 	return ctx.JSON(http.StatusOK, models.UserDataResp{Phone: userDataUcase.Phone, Email: userDataUcase.Email, Name: userDataUcase.Name, Avatar: h.StaticManager.GetAvatarUrl(userDataUcase.Avatar)})
 }
-
-/*
-func (h *UserHandler) UploadPhoto(w http.ResponseWriter, r *http.Request) {
-	err := r.ParseMultipartForm(maxPhotoSize)
-	if err != nil {
-		responses.SendError(w, models.HTTPError{
-			Code:    http.StatusBadRequest,
-			Message: err,
-		}, h.Logger.ErrorLogging)
-		return
-	}
-	uploadedPhoto, fileHeader, err := r.FormFile("photo")
-	if err != nil {
-		responses.SendError(w, models.HTTPError{
-			Code:    http.StatusBadRequest,
-			Message: err,
-		}, h.Logger.ErrorLogging)
-		return
-	}
-	defer uploadedPhoto.Close()
-	photo, err := h.UserUCase.AddPhoto(r.Context(), uploadedPhoto, fileHeader.Filename)
-	if err != nil {
-		responses.SendError(w, models.HTTPError{
-			Code:    http.StatusInternalServerError,
-			Message: err,
-		}, h.Logger.ErrorLogging)
-		return
-	}
-	responses.SendData(w, photo)
-}
-*/

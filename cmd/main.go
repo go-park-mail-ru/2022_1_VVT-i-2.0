@@ -24,6 +24,9 @@ import (
 	suggsHandler "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/address/delivery/http"
 	suggsRepo "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/address/repository"
 	suggsUcase "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/address/usecase"
+	dishesHandler "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/dishes/delivery/http"
+	dishesRepo "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/dishes/repository"
+	dishesUsecase "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/dishes/usecase"
 	orderHandler "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/order/delivery/http"
 	orderRepo "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/order/repository"
 	orderUcase "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/order/usecase"
@@ -110,6 +113,10 @@ func main() {
 	restaurantsUsecase := restaurantsUsecase.NewRestaurantsUsecase(restaurantsRepo)
 	restaurantsHandler := restaurantsHandler.NewRestaurantsHandler(restaurantsUsecase, staticManager)
 
+	dishesRepo := dishesRepo.NewDishesRepo(pgxManager)
+	dishesUsecase := dishesUsecase.NewDishesUsecase(dishesRepo)
+	dishesHandler := dishesHandler.NewDishesHandler(dishesUsecase, staticManager)
+
 	router := echo.New()
 
 	serverRouting := configRouting.ServerHandlers{
@@ -117,6 +124,7 @@ func main() {
 		RestaurantsHandler: restaurantsHandler,
 		SuggsHandler:       suggsHandler,
 		OrderHandler:       orderHandler,
+		DishesHandler:      dishesHandler,
 	}
 
 	serverRouting.ConfigureRouting(router)

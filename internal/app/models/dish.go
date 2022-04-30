@@ -1,64 +1,63 @@
 package models
 
 type Dish struct {
-	Id          int
-	Restaurant  string
-	Name        string
-	Description string
-	Image_path  string
-	Calories    int
-	Price       int
+	Id           int
+	RestaurantId string
+	Name         string
+	Description  string
+	Image_path   string
+	Calories     int
+	Price        int
 }
 
 type DishDataStorage struct {
-	Id 			int
-	Restaurant 	int
-	Name 		string
-	Description string
-	Image_path  string
-	Calories    int
-	Price       int
-	Weight		int
+	Id           int
+	RestaurantId int `db:"restaurant_id"`
+	Name         string
+	Description  string
+	ImagePath    string `db:"image_path"`
+	Calories     int
+	Price        int
+	Weight       int
 }
 
-type DishUseCase struct {
-	Id 			int
-	Restaurant 	int
-	Name 		string
-	Description string
-	Image_path  string
-	Calories    int
-	Price       int
-	Weight		int
+type DishUcase struct {
+	Id           int
+	RestaurantId int
+	Name         string
+	Description  string
+	ImagePath    string
+	Calories     int
+	Price        int
+	Weight       int
 }
 
 type DishesDataStorage struct {
 	Dishes []DishDataStorage
 }
 
-type DishesUseCase struct {
-	Dishes []DishUseCase
+type DishesUcase struct {
+	Dishes []DishUcase
 }
 
-type DishJson struct {
-	Id          int    	`json:"id"`
-	Restaurant  string 	`json:"restaurant"`
-	Name        string 	`json:"productName"`
-	Description string 	`json:"description"`
-	Image_path  string 	`json:"imgPath"`
-	Calories    int    	`json:"calories"`
-	Price       int    	`json:"price"`
-	Weight		int		`json:"weight"`
-	Info        string 	`json:"info"`
+type DishResp struct {
+	Id           int    `json:"id"`
+	RestaurantId int    `json:"restaurant"`
+	Name         string `json:"productName"`
+	Description  string `json:"description"`
+	ImagePath    string `json:"imgPath"`
+	Calories     int    `json:"info"`
+	Price        int    `json:"price"`
+	Weight       int    `json:"weight"`
 }
 
-type DishJsonForKirill struct {
-	Id 			int		`json:"id"`
-	Restaurant 	int		`json:"restaurany"`
-	Name 		string	`json:"productName"`
-	Description string	`json:"description"`
-	Image_path 	string	`json:"imgPath"`
-	Calories 	int		`json:"info"`
-	Price 		int		`json:"price"`
-	Weight		int		`json:"weight"`
+type RestaurantDishesResp struct {
+	Id             int        `json:"id"`
+	Name           string     `json:"restName"`
+	ImagePath      string     `json:"imgPath"`
+	Slug           string     `json:"slug"`
+	MinPrice       int        `json:"minPrice"`
+	Rating         float64    `json:"rating"`
+	TimeToDelivery string     `json:"timeToDeliver"`
+	Dishes         []DishResp `json:"dishes"`
 }
