@@ -17,9 +17,6 @@ jobs:
         run: docker build -t yutfut/vvti_back:${GITHUB_SHA::8} .
       - name: Push the image
         run: docker push yutfut/vvti_back:${GITHUB_SHA::8}
-#        run: docker build -t yutfut/vvti_back:latest .
-#      - name: Push the image
-#        run: docker push yutfut/vvti_back:latest
 
   deploy:
     runs-on: ubuntu-latest
