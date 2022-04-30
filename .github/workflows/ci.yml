@@ -35,5 +35,5 @@ jobs:
           script: |
             cd VVTI-Static/
             sudo docker-compose stop
-            sudo docker-compose rm back
+            sudo docker-compose rm backend
             sudo docker-compose up -d
