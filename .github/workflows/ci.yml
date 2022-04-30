@@ -29,7 +29,7 @@ jobs:
           envs: GITHUB_SHA
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USER }}
-          key: ${{ secrets.SSH_KEY }}
+          key: ${{ secrets.PRIVATE_KEY }}
           script: |
             cd VVTI-Static/
             sudo docker-compose stop
