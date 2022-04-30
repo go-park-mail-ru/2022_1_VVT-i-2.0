@@ -28,7 +28,7 @@ jobs:
         with:
           envs: GITHUB_SHA
           host: ${{ secrets.HOST }}
-          username: ${{ secrets.USER }}
+          username: ${{ secrets.USERNAME }}
           key: ${{ secrets.PRIVATE_KEY }}
           script: |
             cd VVTI-Static/
