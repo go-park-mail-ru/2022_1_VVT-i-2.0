@@ -13,6 +13,6 @@ RUN apk add make git && make build
 FROM alpine:latest
 
 COPY --from=build /project/app /bin/
-COPY --from=build /project/config/serv.toml /
+COPY --from=build /project/config/serv_deploy.toml /
 
 CMD app -config=../serv.toml
