@@ -31,9 +31,6 @@ jobs:
           key: ${{ secrets.PRIVATE_KEY }}
           script: |
             cd VVTI-Static/
-            sudo docker rm -f $(sudo docker ps -aq)
-            sudo docker pull yutfut/vvti_back:${GITHUB_SHA::8}
             sudo docker-compose stop
-            sudo docker-compose rm backend
+            sudo docker rm -f $(sudo docker ps -aq)
             sudo docker-compose up -d
-#
