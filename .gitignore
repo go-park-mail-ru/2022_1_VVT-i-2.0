@@ -7,5 +7,6 @@ error_log
 logs
 
 cmd/static
+cmd/static_1
 
 db_t.go

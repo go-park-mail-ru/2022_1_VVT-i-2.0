@@ -23,7 +23,7 @@ func NewTokenPayload(id models.UserId) *TokenPayload {
 }
 
 type AuthManager interface {
-	CreateToken(payload TokenPayload) (string, error)
+	CreateToken(payload *TokenPayload) (string, error)
 	ParseToken(token string) (*TokenPayload, error)
 	GetEpiryTime() time.Duration
 }

@@ -32,9 +32,9 @@ func (manager *JwtManager) GetEpiryTime() time.Duration {
 	return manager.expDuration
 }
 
-func (manager *JwtManager) CreateToken(payload authManager.TokenPayload) (string, error) {
+func (manager *JwtManager) CreateToken(payload *authManager.TokenPayload) (string, error) {
 	payload.Exp = time.Now().Add(manager.expDuration)
-	token := jwt.NewWithClaims(manager.method, jwt.MapClaims(authManager.TokenPayloadToMap(payload)))
+	token := jwt.NewWithClaims(manager.method, jwt.MapClaims(authManager.TokenPayloadToMap(*payload)))
 	if token == nil {
 		return "", servErrors.NewError(servErrors.CREATE_TOKEN, "error creating jwt-token")
 	}

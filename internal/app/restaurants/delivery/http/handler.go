@@ -2,7 +2,7 @@ package restaurantsHandler
 
 import (
 	"encoding/json"
-
+	"math"
 	"net/http"
 	"strconv"
 
@@ -27,6 +27,14 @@ func NewRestaurantsHandler(usecase restaurants.Usecase, staticManager staticMana
 	}
 }
 
+// GetAllRestaurants Restaurants godoc
+// @Summary      List restaurants
+// @Description  Get restaurants
+// @Tags         Restaurants
+// @Accept       json
+// @Produce      json
+// @Success      200  {object} []models.RestaurantJsonForKirill
+// @Router       /restaurants [get]
 func (h RestaurantsHandler) GetAllRestaurants(ctx echo.Context) error {
 	logger := middleware.GetLoggerFromCtx(ctx)
 	requestId := middleware.GetRequestIdFromCtx(ctx)
@@ -36,110 +44,36 @@ func (h RestaurantsHandler) GetAllRestaurants(ctx echo.Context) error {
 	if err != nil {
 		cause := servErrors.ErrorAs(err)
 		if cause != nil && cause.Code == servErrors.NO_SUCH_ENTITY_IN_DB {
-			return echo.NewHTTPError(http.StatusForbidden, httpErrDescr.NO_SUCH_USER)
+			return echo.NewHTTPError(http.StatusForbidden, httpErrDescr.NO_SUCH_RESTAURANTS)
 		}
 		logger.Error(requestId, err.Error())
 		return echo.NewHTTPError(http.StatusInternalServerError, httpErrDescr.SERVER_ERROR)
 	}
 
 	if restaurantsDataDelivery == nil {
-		logger.Error(requestId, "from user-usecase-get-user returned userData==nil and err==nil, unknown error")
+		logger.Error(requestId, "from restaurants-handler-getall returned restaurantsDataDelivery==nil and err==nil, unknown error")
 		return echo.NewHTTPError(http.StatusInternalServerError, httpErrDescr.SERVER_ERROR)
 	}
 
-	restaurantsD := &models.RestaurantsResponseForKirill{}
-
+	restaurantsD := &models.AllRestaurantsResp{}
 	for _, rest := range restaurantsDataDelivery.Restaurants {
-		item := &models.RestaurantJsonForKirill{
-			Id:         rest.Id,
-			Name:       rest.Name,
-			City:       rest.City,
-			Address:    rest.Address,
-			Image_path: h.StaticManager.GetRestaurantUrl(rest.Image_path),
-			// Image_path:     "http://127.0.0.1:8080/static/static/" + rest.Image_path,
-			Slug:           rest.Slug,
-			Min_price:      rest.Min_price,
-			Avg_price:      rest.Avg_price,
-			Rating:         float64(int(rest.Rating*10)) / 10,
-			TimeToDelivery: "25 - 30",
+		rating := 0.0
+		if rest.ReviewCount != 0 {
+			rating = math.Round(float64(rest.AggRating)*10/float64(rest.ReviewCount)) / 10
 		}
-		restaurantsD.Restaurants = append(restaurantsD.Restaurants, *item)
+		item := models.RestaurantResp{
+			Id:             rest.Id,
+			Name:           rest.Name,
+			ImagePath:      h.StaticManager.GetRestaurantUrl(rest.ImagePath),
+			Slug:           rest.Slug,
+			MinPrice:       rest.MinPrice,
+			Rating:         rating,
+			TimeToDelivery: strconv.Itoa(rest.DownMinutsToDelivery) + "-" + strconv.Itoa(rest.UpMinutsToDelivery),
+		}
+		restaurantsD.Restaurants = append(restaurantsD.Restaurants, item)
 	}
 
 	result, _ := json.Marshal(restaurantsD.Restaurants)
-	// fmt.Printf("json string: %s\n", string(result))
-	ctx.Response().Header().Add(echo.HeaderContentLength, strconv.Itoa(len(result)))
-	return ctx.JSONBlob(http.StatusOK, result)
-}
-
-func (h RestaurantsHandler) GetDishesByRestaurants(ctx echo.Context) error {
-	logger := middleware.GetLoggerFromCtx(ctx)
-	requestId := middleware.GetRequestIdFromCtx(ctx)
-
-	slug := ctx.Param("slug")
-	restaurantDataDelivery, err := h.Usecase.GetRestaurantBySluf(slug)
-
-	if err != nil {
-		cause := servErrors.ErrorAs(err)
-		if cause != nil && cause.Code == servErrors.NO_SUCH_ENTITY_IN_DB {
-			return echo.NewHTTPError(http.StatusForbidden, httpErrDescr.NO_SUCH_USER)
-		}
-		logger.Error(requestId, err.Error())
-		return echo.NewHTTPError(http.StatusInternalServerError, httpErrDescr.SERVER_ERROR)
-	}
-
-	if restaurantDataDelivery == nil {
-		logger.Error(requestId, "from user-usecase-get-user returned userData==nil and err==nil, unknown error")
-		return echo.NewHTTPError(http.StatusInternalServerError, httpErrDescr.SERVER_ERROR)
-	}
-
-	dishesDataDelivery, err := h.Usecase.GetDishByRestaurant(restaurantDataDelivery.Id)
-
-	if err != nil {
-		cause := servErrors.ErrorAs(err)
-		if cause != nil && cause.Code == servErrors.NO_SUCH_ENTITY_IN_DB {
-			return echo.NewHTTPError(http.StatusForbidden, httpErrDescr.NO_SUCH_USER)
-		}
-		logger.Error(requestId, err.Error())
-		return echo.NewHTTPError(http.StatusInternalServerError, httpErrDescr.SERVER_ERROR)
-	}
-
-	if dishesDataDelivery == nil {
-		logger.Error(requestId, "from user-usecase-get-user returned userData==nil and err==nil, unknown error")
-		return echo.NewHTTPError(http.StatusInternalServerError, httpErrDescr.SERVER_ERROR)
-	}
-
-	restaurantD := &models.RestaurantsDishesJsonForKirill{
-		Id:      restaurantDataDelivery.Id,
-		Name:    restaurantDataDelivery.Name,
-		City:    restaurantDataDelivery.City,
-		Address: restaurantDataDelivery.Address,
-		// Image_path:     "http://127.0.0.1:8080/static/static/" + restaurantDataDelivery.Image_path,
-		Image_path:     h.StaticManager.GetRestaurantUrl(restaurantDataDelivery.Image_path),
-		Slug:           restaurantDataDelivery.Slug,
-		Min_price:      restaurantDataDelivery.Min_price,
-		Avg_price:      restaurantDataDelivery.Avg_price,
-		Rating:         float64(int(restaurantDataDelivery.Rating*10)) / 10,
-		TimeToDelivery: "25-30",
-	}
-
-	for _, dish := range dishesDataDelivery.Dishes {
-		item := &models.DishJsonForKirill{
-			Id:          dish.Id,
-			Restaurant:  dish.Restaurant,
-			Name:        dish.Name,
-			Description: dish.Description,
-			Image_path:  h.StaticManager.GetDishesUrl(dish.Image_path),
-			// Image_path:  "http://127.0.0.1:8080/static/dish_static/" + dish.Image_path,
-			Calories: dish.Calories,
-			Price:    dish.Price,
-			Weight:   dish.Weight,
-		}
-		restaurantD.Dishes = append(restaurantD.Dishes, *item)
-	}
-
-	result, _ := json.Marshal(restaurantD)
-	// fmt.Printf("json string: %s\n", string(result))
 	ctx.Response().Header().Add(echo.HeaderContentLength, strconv.Itoa(len(result)))
 	return ctx.JSONBlob(http.StatusOK, result)
 }

@@ -29,6 +29,9 @@ import (
 	suggsHandler "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/address/delivery/http"
 	suggsRepo "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/address/repository"
 	suggsUcase "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/address/usecase"
+	dishesHandler "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/dishes/delivery/http"
+	dishesRepo "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/dishes/repository"
+	dishesUsecase "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/dishes/usecase"
 	orderHandler "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/order/delivery/http"
 	orderRepo "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/order/repository"
 	orderUcase "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/order/usecase"
@@ -39,6 +42,21 @@ import (
 	userRepo "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/user/repository"
 	userUcase "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/user/usecase"
 )
+
+// @title           Swagger Example API
+// @version         1.0
+// @description     This is a sample server celler server.
+// @termsOfService  http://swagger.io/terms/
+
+// @contact.name   API Support
+// @contact.url    http://www.swagger.io/support
+// @contact.email  support@swagger.io
+
+// @license.name  Apache 2.0
+// @license.url   http://www.apache.org/licenses/LICENSE-2.0.html
+
+// @host      localhost:8080
+// @BasePath  /api/v1
 
 func main() {
 	configPath := flag.String("config", "../config/serv.toml", "path to config file")
@@ -112,6 +130,10 @@ func main() {
 	restaurantsUsecase := restaurantsUsecase.NewRestaurantsUsecase(restaurantsRepo)
 	restaurantsHandler := restaurantsHandler.NewRestaurantsHandler(restaurantsUsecase, staticManager)
 
+	dishesRepo := dishesRepo.NewDishesRepo(pgxManager)
+	dishesUsecase := dishesUsecase.NewDishesUsecase(dishesRepo)
+	dishesHandler := dishesHandler.NewDishesHandler(dishesUsecase, staticManager)
+
 	router := echo.New()
 
 	serverRouting := configRouting.ServerHandlers{
@@ -119,6 +141,7 @@ func main() {
 		RestaurantsHandler: restaurantsHandler,
 		SuggsHandler:       suggsHandler,
 		OrderHandler:       orderHandler,
+		DishesHandler:      dishesHandler,
 	}
 
 	serverRouting.ConfigureRouting(router)

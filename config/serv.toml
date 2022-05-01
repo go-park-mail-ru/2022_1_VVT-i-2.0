@@ -41,11 +41,13 @@ email="nat-s.skv@yandex.ru"
 user = "yutfut" # TODO установить норм имя
 password = "example"
 port = 5432
+# host = "db"
 host = "127.0.0.1"
 connectionMax = 500
 dbname = "vvti"
 # dbname = "test"
 
 [cacher]
+# host = "memcached"
 host = "127.0.0.1"
 port = 11211

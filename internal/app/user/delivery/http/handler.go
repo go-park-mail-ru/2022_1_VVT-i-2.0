@@ -93,7 +93,7 @@ func (h UserHandler) Login(ctx echo.Context) error {
 		return echo.NewHTTPError(http.StatusInternalServerError, httpErrDescr.SERVER_ERROR)
 	}
 
-	token, err := h.AuthManager.CreateToken(*authManager.NewTokenPayload(userDataUcase.Id))
+	token, err := h.AuthManager.CreateToken(authManager.NewTokenPayload(userDataUcase.Id))
 	if err != nil {
 		logger.Error(requestId, "error creating token: "+err.Error())
 		return echo.NewHTTPError(http.StatusInternalServerError, httpErrDescr.SERVER_ERROR)
@@ -103,10 +103,6 @@ func (h UserHandler) Login(ctx echo.Context) error {
 	tokenCookie := createTokenCookie(token, host, h.AuthManager.GetEpiryTime())
 
 	ctx.SetCookie(tokenCookie)
-	if userDataUcase.Avatar == "" {
-
-		return ctx.JSON(http.StatusOK, models.UserDataResp{Phone: userDataUcase.Phone, Email: userDataUcase.Email, Name: userDataUcase.Name, Avatar: ""})
-	}
 	csrfToken := middleware.GetCSRFTokenromCtx(ctx)
 	if csrfToken != "" {
 		ctx.Response().Header().Add(echo.HeaderXCSRFToken, csrfToken)
@@ -156,7 +152,7 @@ func (h UserHandler) Register(ctx echo.Context) error {
 		return echo.NewHTTPError(http.StatusInternalServerError, httpErrDescr.SERVER_ERROR)
 	}
 
-	token, err := h.AuthManager.CreateToken(*authManager.NewTokenPayload(userDataUcase.Id))
+	token, err := h.AuthManager.CreateToken(authManager.NewTokenPayload(userDataUcase.Id))
 	if err != nil {
 		logger.Error(requestId, "error creating token: "+err.Error())
 		return echo.NewHTTPError(http.StatusInternalServerError, httpErrDescr.SERVER_ERROR)
@@ -249,8 +245,6 @@ func (h UserHandler) GetUser(ctx echo.Context) error {
 }
 
 func (h UserHandler) UpdateUser(ctx echo.Context) error {
-	// b, _ := io.ReadAll(ctx.Request().Body)
-	// fmt.Println(string(b))
 	user := middleware.GetUserFromCtx(ctx)
 	if user == nil {
 		return echo.NewHTTPError(http.StatusUnauthorized, httpErrDescr.AUTH_REQUIRED)
@@ -278,16 +272,10 @@ func (h UserHandler) UpdateUser(ctx echo.Context) error {
 
 	avatarImage, _, _ := ctx.Request().FormFile("avatar")
 	if avatarImage != nil {
-		// b, _ := io.ReadAll(avatarImage)
-		// fmt.Println(string(b))
-		// fmt.Println(avatarImage)
-		// fmt.Println(del)
 		defer avatarImage.Close()
 	}
 
-	fmt.Println("1")
 	userDataUcase, err := h.Usecase.UpdateUser(&models.UpdateUserUsecase{Id: user.Id, Email: updateReq.Email, Name: updateReq.Name, AvatarImg: avatarImage})
-	fmt.Println("2")
 
 	if err != nil {
 		cause := servErrors.ErrorAs(err)
@@ -314,5 +302,6 @@ func (h UserHandler) UpdateUser(ctx echo.Context) error {
 	if csrfToken != "" {
 		ctx.Response().Header().Add(echo.HeaderXCSRFToken, csrfToken)
 	}
+
 	return ctx.JSON(http.StatusOK, models.UserDataResp{Phone: userDataUcase.Phone, Email: userDataUcase.Email, Name: userDataUcase.Name, Avatar: h.StaticManager.GetAvatarUrl(userDataUcase.Avatar)})
 }
