@@ -29,6 +29,9 @@ import (
 	suggsHandler "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/address/delivery/http"
 	suggsRepo "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/address/repository"
 	suggsUcase "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/address/usecase"
+	commentHandler "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/comments/delivery/http"
+	commentRepo "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/comments/repository"
+	commentUcase "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/comments/usecase"
 	dishesHandler "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/dishes/delivery/http"
 	dishesRepo "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/dishes/repository"
 	dishesUsecase "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/dishes/usecase"
@@ -134,6 +137,10 @@ func main() {
 	dishesUsecase := dishesUsecase.NewDishesUsecase(dishesRepo)
 	dishesHandler := dishesHandler.NewDishesHandler(dishesUsecase, staticManager)
 
+	commentsRepo := commentRepo.NewCommentsRepo(pgxManager)
+	commentsUsecase := commentUcase.NewCommentsUsecase(commentsRepo)
+	commentsHandler := commentHandler.NewCommentsHandler(commentsUsecase)
+
 	router := echo.New()
 
 	serverRouting := configRouting.ServerHandlers{
@@ -142,6 +149,7 @@ func main() {
 		SuggsHandler:       suggsHandler,
 		OrderHandler:       orderHandler,
 		DishesHandler:      dishesHandler,
+		CommentsHandler: 	commentsHandler,
 	}
 
 	serverRouting.ConfigureRouting(router)

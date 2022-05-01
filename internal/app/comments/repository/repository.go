@@ -2,7 +2,6 @@ package repository
 
 import (
 	"database/sql"
-
 	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/models"
 	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/tools/servErrors"
 	"github.com/jmoiron/sqlx"
@@ -12,13 +11,13 @@ type CommentsRepo struct {
 	DB *sqlx.DB
 }
 
-func NewRestaurantsRepo(db *sqlx.DB) *CommentsRepo {
+func NewCommentsRepo(db *sqlx.DB) *CommentsRepo {
 	return &CommentsRepo{DB: db}
 }
 
 func (r *CommentsRepo) GetRestaurantByID(id int) (*models.RestaurantDataStorage, error) {
 	restaurant := &models.RestaurantDataStorage{}
-	err := r.DB.Get(restaurant, "SELECT id, name, image_path, slug, min_price,  rating, count_rating FROM restaurants WHERE id = $1", id)
+	err := r.DB.Get(restaurant, "SELECT id, name, image_path, slug, min_price, up_time_to_delivery, down_time_to_delivery, review_count, agg_rating FROM restaurants WHERE id = $1", id)
 	switch err {
 	case nil:
 		return restaurant, nil
@@ -31,7 +30,7 @@ func (r *CommentsRepo) GetRestaurantByID(id int) (*models.RestaurantDataStorage,
 
 func (r *CommentsRepo) GetRestaurantComments(id int) ([]*models.CommentRestaurantDataStorage, error) {
 	comments := make([]*models.CommentRestaurantDataStorage, 0, 3)
-	err := r.DB.Select(&comments, `SELECT id, restaurant, user_id, comment_text, comment_rating FROM comment_restaurants WHERE restaurant = $1`, id)
+	err := r.DB.Select(&comments, `SELECT restaurant_id, author, text, stars, date FROM comments WHERE restaurant_id = $1`, id)
 
 	switch err {
 	case nil:
@@ -43,9 +42,23 @@ func (r *CommentsRepo) GetRestaurantComments(id int) ([]*models.CommentRestauran
 	}
 }
 
+func (r *CommentsRepo) GetUserById(id models.UserId) (*models.UserDataRepo, error) {
+	user := &models.UserDataRepo{}
+	err := r.DB.Get(user, `SELECT id, phone, email, name, avatar FROM users WHERE id = $1`, id)
+
+	switch err {
+	case nil:
+		return user, nil
+	case sql.ErrNoRows:
+		return nil, servErrors.NewError(servErrors.NO_SUCH_ENTITY_IN_DB, err.Error())
+	default:
+		return nil, servErrors.NewError(servErrors.DB_ERROR, err.Error())
+	}
+}
+
 func (r *CommentsRepo) AddRestaurantComment(newComment *models.AddCommentRestaurantDataStorage) (*models.CommentRestaurantDataStorage, error) {
 	comment := &models.CommentRestaurantDataStorage{}
-	err := r.DB.Get(comment, `INSERT INTO comment_restaurants (restaurant, user_id, comment_text, comment_rating) VALUES ($1,$2,$3,$4) RETURNING id, restaurant, user_id, comment_text, comment_rating`, newComment.Restaurant, newComment.User_id, newComment.Comment_text, newComment.Comment_rating)
+	err := r.DB.Get(comment, `INSERT INTO comments (restaurant_id, author, text, stars) VALUES ($1,$2,$3,$4) RETURNING restaurant_id, author, text, stars, date`, newComment.Restaurant_id, newComment.User, newComment.Comment_text, newComment.Comment_rating)
 	if err != nil {
 		if err == sql.ErrConnDone || err == sql.ErrTxDone {
 			return nil, servErrors.NewError(servErrors.DB_ERROR, err.Error())
@@ -60,7 +73,7 @@ func (r *CommentsRepo) AddRestaurantComment(newComment *models.AddCommentRestaur
 
 func (r *CommentsRepo) UpdateRestaurantRating(restId int, newRestRating int, countRating int) (*models.RestaurantDataStorage, error) {
 	restaurant := &models.RestaurantDataStorage{}
-	err := r.DB.Get(restaurant, `UPDATE restaurants SET rating=$1, count_rating=$2 WHERE id=$3 RETURNING id, name, city, address, image_path, slug, min_price, avg_price, rating, count_rating`, newRestRating, countRating, restId)
+	err := r.DB.Get(restaurant, `UPDATE restaurants SET agg_rating=$1, review_count=$2 WHERE id=$3 RETURNING id, name, image_path, slug, image_path, slug, min_price, up_time_to_delivery, down_time_to_delivery, review_count, agg_rating`, newRestRating, countRating, restId)
 	if err != nil {
 		if err == sql.ErrConnDone || err == sql.ErrTxDone {
 			return nil, servErrors.NewError(servErrors.DB_ERROR, err.Error())
@@ -72,3 +85,6 @@ func (r *CommentsRepo) UpdateRestaurantRating(restId int, newRestRating int, cou
 	}
 	return restaurant, nil
 }
+
+//token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHBpcmVkIjoiMjAyMi0wNS0wOFQxODozNDo0OS42ODYzMzgrMDM6MDAiLCJpZCI6NH0.XhuLHltOesExgjuC1bKFo5zl5D37rLXR2JNzTyqhtJw
+// _csrf=ZhSKtRBGuTj24Pgc4tdtqNHL37NUHWux

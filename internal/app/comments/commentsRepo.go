@@ -7,4 +7,5 @@ type Repository interface {
 	GetRestaurantComments(id int) ([]*models.CommentRestaurantDataStorage, error)
 	AddRestaurantComment(item *models.AddCommentRestaurantDataStorage) (*models.CommentRestaurantDataStorage, error)
 	UpdateRestaurantRating(restId int, newRestRating int, countRating int) (*models.RestaurantDataStorage, error)
+	GetUserById(id models.UserId) (*models.UserDataRepo, error)
 }
