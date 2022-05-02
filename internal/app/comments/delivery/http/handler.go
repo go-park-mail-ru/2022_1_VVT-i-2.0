@@ -40,10 +40,12 @@ func (h CommentsHandler) GetRestaurantComments(ctx echo.Context) error {
 
 	//item := ctx.Param("id")
 	//id, err := strconv.ParseInt(item, 16, 32)
-	id, _ := strconv.Atoi(ctx.Param("id"))
-	commetsDataDelivery, err := h.Usecase.GetRestaurantComments(int(id))
+	slug := ctx.Param("slug")
+
+	commetsDataDelivery, err := h.Usecase.GetRestaurantComments(slug)
 
 	if err != nil {
+		fmt.Println("сломалась тут1")
 		cause := servErrors.ErrorAs(err)
 		if cause != nil && cause.Code == servErrors.NO_SUCH_ENTITY_IN_DB {
 			return echo.NewHTTPError(http.StatusForbidden, httpErrDescr.NO_SUCH_USER)
@@ -57,11 +59,10 @@ func (h CommentsHandler) GetRestaurantComments(ctx echo.Context) error {
 		return echo.NewHTTPError(http.StatusInternalServerError, httpErrDescr.SERVER_ERROR)
 	}
 
-	commentsD := &models.CommentsDataDelivery{}
+	commentsD := &models.GetCommentsDataDelivery{}
 
 	for _, comment := range commetsDataDelivery.Comment {
-		item := &models.CommentDataDelivery{
-			Restaurant_id:	comment.Restaurant_id,
+		item := &models.GetCommentDataDelivery{
 			Author:        	comment.Author,
 			Text:   		comment.Text,
 			Stars: 			comment.Stars,
@@ -85,9 +86,7 @@ func (h CommentsHandler) GetRestaurantComments(ctx echo.Context) error {
 // @Router       /comment [post]
 func (h CommentsHandler) AddRestaurantComment(ctx echo.Context) error {
 	user := middleware.GetUserFromCtx(ctx)
-	fmt.Println("сломалось тут")
 	if user == nil {
-		fmt.Println("сломалось тут")
 		return ctx.JSON(http.StatusUnauthorized, httpErrDescr.AUTH_REQUIRED)
 	}
 

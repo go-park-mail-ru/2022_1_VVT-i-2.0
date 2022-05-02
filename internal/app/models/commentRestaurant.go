@@ -5,7 +5,7 @@ type CommentRestaurantDataStorage struct {
 	Author			string
 	Text 			string
 	Stars			int
-	Date 			string
+	Date 			string	`db:"get_ru_date"`
 }
 
 type AddCommentRestaurantDataStorage struct {
@@ -51,11 +51,22 @@ type CommentsRestaurantUseCase struct {
 	Comment []CommentRestaurantUseCase
 }
 
+type GetCommentDataDelivery struct {
+	Author			string	`json:"author"`
+	Text 			string	`json:"text"`
+	Stars			int		`json:"stars"`
+	Date 			string	`json:"date"`
+}
+
+type GetCommentsDataDelivery struct {
+	Comment []GetCommentDataDelivery `json:"comment"`
+}
+
 type CommentDataDelivery struct {
 	Restaurant_id	int		`json:"restaurants_id"`
 	Author			string	`json:"author"`
 	Text 			string	`json:"text"`
-	Stars			int		`json:"starts"`
+	Stars			int		`json:"stars"`
 	Date 			string	`json:"date"`
 }
 

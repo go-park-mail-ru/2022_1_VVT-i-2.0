@@ -52,12 +52,13 @@ type DishResp struct {
 }
 
 type RestaurantDishesResp struct {
-	Id             int        `json:"id"`
-	Name           string     `json:"restName"`
-	ImagePath      string     `json:"imgPath"`
-	Slug           string     `json:"slug"`
-	MinPrice       int        `json:"minPrice"`
-	Rating         float64    `json:"rating"`
-	TimeToDelivery string     `json:"timeToDeliver"`
-	Dishes         []DishResp `json:"dishes"`
+	Id            	int        	`json:"id"`
+	Name          	string     	`json:"restName"`
+	ImagePath     	string     	`json:"imgPath"`
+	Slug          	string     	`json:"slug"`
+	MinPrice      	int        	`json:"minPrice"`
+	Rating        	float64    	`json:"rating"`
+	TimeToDelivery 	string     	`json:"timeToDeliver"`
+	ReviewCount		int			`json:"reviewCount"`
+	Dishes         	[]DishResp 	`json:"dishes"`
 }

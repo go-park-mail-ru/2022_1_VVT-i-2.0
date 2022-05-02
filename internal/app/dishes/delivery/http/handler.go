@@ -83,6 +83,7 @@ func (h DishesHandler) GetDishesByRestaurants(ctx echo.Context) error {
 		Slug:           restaurantData.Slug,
 		MinPrice:       restaurantData.MinPrice,
 		Rating:         rating,
+		ReviewCount: 	restaurantData.ReviewCount,
 		TimeToDelivery: strconv.Itoa(restaurantData.DownMinutsToDelivery) + "-" + strconv.Itoa(restaurantData.UpMinutsToDelivery),
 	}
 

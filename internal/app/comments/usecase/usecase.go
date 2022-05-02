@@ -1,6 +1,7 @@
 package usecase
 
 import (
+	"fmt"
 	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/comments"
 	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/models"
 	"github.com/pkg/errors"
@@ -16,17 +17,24 @@ func NewCommentsUsecase(commentsRepo comments.Repository) *CommentsUsecase {
 	}
 }
 
-func (u *CommentsUsecase) GetRestaurantComments(id int) (*models.CommentsRestaurantUseCase, error) {
-	commentsData, err := u.Repository.GetRestaurantComments(id)
+func (u *CommentsUsecase) GetRestaurantComments(slug string) (*models.CommentsRestaurantUseCase, error) {
+	restaurant := &models.RestaurantDataStorage{}
+	restaurant, err := u.Repository.GetRestaurantBySlug(slug)
 	if err != nil {
-		return nil, errors.Wrapf(err, "error getting restaurants")
+		fmt.Println("сломалась тут2")
+		return nil, errors.Wrapf(err, "error getting restaurant")
+	}
+
+	commentsData, err := u.Repository.GetRestaurantComments(restaurant.Id)
+	if err != nil {
+		fmt.Println("сломалась тут3")
+		return nil, errors.Wrapf(err, "error getting comments")
 	}
 
 	commentsUC := &models.CommentsRestaurantUseCase{}
 
 	for _, comment := range commentsData {
 		item := &models.CommentRestaurantUseCase{
-			Restaurant_id:	comment.Restaurant_id,
 			Author:        	comment.Author,
 			Text:   		comment.Text,
 			Stars: 			comment.Stars,
