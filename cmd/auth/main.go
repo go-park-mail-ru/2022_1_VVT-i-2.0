@@ -25,13 +25,13 @@ func main() {
 	configPath := flag.String("config", "../../config/auth.toml", "path to config file")
 	flag.Parse()
 
-	config := conf.NewConfig()
+	config := conf.NewAuthMicroserviceConfig()
 	err := conf.ReadConfigFile(*configPath, config)
 	if err != nil {
 		log.Fatal(errors.Wrap(err, "error reading config"))
 	}
 
-	pgxManager, err := postgresqlx.NewPostgresqlX(&config.DatabaseCongig)
+	pgxManager, err := postgresqlx.NewPostgresqlX(&config.DatabaseConfig)
 	if err != nil {
 		log.Fatal(errors.Wrap(err, "error creating postgres agent"))
 	}
@@ -56,7 +56,7 @@ func main() {
 
 	authHandler := authHandler.NewAuthHandler(authUcase)
 
-	lis, err := net.Listen("tcp", config.ServConfig.BindAddr)
+	lis, err := net.Listen("tcp", config.AuthServConfig.BindAddr)
 	if err != nil {
 		log.Fatalln("cant listen port", err)
 	}

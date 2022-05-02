@@ -15,6 +15,7 @@ import (
 	authProto "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/microservices/auth/proto"
 	"github.com/google/uuid"
 	"github.com/pkg/errors"
+	"google.golang.org/grpc/status"
 )
 
 // TODO: удалить
@@ -49,7 +50,7 @@ func (u *UserUsecase) SendCode(req *models.SendCodeUcaseReq) (models.SendCodeUca
 	fmt.Println("send-code-eu")
 	fmt.Println(isRegistered, err)
 	if err != nil {
-		return models.SendCodeUcaseResp{IsRegistered: false}, err
+		return models.SendCodeUcaseResp{IsRegistered: false}, servErrors.NewError(int(status.Code(err)), err.Error())
 	}
 	return models.SendCodeUcaseResp{IsRegistered: isRegistered.IsRegistered}, err
 }
@@ -60,7 +61,7 @@ func (u *UserUsecase) Register(req *models.RegisterUcaseReq) (*models.UserDataUc
 	fmt.Println("reg-eu")
 	fmt.Println(userData, err)
 	if err != nil {
-		return nil, err
+		return nil, servErrors.NewError(int(status.Code(err)), err.Error())
 	}
 	return &models.UserDataUcase{Id: models.UserId(userData.Id), Phone: userData.Phone, Name: userData.Name, Email: userData.Email, Avatar: userData.Avatar}, err
 }
@@ -71,7 +72,7 @@ func (u *UserUsecase) Login(req *models.LoginUcaseReq) (*models.UserDataUcase, e
 	fmt.Println("reg-eu")
 	fmt.Println(userData, err)
 	if err != nil {
-		return nil, err
+		return nil, servErrors.NewError(int(status.Code(err)), err.Error())
 	}
 	return &models.UserDataUcase{Id: models.UserId(userData.Id), Phone: userData.Phone, Name: userData.Name, Email: userData.Email, Avatar: userData.Avatar}, err
 }

@@ -1,4 +1,5 @@
 authMicroserviceAddr = "localhost:8081"
+orderMicroserviceAddr = "localhost:8082"
 
 [server]
 bindAddr = ":8080"
