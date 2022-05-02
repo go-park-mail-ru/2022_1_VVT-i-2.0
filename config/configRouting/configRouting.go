@@ -40,7 +40,7 @@ func (sh *ServerHandlers) ConfigureRouting(router *echo.Echo) {
 	router.POST(v1Prefix+"order", sh.OrderHandler.Order)
 
 	router.GET(v1Prefix+"comments/:id", sh.CommentsHandler.GetRestaurantComments)
-	router.GET(v1Prefix+"comment", sh.CommentsHandler.AddRestaurantComment)
+	router.POST(v1Prefix+"comment", sh.CommentsHandler.AddRestaurantComment)
 	router.GET(v1Prefix+"restaurants", sh.RestaurantsHandler.GetAllRestaurants)
 	router.GET(v1Prefix+"", sh.RestaurantsHandler.GetAllRestaurants)
 	router.GET(v1Prefix+"restaurant/:slug", sh.DishesHandler.GetDishesByRestaurants)

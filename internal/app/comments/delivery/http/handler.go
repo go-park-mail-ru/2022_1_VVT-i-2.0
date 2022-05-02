@@ -2,6 +2,7 @@ package restaurantsHandler
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"strconv"
 
@@ -83,13 +84,12 @@ func (h CommentsHandler) GetRestaurantComments(ctx echo.Context) error {
 // @Success      200  {object}   models.CommentDataDelivery
 // @Router       /comment [post]
 func (h CommentsHandler) AddRestaurantComment(ctx echo.Context) error {
-	//user := middleware.GetUserFromCtx(ctx)
-	//fmt.Println("сломалось тут")
-	//if user == nil {
-	//	fmt.Println("сломалось тут")
-	//	return ctx.JSON(http.StatusOK, ``)
-	//}
-	userId := 1
+	user := middleware.GetUserFromCtx(ctx)
+	fmt.Println("сломалось тут")
+	if user == nil {
+		fmt.Println("сломалось тут")
+		return ctx.JSON(http.StatusUnauthorized, httpErrDescr.AUTH_REQUIRED)
+	}
 
 	logger := middleware.GetLoggerFromCtx(ctx)
 	requestId := middleware.GetRequestIdFromCtx(ctx)
@@ -99,7 +99,7 @@ func (h CommentsHandler) AddRestaurantComment(ctx echo.Context) error {
 		return echo.NewHTTPError(http.StatusBadRequest, httpErrDescr.BAD_REQUEST_BODY)
 	}
 
-	commetsDataDelivery, err := h.Usecase.AddRestaurantComment(models.UserId(userId), &models.AddCommentRestaurantUseCase{
+	commetsDataDelivery, err := h.Usecase.AddRestaurantComment(models.UserId(user.Id), &models.AddCommentRestaurantUseCase{
 		Restaurant:     AddCommentRestaurantUseCaseReq.Restaurant,
 		Comment_text:   AddCommentRestaurantUseCaseReq.Comment_text,
 		Comment_rating: AddCommentRestaurantUseCaseReq.Comment_rating,
