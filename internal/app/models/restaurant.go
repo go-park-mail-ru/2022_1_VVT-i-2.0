@@ -53,3 +53,11 @@ type GetRestaurantByCategoryRepoReq struct {
 type GetRestaurantByCategoryUcaseReq struct {
 	Name string
 }
+
+type GetRestaurantBySearchQueryUcaseReq struct {
+	Query string
+}
+
+type GetRestaurantBySearchQueryRepoReq struct {
+	Query string
+}
