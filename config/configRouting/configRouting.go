@@ -13,12 +13,12 @@ import (
 )
 
 type ServerHandlers struct {
-	UserHandler        	*userHandler.UserHandler
-	RestaurantsHandler 	*restaurantsHandler.RestaurantsHandler
-	DishesHandler      	*dishesHandler.DishesHandler
-	SuggsHandler       	*suggestHandler.SuggsHandler
-	OrderHandler       	*orderHandler.OrderHandler
-	CommentsHandler		*commentHandler.CommentsHandler
+	UserHandler        *userHandler.UserHandler
+	RestaurantsHandler *restaurantsHandler.RestaurantsHandler
+	DishesHandler      *dishesHandler.DishesHandler
+	SuggsHandler       *suggestHandler.SuggsHandler
+	OrderHandler       *orderHandler.OrderHandler
+	CommentsHandler    *commentHandler.CommentsHandler
 }
 
 const (
@@ -44,7 +44,7 @@ func (sh *ServerHandlers) ConfigureRouting(router *echo.Echo) {
 
 	router.GET(v1Prefix+"comments/:slug", sh.CommentsHandler.GetRestaurantComments)
 	router.POST(v1Prefix+"comment", sh.CommentsHandler.AddRestaurantComment)
-	router.GET(v1Prefix+"restaurants", sh.RestaurantsHandler.GetAllRestaurants)
+	router.GET(v1Prefix+"restaurants", sh.RestaurantsHandler.GetAllRestaurantsMain)
 	router.GET(v1Prefix+"", sh.RestaurantsHandler.GetAllRestaurants)
 	router.GET(v1Prefix+"restaurant/:slug", sh.DishesHandler.GetDishesByRestaurants)
 }
