@@ -64,3 +64,17 @@ func (u *OrderUsecase) GetUserOrderStatuses(order *models.GetUserOrderStatusesUc
 	fmt.Println(ordersResp)
 	return &models.GetUserOrderStatusesUcaseResp{OrderStatuses: ordersResp}, err
 }
+
+func (u *OrderUsecase) GetUserOrder(req *models.GetUserOrderUcaseReq) (*models.GetUserOrderUcaseResp, error) {
+	order, err := u.OrderCli.GetUserOrder(context.Background(), &orderProto.GetUserOrderReq{UserId: int64(req.UserId), OrderId: req.OrderId})
+
+	if err != nil {
+		return nil, servErrors.NewError(int(status.Code(err)), err.Error())
+	}
+
+	resp := models.GetUserOrderUcaseResp{OrderId: order.OrderId, Address: order.Address, Date: order.Date, RestaurantName: order.RestaurantName, TotalPrice: order.TotalPrice, Status: order.Status, Cart: make([]models.OrderPositionUcaseResp, len(order.Cart))}
+	for i, poz := range order.Cart {
+		resp.Cart[i] = models.OrderPositionUcaseResp{Name: poz.Name, Description: poz.Description, ImagePath: poz.ImagePath, Calories: poz.Calories, Count: poz.Count, Price: poz.Price, Weigth: poz.Weigth}
+	}
+	return &resp, err
+}

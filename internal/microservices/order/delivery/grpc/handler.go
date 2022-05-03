@@ -85,3 +85,24 @@ func (h grpcOrderHandler) GetUserOrderStatuses(ctx context.Context, req *proto.G
 	fmt.Println(ordersStatusesResp)
 	return &proto.GetUserOrderStatusesResp{OrderStatuses: ordersStatusesResp}, nil
 }
+
+func (h grpcOrderHandler) GetUserOrder(ctx context.Context, req *proto.GetUserOrderReq) (*proto.GetUserOrderResp, error) {
+	fmt.Println("grpc-h")
+	order, err := h.Usecase.GetUserOrder(&models.GetUserOrderUcaseReq{UserId: req.UserId, OrderId: req.OrderId})
+	fmt.Println("grpc-eh")
+	fmt.Println(order, err)
+	if err != nil {
+		cause := servErrors.ErrorAs(err)
+		if cause == nil {
+			return &proto.GetUserOrderResp{}, status.Error(codes.Internal, err.Error())
+		}
+		return &proto.GetUserOrderResp{}, status.Error(codes.Code(cause.Code), err.Error())
+	}
+
+	cart := make([]*proto.OrderPositionResp, len(order.Cart))
+	for i, poz := range order.Cart {
+		cart[i] = &proto.OrderPositionResp{Name: poz.Name, Description: poz.Description, ImagePath: poz.ImagePath, Calories: poz.Calories, Count: poz.Count, Price: poz.Price, Weigth: poz.Weigth}
+	}
+
+	return &proto.GetUserOrderResp{OrderId: order.OrderId, Address: order.Address, Date: order.Date, RestaurantName: order.RestaurantName, TotalPrice: order.TotalPrice, Status: order.Status, Cart: cart}, nil
+}

@@ -116,3 +116,40 @@ func (h OrderHandler) GetUserOrderStatuses(ctx echo.Context) error {
 	ctx.Response().Header().Add(echo.HeaderContentLength, strconv.Itoa(len(result)))
 	return ctx.JSONBlob(http.StatusOK, result)
 }
+
+func (h OrderHandler) GetUserOrder(ctx echo.Context) error {
+	user := middleware.GetUserFromCtx(ctx)
+	if user == nil {
+		return echo.NewHTTPError(http.StatusUnauthorized, httpErrDescr.AUTH_REQUIRED)
+	}
+	logger := middleware.GetLoggerFromCtx(ctx)
+	requestId := middleware.GetRequestIdFromCtx(ctx)
+
+	orderId, err := strconv.Atoi(ctx.Param("orderId"))
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, httpErrDescr.BAD_QUERY_PARAMS)
+	}
+
+	orderUcaseData, err := h.Usecase.GetUserOrder(&models.GetUserOrderUcaseReq{UserId: int64(user.Id), OrderId: int64(orderId)})
+	if err != nil {
+		cause := servErrors.ErrorAs(err)
+		if cause != nil && cause.Code == servErrors.THIS_ORDER_DOESNOT_BELONG_USER {
+			return echo.NewHTTPError(http.StatusForbidden, httpErrDescr.THIS_ORDER_DOESNOT_BELONG_USER)
+		}
+
+		if cause != nil && cause.Code == servErrors.NO_SUCH_ENTITY_IN_DB {
+			return echo.NewHTTPError(http.StatusForbidden, httpErrDescr.NO_SUCH_USER)
+		}
+		logger.Error(requestId, err.Error())
+		return echo.NewHTTPError(http.StatusInternalServerError, httpErrDescr.SERVER_ERROR)
+	}
+	fmt.Println(orderUcaseData.Status)
+	resp := models.GetUserOrderResp{OrderId: orderUcaseData.OrderId, Address: orderUcaseData.Address, Date: orderUcaseData.Date, RestaurantName: orderUcaseData.RestaurantName, Status: orderUcaseData.Status, TotalPrice: orderUcaseData.TotalPrice, Cart: make([]models.OrderPositionResp, len(orderUcaseData.Cart))}
+	for i, order := range orderUcaseData.Cart {
+		resp.Cart[i] = models.OrderPositionResp(order)
+	}
+	fmt.Println(resp)
+	result, _ := json.Marshal(resp)
+	ctx.Response().Header().Add(echo.HeaderContentLength, strconv.Itoa(len(result)))
+	return ctx.JSONBlob(http.StatusOK, result)
+}

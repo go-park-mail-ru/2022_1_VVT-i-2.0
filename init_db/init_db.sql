@@ -4,10 +4,11 @@ DROP TABLE IF EXISTS dishes CASCADE;
 DROP TABLE IF EXISTS comments CASCADE;
 DROP TABLE IF EXISTS streets CASCADE;
 DROP TABLE IF EXISTS houses CASCADE;
-DROP TYPE order_dish CASCADE ;
-DROP TABLE orders_internal CASCADE ;
-DROP TABLE statuses CASCADE;
+DROP TYPE  IF EXISTS order_dish CASCADE ;
+DROP TABLE IF EXISTS orders_internal CASCADE ;
+DROP TABLE IF EXISTS statuses CASCADE;
 DROP TABLE IF EXISTS orders CASCADE;
+DROP TABLE IF EXISTS orders_internal CASCADE;
 DROP TABLE IF EXISTS categori_restaurant CASCADE;
 DROP TABLE IF EXISTS categories CASCADE;
 
@@ -342,6 +343,28 @@ INSERT INTO categori_restaurant (restaurant_id, categori_id) VALUES
 (70529,5);
 
 -- ----------------------------------COMMENTS-------------------------------
+
+CREATE OR REPLACE FUNCTION get_ru_date(date TIMESTAMP) RETURNS VARCHAR(30) AS $$
+DECLARE
+    month_str VARCHAR(30);
+    BEGIN
+        month_str = CASE to_char(date, 'MM') WHEN '01' THEN ' января '
+                        WHEN '02' THEN ' февраля '
+                        WHEN '03' THEN ' марта '
+                        WHEN '04' THEN ' апреля '
+                        WHEN '05' THEN ' мая '
+                        WHEN '06' THEN ' июня '
+                        WHEN '07' THEN ' июля '
+                        WHEN '08' THEN ' августа '
+                        WHEN '09' THEN ' сентября '
+                        WHEN '10' THEN ' октября '
+                        WHEN '11' THEN ' ноября '
+                        WHEN '12' THEN ' декабря '
+                    END;
+        RETURN to_char(date, 'DD')|| month_str || to_char(date, 'YYYY, HH24:MI');          
+        -- RETURN '1234';
+    END;
+$$ LANGUAGE plpgsql;
 
 
 create table comments 
@@ -150623,8 +150646,6 @@ DECLARE
     END;
 $$ LANGUAGE plpgsql;
 
-
-
 CREATE VIEW orders AS
-    SELECT o.id id, o.user_id user_id, to_char(o.date, 'DD.MM.YYYY') date, o.date  fulldate,get_order_status(statuses) status, r.name restaurant_name, o.total_price total_price
+    SELECT o.id id, o.address address, o.user_id user_id, to_char(o.date, 'DD.MM.YYYY') date, o.date  fulldate,get_order_status(statuses) status, r.name restaurant_name, o.total_price total_price, o.cart
     FROM orders_internal o JOIN restaurants r ON o.restaurant_id=r.id;

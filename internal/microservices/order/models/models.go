@@ -1,23 +1,13 @@
 package models
 
-import (
-	"database/sql"
-)
-
-type OrderPositionStorage struct {
-	Id    int64
-	Count int64
-	Price int64
-}
-
-type OrderStorage struct {
-	OrderId    int64
-	UserId     int64
-	Address    string
-	Comment    sql.NullString
-	TotalPrice string
-	Cart       []OrderPositionStorage
-}
+// type OrderStorage struct {
+// 	OrderId    int64
+// 	UserId     int64
+// 	Address    string
+// 	Comment    sql.NullString
+// 	TotalPrice string
+// 	Cart       []OrderPositionStorage
+// }
 
 type OrderPositionUcase struct {
 	Id    int64
@@ -107,4 +97,75 @@ type OrderStatusRepo struct {
 
 type GetUserOrderStatusesRepoResp struct {
 	OrderStatuses []OrderStatusRepo
+}
+
+// //////////////
+
+type GetUserOrderRepoReq struct {
+	OrderId int64
+}
+
+type OrderPositionRepoResp struct {
+	Name        string
+	Description string
+	Count       int64
+	Price       int64
+	Calories    int64
+	Weight      int64
+	ImagePath   string `db:"image_path"`
+}
+
+type GetUserOrderRepoResp struct {
+	UserId         int64 `db:"user_id"`
+	OrderId        int64 `db:"id"`
+	Date           string
+	TotalPrice     int64  `db:"total_price"`
+	RestaurantName string `db:"restaurant_name"`
+	Address        string
+	Status         string
+	Cart           []OrderPositionRepoResp
+}
+
+type GetUserOrderUcaseReq struct {
+	UserId  int64
+	OrderId int64
+}
+
+type OrderPositionUcaseResp struct {
+	Name        string
+	Description string
+	Count       int64
+	Price       int64
+	Calories    int64
+	Weigth      int64
+	ImagePath   string
+}
+
+type GetUserOrderUcaseResp struct {
+	OrderId        int64
+	Date           string
+	TotalPrice     int64
+	RestaurantName string
+	Address        string
+	Status         string
+	Cart           []OrderPositionUcaseResp
+}
+
+type OrderPositionResp struct {
+	Name        string `json:"name"`
+	Description string `json:"description"`
+	Count       int64  `json:"count"`
+	Price       int64  `json:"price"`
+	Calories    int64  `json:"calories"`
+	Weigth      int64  `json:"weigth"`
+	ImagePath   string `json:"imagePath"`
+}
+type GetUserOrderResp struct {
+	OrderId        int64               `json:"id"`
+	Address        string              `json:"address"`
+	Date           string              `json:"date"`
+	TotalPrice     int64               `json:"totalPrice"`
+	RestaurantName string              `json:"restName"`
+	Status         string              `json:"status"`
+	Cart           []OrderPositionResp `json:"cart"`
 }

@@ -1,6 +1,7 @@
 package usecase
 
 import (
+	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/tools/servErrors"
 	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/microservices/order"
 	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/microservices/order/models"
 	"github.com/pkg/errors"
@@ -58,3 +59,29 @@ func (u *OrderUsecase) GetUserOrderStatuses(user *models.GetUserOrderStatusesUca
 	}
 	return &models.GetUserOrderStatusesUcaseResp{OrderStatuses: orderStatusesResp}, nil
 }
+
+func (u *OrderUsecase) GetUserOrder(req *models.GetUserOrderUcaseReq) (*models.GetUserOrderUcaseResp, error) {
+
+	order, err := u.OrderRepo.GetUserOrder(&models.GetUserOrderRepoReq{OrderId: req.OrderId})
+
+	if err != nil {
+		return nil, errors.Wrap(err, "error getting orders from storage")
+	}
+
+	if order.UserId != req.UserId {
+		return nil, servErrors.NewError(servErrors.THIS_ORDER_DOESNOT_BELONG_USER, "")
+	}
+	cart := make([]models.OrderPositionUcaseResp, len(order.Cart))
+	for i, poz := range order.Cart {
+		cart[i] = models.OrderPositionUcaseResp{Name: poz.Name, Description: poz.Description, ImagePath: poz.ImagePath, Calories: poz.Calories, Count: poz.Count, Price: poz.Price, Weigth: poz.Weight}
+	}
+
+	return &models.GetUserOrderUcaseResp{OrderId: order.OrderId, Address: order.Address, Date: order.Date, RestaurantName: order.RestaurantName, TotalPrice: order.TotalPrice, Status: order.Status, Cart: cart}, nil
+}
+
+// ordersResp := make([]models.ShortOrderUcase, len(orders.OrderStatuses))
+// for i, position := range orders.OrderStatuses {
+// ordersResp[i] = models.ShortOrderUcase(position)
+// }
+// return &models.GetUserOrderUcaseResp{Address: order.Address}, nil
+// }

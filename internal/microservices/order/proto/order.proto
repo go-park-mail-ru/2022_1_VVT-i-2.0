@@ -36,16 +36,18 @@ message GetUserOrdersResp {
 }
 
 message OrderPositionResp {
-  int64 Id = 1;
-  int64 Count = 2;
-  int64 Price = 3;
-  int64 Calries = 4;
-  int64 Weigth = 5;
-  string ImgePath = 6;
+  string Name = 1;
+  string Description = 2;
+  int64 Count = 3;
+  int64 Price = 4;
+  int64 Calories = 5;
+  int64 Weigth = 6;
+  string ImagePath = 7;
 }
 
 message GetUserOrderReq {
   int64 UserId = 1;
+  int64 OrderId = 2;
 }
 
 message GetUserOrderResp {
@@ -54,7 +56,8 @@ message GetUserOrderResp {
   int64 TotalPrice = 3;
   string RestaurantName = 4;
   string Status = 5;
-  repeated OrderPositionResp Cart = 6;
+  string Address = 6;
+  repeated OrderPositionResp Cart = 7;
 }
 
 message GetUserOrderStatusesReq {
