@@ -33,13 +33,13 @@ type RestaurantsUcase struct {
 }
 
 type RestaurantResp struct {
-	Id             int     `json:"id"`
-	Name           string  `json:"restName"`
-	ImagePath      string  `json:"imgPath"`
-	Slug           string  `json:"slug"`
-	MinPrice       int     `json:"price"`
-	Rating         float64 `json:"rating"`
-	TimeToDelivery string  `json:"timeToDeliver"`
+	Id            	 int     `json:"id"`
+	Name          	 string  `json:"restName"`
+	ImagePath     	string  `json:"imgPath"`
+	Slug           	string  `json:"slug"`
+	MinPrice       	int     `json:"price"`
+	Rating         	float64 `json:"rating"`
+	TimeToDelivery 	string  `json:"timeToDeliver"`
 }
 
 type AllRestaurantsResp struct {

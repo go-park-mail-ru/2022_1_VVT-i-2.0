@@ -343,6 +343,27 @@ INSERT INTO categori_restaurant (restaurant_id, categori_id) VALUES
 (70529,5);
 
 -- ----------------------------------COMMENTS-------------------------------
+CREATE OR REPLACE FUNCTION get_ru_date(date TIMESTAMP) RETURNS VARCHAR(30) AS $$
+DECLARE
+    month_str VARCHAR(30);
+    BEGIN
+        month_str = CASE to_char(date, 'MM') WHEN '01' THEN ' января '
+                        WHEN '02' THEN ' февраля '
+                        WHEN '03' THEN ' марта '
+                        WHEN '04' THEN ' апреля '
+                        WHEN '05' THEN ' мая '
+                        WHEN '06' THEN ' июня '
+                        WHEN '07' THEN ' июля '
+                        WHEN '08' THEN ' августа '
+                        WHEN '09' THEN ' сентября '
+                        WHEN '10' THEN ' октября '
+                        WHEN '11' THEN ' ноября '
+                        WHEN '12' THEN ' декабря '
+                    END;
+        RETURN to_char(date, 'DD')|| month_str || to_char(date, 'YYYY, HH24:MI');
+        -- RETURN '1234';
+    END;
+$$ LANGUAGE plpgsql;
 
 CREATE OR REPLACE FUNCTION get_ru_date(date TIMESTAMP) RETURNS VARCHAR(30) AS $$
 DECLARE
