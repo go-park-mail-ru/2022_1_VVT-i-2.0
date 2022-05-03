@@ -3,7 +3,7 @@ bindAddr = ":8080"
 readTimeout = 10
 writeTimeout= 10
 staticPath="static/"
-staticUrl="http://tavide.xyz:8080/static/"
+staticUrl="https://tavide.xyz/static/"
 
 [cors]
 allowOrigins=["", "http://95.163.180.8:80", "http://localhost:3000", "http://tavide.xyz:3000"]
