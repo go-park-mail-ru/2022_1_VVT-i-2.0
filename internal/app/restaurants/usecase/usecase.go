@@ -41,3 +41,29 @@ func (u *RestaurantsUsecase) GetAllRestaurants() (*models.RestaurantsUcase, erro
 
 	return restaurants, nil
 }
+
+func (u *RestaurantsUsecase) GetRestaurantsByCategory(category models.GetRestaurantByCategoryUcaseReq) (*models.RestaurantsUcase, error) {
+	restaurantsData, err := u.RestaurantsRepo.GetRestaurantsByCategory(models.GetRestaurantByCategoryRepoReq(category))
+	if err != nil {
+		return nil, errors.Wrapf(err, "error getting restaurants")
+	}
+
+	restaurants := &models.RestaurantsUcase{}
+
+	for _, rest := range restaurantsData {
+		item := models.RestaurantUcase{
+			Id:                   rest.Id,
+			Name:                 rest.Name,
+			ImagePath:            rest.ImagePath,
+			Slug:                 rest.Slug,
+			MinPrice:             rest.MinPrice,
+			AggRating:            rest.AggRating,
+			ReviewCount:          rest.ReviewCount,
+			UpMinutsToDelivery:   rest.UpMinutsToDelivery,
+			DownMinutsToDelivery: rest.DownMinutsToDelivery,
+		}
+		restaurants.Restaurants = append(restaurants.Restaurants, item)
+	}
+
+	return restaurants, nil
+}

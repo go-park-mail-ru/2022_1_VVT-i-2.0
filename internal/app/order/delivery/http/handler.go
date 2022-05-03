@@ -127,7 +127,7 @@ func (h OrderHandler) GetUserOrder(ctx echo.Context) error {
 
 	orderId, err := strconv.Atoi(ctx.Param("orderId"))
 	if err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, httpErrDescr.BAD_QUERY_PARAMS)
+		return echo.NewHTTPError(http.StatusBadRequest, httpErrDescr.BAD_ORDER_ID)
 	}
 
 	orderUcaseData, err := h.Usecase.GetUserOrder(&models.GetUserOrderUcaseReq{UserId: int64(user.Id), OrderId: int64(orderId)})

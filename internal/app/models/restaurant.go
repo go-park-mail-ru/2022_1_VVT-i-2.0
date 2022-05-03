@@ -1,7 +1,7 @@
 package models
 
 type RestaurantDataStorage struct {
-	Id                   int
+	Id                   int `db:"id"`
 	Name                 string
 	ImagePath            string `db:"image_path"`
 	Slug                 string
@@ -44,4 +44,12 @@ type RestaurantResp struct {
 
 type AllRestaurantsResp struct {
 	Restaurants []RestaurantResp `json:"restaurants"`
+}
+
+type GetRestaurantByCategoryRepoReq struct {
+	Name string
+}
+
+type GetRestaurantByCategoryUcaseReq struct {
+	Name string
 }
