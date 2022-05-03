@@ -14,7 +14,8 @@ const (
 
 // ошибки, которые не нужно логировать
 const (
-	CACH_MISS_CODE = iota
+	OK = iota
+	CACH_MISS_CODE
 	FLASHCALL_RESPONSE_ERR
 
 	WRONG_AUTH_CODE
@@ -37,6 +38,7 @@ const (
 	DECODE_IMG
 	UNKNOWN_STATIC_TYPE
 	TEST_ERROR
+	THIS_ORDER_DOESNOT_BELONG_USER
 )
 
 const (
@@ -50,20 +52,20 @@ const (
 	NO_SUCH_ENTITY_IN_DB_DESCR = "нет такой сущности в базе данных"
 	NO_SUCH_USER_DESCR         = "не существует такого пользователя"
 	// невалидные данные от пользователя
-	DB_INSERT_DESCR               = "неуспешная вставка в базу данных"
-	NO_SUCH_CITY_DESCR            = "не существует такого города"
-	NO_SUCH_STREET_DESCR          = "не существует такой улицы"
-	CANT_CREATE_AVATAR_NAME_DESCR = "не получается сгенерировать имя аватарки"
-	CANT_SAVE_AVATAR_DESCR        = "не получается сохранить аватарку"
-	UNKNOWN_STATIC_TYPE_DESCR     = "неизвестный тип статики, невозможно определить расположение"
-	TEST_ERROR_DESCR					  = "test"
+	DB_INSERT_DESCR                      = "неуспешная вставка в базу данных"
+	NO_SUCH_CITY_DESCR                   = "не существует такого города"
+	NO_SUCH_STREET_DESCR                 = "не существует такой улицы"
+	CANT_CREATE_AVATAR_NAME_DESCR        = "не получается сгенерировать имя аватарки"
+	CANT_SAVE_AVATAR_DESCR               = "не получается сохранить аватарку"
+	UNKNOWN_STATIC_TYPE_DESCR            = "неизвестный тип статики, невозможно определить расположение"
+	THIS_ORDER_DOESNOT_BELONG_USER_DESCR = "запрошенный заказ не принадлежит текущему пользователю"
 )
 
 var codeDescr = map[int]string{
-	NO_SUCH_RESTAURANT: NO_SUCH_RESTAURANT_DESCR,
-	CACH_MISS_CODE:     CACH_MISS_DESCR,
-	NO_SUCH_USER:       NO_SUCH_USER_DESCR,
-	TEST_ERROR: 		TEST_ERROR_DESCR,
+	NO_SUCH_RESTAURANT:             NO_SUCH_RESTAURANT_DESCR,
+	CACH_MISS_CODE:                 CACH_MISS_DESCR,
+	NO_SUCH_USER:                   NO_SUCH_USER_DESCR,
+	THIS_ORDER_DOESNOT_BELONG_USER: THIS_ORDER_DOESNOT_BELONG_USER_DESCR,
 }
 
 type Error struct {

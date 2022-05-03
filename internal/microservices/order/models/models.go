@@ -1,28 +1,43 @@
 package models
 
-type OrderPosition struct {
-	Id    int64 `json:"id"`
-	Count int64 `json:"count"`
+// type OrderStorage struct {
+// 	OrderId    int64
+// 	UserId     int64
+// 	Address    string
+// 	Comment    sql.NullString
+// 	TotalPrice string
+// 	Cart       []OrderPositionStorage
+// }
+
+type OrderPositionUcase struct {
+	Id    int64
+	Count int64
 }
 
-type OrderReq struct {
-	Address string          `json:"address" valid:"address,required"`
-	Comment string          `json:"comment" valid:"comment"` //TODO валидатор сделать
-	Cart    []OrderPosition `json:"cart" valid:"required"`
+type OrderPositionRepo struct {
+	Id    int64
+	Count int64
 }
 
-type OrderUcaseReq struct {
-	UserId  UserId
+type CreateOrderRepoReq struct {
+	UserId  int64
 	Address string
 	Comment string
-	Cart    []OrderPosition
+	Cart    []OrderPositionRepo
 }
 
-type OrderUcaseResp struct {
+type CreateOrderRepoResp struct {
 	OrderId int64
 }
 
-type OrderResp struct {
+type CreateOrderUcaseReq struct {
+	UserId  int64
+	Address string
+	Comment string
+	Cart    []OrderPositionUcase
+}
+
+type CreateOrderUcaseResp struct {
 	OrderId int64
 }
 
@@ -42,24 +57,20 @@ type GetUserOrdersUcaseResp struct {
 	Orders []ShortOrderUcase
 }
 
-type ShortOrderResp struct {
-	OrderId        int64
+type GetUserOrdersRepoReq struct {
+	UserId int64
+}
+
+type ShortOrderRepo struct {
+	OrderId        int64 `db:"id"`
 	Date           string
-	TotalPrice     int64
-	RestaurantName string
+	TotalPrice     int64  `db:"total_price"`
+	RestaurantName string `db:"restaurant_name"`
 	Status         string
 }
 
-type ShortOrder struct {
-	OrderId        int64  `json:"id"`
-	Date           string `json:"date"`
-	TotalPrice     int64  `json:"totalPrice"`
-	RestaurantName string `json:"restName"`
-	Status         string `json:"status"`
-}
-
-type GetUserOrdersResp struct {
-	Orders []ShortOrder `json:"orders"`
+type GetUserOrdersRepoResp struct {
+	OrderStatuses []ShortOrderRepo
 }
 
 type GetUserOrderStatusesUcaseReq struct {
@@ -75,20 +86,46 @@ type GetUserOrderStatusesUcaseResp struct {
 	OrderStatuses []OrderStatusUcase
 }
 
-type GetUserOrderStatusesReq struct {
+type GetUserOrderStatusesRepoReq struct {
 	UserId int64
 }
 
-type OrderStatus struct {
-	OrderId int64
+type OrderStatusRepo struct {
+	OrderId int64 `db:"id"`
 	Status  string
 }
 
-type GetUserOrderStatusesResp struct {
-	OrderStatuses []OrderStatus `json:"orders"`
+type GetUserOrderStatusesRepoResp struct {
+	OrderStatuses []OrderStatusRepo
 }
 
-// /////////////
+// //////////////
+
+type GetUserOrderRepoReq struct {
+	OrderId int64
+}
+
+type OrderPositionRepoResp struct {
+	Name        string
+	Description string
+	Count       int64
+	Price       int64
+	Calories    int64
+	Weight      int64
+	ImagePath   string `db:"image_path"`
+}
+
+type GetUserOrderRepoResp struct {
+	UserId         int64 `db:"user_id"`
+	OrderId        int64 `db:"id"`
+	Date           string
+	TotalPrice     int64  `db:"total_price"`
+	RestaurantName string `db:"restaurant_name"`
+	Address        string
+	Status         string
+	Cart           []OrderPositionRepoResp
+}
+
 type GetUserOrderUcaseReq struct {
 	UserId  int64
 	OrderId int64
