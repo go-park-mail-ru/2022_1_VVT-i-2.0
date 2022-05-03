@@ -2,7 +2,6 @@ package restaurantsHandler
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"strconv"
 
@@ -45,7 +44,6 @@ func (h CommentsHandler) GetRestaurantComments(ctx echo.Context) error {
 	commetsDataDelivery, err := h.Usecase.GetRestaurantComments(slug)
 
 	if err != nil {
-		fmt.Println("сломалась тут1")
 		cause := servErrors.ErrorAs(err)
 		if cause != nil && cause.Code == servErrors.NO_SUCH_ENTITY_IN_DB {
 			return echo.NewHTTPError(http.StatusForbidden, httpErrDescr.NO_SUCH_USER)

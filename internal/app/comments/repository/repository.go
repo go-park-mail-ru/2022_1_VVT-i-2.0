@@ -2,7 +2,6 @@ package repository
 
 import (
 	"database/sql"
-	"fmt"
 	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/models"
 	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/tools/servErrors"
 	"github.com/jmoiron/sqlx"
@@ -43,19 +42,15 @@ func (r *CommentsRepo) GetRestaurantBySlug(slug string) (*models.RestaurantDataS
 }
 
 func (r *CommentsRepo) GetRestaurantComments(id int) ([]*models.CommentRestaurantDataStorage, error) {
-	comments := make([]*models.CommentRestaurantDataStorage, 0, 3)
-	err := r.DB.Select(&comments, `SELECT restaurant_id, author, text, stars, get_ru_date(date) FROM comments WHERE restaurant_id = $1`, id)
+	comments := make([]*models.CommentRestaurantDataStorage, 0)
+	err := r.DB.Select(&comments, `SELECT restaurant_id, author, text, stars, get_ru_date(date) FROM comments WHERE restaurant_id = $1 ORDER BY get_ru_date(date) DESC`, id)
 
 	switch err {
 	case nil:
 		return comments, nil
 	case sql.ErrNoRows:
-		fmt.Println("сломалась тут4")
-		fmt.Println(err)
 		return nil, servErrors.NewError(servErrors.NO_SUCH_ENTITY_IN_DB, err.Error())
 	default:
-		fmt.Println("сломалась тут5")
-		fmt.Println(err)
 		return nil, servErrors.NewError(servErrors.DB_ERROR, err.Error())
 	}
 }

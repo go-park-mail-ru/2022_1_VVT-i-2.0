@@ -1,7 +1,6 @@
 package usecase
 
 import (
-	"fmt"
 	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/comments"
 	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/models"
 	"github.com/pkg/errors"
@@ -21,13 +20,11 @@ func (u *CommentsUsecase) GetRestaurantComments(slug string) (*models.CommentsRe
 	restaurant := &models.RestaurantDataStorage{}
 	restaurant, err := u.Repository.GetRestaurantBySlug(slug)
 	if err != nil {
-		fmt.Println("сломалась тут2")
 		return nil, errors.Wrapf(err, "error getting restaurant")
 	}
 
 	commentsData, err := u.Repository.GetRestaurantComments(restaurant.Id)
 	if err != nil {
-		fmt.Println("сломалась тут3")
 		return nil, errors.Wrapf(err, "error getting comments")
 	}
 
