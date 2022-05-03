@@ -25,6 +25,7 @@ import (
 	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/tools/staticManager/localStaticManager"
 
 	authProto "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/microservices/auth/proto"
+	orderProto "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/microservices/order/proto"
 
 	suggsHandler "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/address/delivery/http"
 	suggsRepo "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/address/repository"
@@ -36,7 +37,6 @@ import (
 	dishesRepo "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/dishes/repository"
 	dishesUsecase "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/dishes/usecase"
 	orderHandler "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/order/delivery/http"
-	orderRepo "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/order/repository"
 	orderUcase "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/order/usecase"
 	restaurantsHandler "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/restaurants/delivery/http"
 	restaurantsRepo "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/restaurants/repository"
@@ -71,7 +71,7 @@ func main() {
 		log.Fatal(errors.Wrap(err, "error reading config"))
 	}
 
-	pgxManager, err := postgresqlx.NewPostgresqlX(&config.DatabaseCongig)
+	pgxManager, err := postgresqlx.NewPostgresqlX(&config.DatabaseConfig)
 	if err != nil {
 		log.Fatal(errors.Wrap(err, "error creating postgres agent"))
 	}
@@ -117,13 +117,23 @@ func main() {
 
 	authorizerCli := authProto.NewAuthServiceClient(authGrpcConn)
 
+	orderGrpcConn, err := grpc.Dial(
+		config.OrderMicroserverAddr,
+		grpc.WithTransportCredentials(insecure.NewCredentials()),
+	)
+	if err != nil {
+		log.Fatal(errors.Wrap(err, "error connecting to grpc-auth-microserver"))
+	}
+	defer authGrpcConn.Close()
+
+	orderCli := orderProto.NewOrderServiceClient(orderGrpcConn)
+
 	userRepo := userRepo.NewUserRepo(pgxManager)
 	suggsRepo := suggsRepo.NewAddrRepo(pgxManager)
-	orderRepo := orderRepo.NewOrderRepo(pgxManager)
 
 	userUcase := userUcase.NewUsecase(flashcaller, memcacher, userRepo, staticManager, authorizerCli)
 	suggsUcase := suggsUcase.NewAddrUsecase(suggsRepo)
-	orderUcase := orderUcase.NewUsecase(orderRepo)
+	orderUcase := orderUcase.NewUsecase(orderCli)
 
 	userHandler := userHandler.NewUserHandler(userUcase, jwtManager, staticManager)
 	suggsHandler := suggsHandler.NewSuggsHandler(suggsUcase)

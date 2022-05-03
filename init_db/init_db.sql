@@ -1,4 +1,16 @@
 DROP TABLE IF EXISTS restaurants CASCADE;
+DROP TABLE IF EXISTS users CASCADE;
+DROP TABLE IF EXISTS dishes CASCADE;
+DROP TABLE IF EXISTS comments CASCADE;
+DROP TABLE IF EXISTS streets CASCADE;
+DROP TABLE IF EXISTS houses CASCADE;
+DROP TYPE  IF EXISTS order_dish CASCADE ;
+DROP TABLE IF EXISTS orders_internal CASCADE ;
+DROP TABLE IF EXISTS statuses CASCADE;
+DROP TABLE IF EXISTS orders CASCADE;
+DROP TABLE IF EXISTS orders_internal CASCADE;
+DROP TABLE IF EXISTS categori_restaurant CASCADE;
+DROP TABLE IF EXISTS categories CASCADE;
 
 create table restaurants
 (
@@ -86,7 +98,6 @@ ALTER TABLE restaurants ADD CONSTRAINT pkey_id  PRIMARY KEY(id);
 
 -- -------------------------------CATEGORIES----------------------------------------  
 
-DROP TABLE IF EXISTS categories CASCADE;
 
 create table categories
 (
@@ -141,7 +152,6 @@ ALTER TABLE categories ADD CONSTRAINT categori_pkey PRIMARY KEY(id);
 
 -- -------------------------------CATEGORIES_RESTAURANT-------------------------------------------
 
-DROP TABLE IF EXISTS categories_restaurant CASCADE;
 
 create table categori_restaurant
 (
@@ -355,7 +365,28 @@ DECLARE
     END;
 $$ LANGUAGE plpgsql;
 
-DROP TABLE IF EXISTS comments CASCADE;
+CREATE OR REPLACE FUNCTION get_ru_date(date TIMESTAMP) RETURNS VARCHAR(30) AS $$
+DECLARE
+    month_str VARCHAR(30);
+    BEGIN
+        month_str = CASE to_char(date, 'MM') WHEN '01' THEN ' января '
+                        WHEN '02' THEN ' февраля '
+                        WHEN '03' THEN ' марта '
+                        WHEN '04' THEN ' апреля '
+                        WHEN '05' THEN ' мая '
+                        WHEN '06' THEN ' июня '
+                        WHEN '07' THEN ' июля '
+                        WHEN '08' THEN ' августа '
+                        WHEN '09' THEN ' сентября '
+                        WHEN '10' THEN ' октября '
+                        WHEN '11' THEN ' ноября '
+                        WHEN '12' THEN ' декабря '
+                    END;
+        RETURN to_char(date, 'DD')|| month_str || to_char(date, 'YYYY, HH24:MI');          
+        -- RETURN '1234';
+    END;
+$$ LANGUAGE plpgsql;
+
 
 create table comments 
 (
@@ -1066,7 +1097,6 @@ INSERT INTO comments(restaurant_id, author, text, stars, date) VALUES
 
 -- --------------------------------------------------------DISHES--------------------------------------------------------------
 
-DROP TABLE IF EXISTS dishes;
 
 create table dishes
 (
@@ -6492,7 +6522,6 @@ INSERT INTO dishes(restaurant_id, categori, name, price, description, weight, ca
 
 -- ----------------------------USERS-------------------------------
 
-DROP TABLE IF EXISTS users;
 
 CREATE TABLE users (
     id integer PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
@@ -6510,8 +6539,6 @@ INSERT INTO users(name,email,phone,avatar) VALUES
 
 
 -- --------------------------STREETS AND HOUSES------------------------------------
-DROP TABLE IF EXISTS streets;
-DROP TABLE IF EXISTS houses;
 
 CREATE TABLE streets (
     id integer,
@@ -150483,7 +150510,79 @@ INSERT INTO houses(street_id, house) VALUES
 -- copy houses(street_id, house) FROM '/home/ns/tp/bd/back/csv/houses.csv' (DELIMITER ';');
 -- copy houses(street_id, house) FROM 'csv/houses.csv' (DELIMITER ';');
 
+
+
 CREATE TYPE order_dish AS (id integer,count int, price int);
+
+-- CREATE OR REPLACE FUNCTION public.total_cost() RETURNS trigger
+-- AS $$
+-- DECLARE
+--     rest_id1 integer;
+--     rest_id_next integer;
+--     price_per_one integer;
+--     total_price integer;
+--     cart order_dish[];
+--     up_ttd integer;
+--     down_ttd integer;
+-- BEGIN
+--     IF array_length( NEW.cart,1) = 0 THEN
+--         RETURN NULL;
+--     END IF;
+--     SELECT restaurant_id INTO rest_id1 FROM dishes WHERE id=NEW.cart[1].id;
+--     total_price=0;
+--     FOR i IN 1..array_length(NEW.cart,1)
+--     LOOP
+--         SELECT restaurant_id,price INTO rest_id_next, price_per_one FROM dishes WHERE id=NEW.cart[i].id;
+--         IF rest_id1 != rest_id_next THEN
+--             RETURN NULL; 
+--         END IF;
+--         total_price = total_price + NEW.cart[i].count*price_per_one;
+--         cart = array_append(cart, (NEW.cart[i].id, NEW.cart[i].count, price_per_one)::order_dish);
+--     END LOOP;
+--     NEW.cart = cart;
+--     NEW.restaurant_id = rest_id1;
+--     NEW.total_price = total_price; 
+
+--     -- SELECT down_time_to_delivery, up_time_to_delivery INTO up_ttd, down_ttd FROM restaurants WHERE id=NEW.restaurant_id;
+--     -- ttd = (up_ttd + down_ttd)/2
+--     -- 1 2 3 4
+--     -- в обработке готовится доставляется получен
+--     NEW.statuces = ARRAY[NEW.date + '20 seconds', NEW.date + '60 seconds', NEW.date + '90 seconds'];
+--     -- RAISE NOTICE '%', NEW;
+--     RETURN NEW;
+-- END;
+-- $$
+-- LANGUAGE plpgsql;
+
+-- CREATE OR REPLACE FUNCTION get_status(statuses) RETURNS trigger
+
+-- -- таблица статусов???
+-- -- в обработке
+-- -- В обработке
+-- -- Готовится
+-- -- Доставляется
+-- -- Получен
+
+-- -- можно хранить время обновления в бд и записывать их исходя из времени доставки
+-- -- можно хранить время обновления в бд и записывать +- oдинаковое
+-- -- можно "выяснять" статус после того как достали ( просто высчитать, сделать константное время перехода от одной стадии в другую)
+-- -- просто буду закладывать массив дататайм, 
+
+
+-- CREATE TABLE orders (
+--     id integer PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
+--     restaurant_id integer  REFERENCES restaurants ON DELETE NO ACTION NOT NULL,
+--     date TIMESTAMP DEFAULT now() NOT NULL,
+--     user_id integer  REFERENCES users ON DELETE NO ACTION NOT NULL,
+--     address VARCHAR(256) NOT NULL,
+--     comment VARCHAR(256),
+--     cart order_dish[] NOT NULL,
+--     total_price integer NOT NULL,
+--     statuses TIMESTAMP[4] NOT NULL
+-- );
+
+-- CREATE TRIGGER cost_and_restaurant_id BEFORE UPDATE OR INSERT ON orders
+-- FOR EACH ROW EXECUTE FUNCTION total_cost();
 
 CREATE OR REPLACE FUNCTION public.total_cost() RETURNS trigger
 AS $$
@@ -150492,32 +150591,35 @@ DECLARE
     rest_id_next integer;
     price_per_one integer;
     total_price integer;
-    arr order_dish[];
+    cart order_dish[];
+    up_ttd integer;
+    down_ttd integer;
 BEGIN
     IF array_length( NEW.cart,1) = 0 THEN
         RETURN NULL;
     END IF;
-    SELECT restaurant INTO rest_id1 FROM dish WHERE id=NEW.cart[1].id;
+    SELECT restaurant_id INTO rest_id1 FROM dishes WHERE id=NEW.cart[1].id;
     total_price=0;
     FOR i IN 1..array_length(NEW.cart,1)
     LOOP
-        SELECT restaurant,price INTO rest_id_next, price_per_one FROM dish WHERE id=NEW.cart[i].id;
+        SELECT restaurant_id,price INTO rest_id_next, price_per_one FROM dishes WHERE id=NEW.cart[i].id;
         IF rest_id1 != rest_id_next THEN
             RETURN NULL; 
         END IF;
         total_price = total_price + NEW.cart[i].count*price_per_one;
-        arr = array_append(arr, (NEW.cart[i].id, NEW.cart[i].count, price_per_one)::order_dish);
+        cart = array_append(cart, (NEW.cart[i].id, NEW.cart[i].count, price_per_one)::order_dish);
     END LOOP;
-    NEW.cart = arr;
+    NEW.cart = cart;
     NEW.restaurant_id = rest_id1;
     NEW.total_price = total_price; 
-    RAISE NOTICE '%', NEW;
+    NEW.statuses = ARRAY[NEW.date + '20 seconds', NEW.date + '60 seconds', NEW.date + '90 seconds'];
     RETURN NEW;
 END;
 $$
 LANGUAGE plpgsql;
 
-CREATE TABLE orders (
+
+CREATE TABLE orders_internal (
     id integer PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
     restaurant_id integer  REFERENCES restaurants ON DELETE NO ACTION NOT NULL,
     date TIMESTAMP DEFAULT now() NOT NULL,
@@ -150525,8 +150627,46 @@ CREATE TABLE orders (
     address VARCHAR(256) NOT NULL,
     comment VARCHAR(256),
     cart order_dish[] NOT NULL,
-    total_price integer NOT NULL
+    total_price integer NOT NULL,
+    statuses TIMESTAMP[3] NOT NULL
 );
 
-CREATE TRIGGER cost_and_restaurant_id BEFORE UPDATE OR INSERT ON orders
+CREATE TRIGGER cost_and_restaurant_id BEFORE UPDATE OR INSERT ON orders_internal
 FOR EACH ROW EXECUTE FUNCTION total_cost();
+
+	-- // INSERT INTO orders (user_id , address, comment, cart) VALUES ($1,$2,$3, ARRAY[($4,$5)::order_position, ($6,$7)::order_position])`
+
+CREATE TABLE statuses (
+    name VARCHAR(30) NOT NULL,
+    id integer GENERATED ALWAYS AS IDENTITY
+); 
+
+INSERT INTO statuses (name) VALUES 
+('В обработке'),
+('Готовится'),
+('В пути'),
+('Получен');
+
+CREATE OR REPLACE FUNCTION get_order_status(status_dates TIMESTAMP[4]) RETURNS VARCHAR(30) AS $$
+DECLARE
+    now TIMESTAMP;
+    status VARCHAR(30);
+    BEGIN
+        now := now();
+        FOR i IN 1..3
+        LOOP
+        RAISE NOTICE '%', now ;
+        RAISE NOTICE '%', status_dates[i] ;
+        IF now < status_dates[i] THEN
+            SELECT name INTO status FROM statuses WHERE id=i;
+            RETURN status; 
+        END IF;
+        END LOOP;
+            SELECT name INTO status FROM statuses WHERE id=4;
+            RETURN status; 
+    END;
+$$ LANGUAGE plpgsql;
+
+CREATE VIEW orders AS
+    SELECT o.id id, o.address address, o.user_id user_id, to_char(o.date, 'DD.MM.YYYY') date, o.date  fulldate,get_order_status(statuses) status, r.name restaurant_name, o.total_price total_price, o.cart
+    FROM orders_internal o JOIN restaurants r ON o.restaurant_id=r.id;

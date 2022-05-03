@@ -72,6 +72,7 @@ func (h UserHandler) Login(ctx echo.Context) error {
 	if err != nil {
 		cause := servErrors.ErrorAs(err)
 		if cause == nil {
+			fmt.Println("-----------------cause == nil--------------")
 			logger.Error(requestId, err.Error())
 			return echo.NewHTTPError(http.StatusInternalServerError, httpErrDescr.SERVER_ERROR)
 		}

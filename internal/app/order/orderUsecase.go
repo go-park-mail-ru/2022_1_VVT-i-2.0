@@ -5,5 +5,8 @@ import (
 )
 
 type Usecase interface {
-	Order(order *models.OrderUcaseInput) (*models.OrderUcaseAnsw, error)
+	CreateOrder(order *models.OrderUcaseReq) (*models.OrderUcaseResp, error)
+	GetUserOrders(order *models.GetUserOrdersUcaseReq) (*models.GetUserOrdersUcaseResp, error)
+	GetUserOrderStatuses(order *models.GetUserOrderStatusesUcaseReq) (*models.GetUserOrderStatusesUcaseResp, error)
+	GetUserOrder(req *models.GetUserOrderUcaseReq) (*models.GetUserOrderUcaseResp, error)
 }
