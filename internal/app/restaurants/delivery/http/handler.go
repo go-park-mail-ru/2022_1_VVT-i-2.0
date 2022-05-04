@@ -189,3 +189,7 @@ func (h RestaurantsHandler) GetAllRestaurantsMain(ctx echo.Context) error {
 
 	return h.GetAllRestaurants(ctx)
 }
+
+//func (h RestaurantsHandler) GetMetriks(ctx echo.Context) error {
+//	return promhttp.Handler()
+//}
