@@ -57,16 +57,15 @@ func (h CommentsHandler) GetRestaurantComments(ctx echo.Context) error {
 		return echo.NewHTTPError(http.StatusInternalServerError, httpErrDescr.SERVER_ERROR)
 	}
 
-	commentsD := &models.GetCommentsDataDelivery{}
+	commentsD := &models.GetCommentsDataDelivery{Comment: make([]models.GetCommentDataDelivery, len(commetsDataDelivery.Comment))}
 
-	for _, comment := range commetsDataDelivery.Comment {
-		item := &models.GetCommentDataDelivery{
-			Author:        	comment.Author,
-			Text:   		comment.Text,
-			Stars: 			comment.Stars,
-			Date: 			comment.Date,
+	for i, comment := range commetsDataDelivery.Comment {
+		commentsD.Comment[i] = models.GetCommentDataDelivery{
+			Author: comment.Author,
+			Text:   comment.Text,
+			Stars:  comment.Stars,
+			Date:   comment.Date,
 		}
-		commentsD.Comment = append(commentsD.Comment, *item)
 	}
 
 	result, _ := json.Marshal(commentsD.Comment)
@@ -124,19 +123,17 @@ func (h CommentsHandler) AddRestaurantComment(ctx echo.Context) error {
 	}
 
 	comment := &models.CommentDataDelivery{
-		Restaurant_id:	commetsDataDelivery.Restaurant_id,
-		Author:        	commetsDataDelivery.Author,
-		Text:   		commetsDataDelivery.Text,
-		Stars: 			commetsDataDelivery.Stars,
-		Date: 			commetsDataDelivery.Date,
+		Restaurant_id: commetsDataDelivery.Restaurant_id,
+		Author:        commetsDataDelivery.Author,
+		Text:          commetsDataDelivery.Text,
+		Stars:         commetsDataDelivery.Stars,
+		Date:          commetsDataDelivery.Date,
 	}
 
 	result, _ := json.Marshal(comment)
 	ctx.Response().Header().Add(echo.HeaderContentLength, strconv.Itoa(len(result)))
 	return ctx.JSONBlob(http.StatusOK, result)
 }
-
-
 
 //func (h CommentsHandler) AddRestaurantComment(ctx echo.Context) error {
 //	if middleware.GetUserFromCtx(ctx) != nil {
