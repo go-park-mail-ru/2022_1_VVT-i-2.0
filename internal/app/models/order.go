@@ -59,7 +59,7 @@ type ShortOrder struct {
 }
 
 type GetUserOrdersResp struct {
-	Orders []ShortOrder `json:"orders"`
+	Orders []ShortOrder `json:"orderList"`
 }
 
 type GetUserOrderStatusesUcaseReq struct {
