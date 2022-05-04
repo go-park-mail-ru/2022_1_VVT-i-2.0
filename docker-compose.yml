@@ -42,3 +42,11 @@ services:
       - '--config.file=/etc/alertmanager/alertmanager.yml'
     volumes:
       - "./alertmanager:/etc/alertmanager"
+
+  grafana:
+    image: grafana/grafana-enterprise:8.2.0
+    links:
+      - "prometheus:prometheus"
+    ports:
+      - "3000:3000"
+    user: '472'
