@@ -12,16 +12,19 @@ import (
 	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/models"
 	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/order"
 	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/tools/servErrors"
+	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/tools/staticManager"
 	"github.com/labstack/echo/v4"
 )
 
 type OrderHandler struct {
-	Usecase order.Usecase
+	Usecase       order.Usecase
+	StaticManager staticManager.FileManager
 }
 
-func NewOrderHandler(usecase order.Usecase) *OrderHandler {
+func NewOrderHandler(usecase order.Usecase, staticManager staticManager.FileManager) *OrderHandler {
 	return &OrderHandler{
-		Usecase: usecase,
+		Usecase:       usecase,
+		StaticManager: staticManager,
 	}
 }
 
@@ -146,6 +149,7 @@ func (h OrderHandler) GetUserOrder(ctx echo.Context) error {
 	fmt.Println(orderUcaseData.Status)
 	resp := models.GetUserOrderResp{OrderId: orderUcaseData.OrderId, Address: orderUcaseData.Address, Date: orderUcaseData.Date, RestaurantName: orderUcaseData.RestaurantName, Status: orderUcaseData.Status, TotalPrice: orderUcaseData.TotalPrice, Cart: make([]models.OrderPositionResp, len(orderUcaseData.Cart))}
 	for i, order := range orderUcaseData.Cart {
+		order.ImagePath = h.StaticManager.GetDishesUrl(order.ImagePath)
 		resp.Cart[i] = models.OrderPositionResp(order)
 	}
 	fmt.Println(resp)
