@@ -120,8 +120,8 @@ type OrderPositionResp struct {
 	Count       int64  `json:"count"`
 	Price       int64  `json:"price"`
 	Calories    int64  `json:"calories"`
-	Weigth      int64  `json:"weigth"`
-	ImagePath   string `json:"imagePath"`
+	Weigth      int64  `json:"weight"`
+	ImagePath   string `json:"imgPath"`
 }
 type GetUserOrderResp struct {
 	OrderId        int64               `json:"orderNumber"`
