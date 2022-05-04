@@ -5,7 +5,7 @@ type CommentRestaurantDataStorage struct {
 	Author        string
 	Text          string
 	Stars         int
-	Date          string `db:"date"`
+	Date          string `db:"date_creating"`
 }
 
 type AddCommentRestaurantDataStorage struct {
