@@ -1,12 +1,12 @@
-authMicroserviceAddr = "localhost:8081"
-orderMicroserviceAddr = "localhost:8082"
+authMicroserviceAddr = "auth:8081"
+orderMicroserviceAddr = "order:8082"
 
 [server]
 bindAddr = ":8080"
 readTimeout = 10
 writeTimeout= 10
 staticPath="static/"
-staticUrl="http://tavide.xyz:8080/static/"
+staticUrl="https://tavide.xyz/static/"
 
 [cors]
 allowOrigins=["", "http://localhost:3000", "http://tavide.xyz:3000"]

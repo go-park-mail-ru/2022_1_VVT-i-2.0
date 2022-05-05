@@ -1,0 +1,11 @@
+[server]
+bindAddr = ":8082"
+
+[database]
+user = "yutfut" # TODO установить норм имя
+password = "example"
+port = 5432
+host = "db"
+connectionMax = 500
+dbname = "vvti"
+# dbname = "test"

@@ -29,7 +29,7 @@ const (
 
 // TODO:  убрать миддлвар авторизации с suggests
 func (sh *ServerHandlers) ConfigureRouting(router *echo.Echo) {
-	router.GET("/metrics", echo.WrapHandler(promhttp.Handler()))
+	router.GET("metrics", echo.WrapHandler(promhttp.Handler()))
 	router.Static("/static", "static")
 	//router.GET("/swagger/*", echoSwagger.WrapHandler)
 	router.POST(v1Prefix+"login", sh.UserHandler.Login)

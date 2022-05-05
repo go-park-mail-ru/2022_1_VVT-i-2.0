@@ -12,7 +12,7 @@ RUN apk add make git && make build
 
 FROM alpine:latest
 
-COPY --from=build /project/auth /bin/
-COPY --from=build /project/config/auth_deploy.toml /
+COPY --from=build /project/order /bin/
+COPY --from=build /project/config/order_deploy.toml /
 
-CMD auth -config=../auth_deploy.toml
+CMD order -config=../order_deploy.toml

@@ -2,18 +2,16 @@ package main
 
 import (
 	"flag"
-	"log"
-	"net"
-
+	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/tools/postgresqlx"
 	"github.com/pkg/errors"
 	"google.golang.org/grpc"
+	"log"
+	"net"
 
 	conf "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/config"
 
 	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/tools/cacher/memcacher"
 	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/tools/notification/flashcall"
-	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/tools/postgresqlx"
-
 	authHandler "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/microservices/auth/delivery/grpc"
 	authRepo "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/microservices/auth/repository"
 	authUcase "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/microservices/auth/usecase"
@@ -36,6 +34,8 @@ func main() {
 		log.Fatal(errors.Wrap(err, "error creating postgres agent"))
 	}
 	defer pgxManager.Close()
+
+
 
 	// jwtManager := jwt.NewJwtManager(config.AuthentificatorConfig)
 
