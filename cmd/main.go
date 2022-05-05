@@ -2,6 +2,7 @@ package main
 
 import (
 	"flag"
+	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/metrics"
 	"log"
 	"net/http"
 	"time"
@@ -152,6 +153,13 @@ func main() {
 	commentsHandler := commentHandler.NewCommentsHandler(commentsUsecase)
 
 	router := echo.New()
+
+	m, err := metrics.CreateNewMetric("main")
+	if err != nil {
+		panic(err)
+	}
+
+	router.Use(m.CollectMetrics)
 
 	serverRouting := configRouting.ServerHandlers{
 		UserHandler:        userHandler,

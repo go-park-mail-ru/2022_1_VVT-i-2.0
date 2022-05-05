@@ -46,15 +46,15 @@ func (h CommentsHandler) GetRestaurantComments(ctx echo.Context) error {
 	if err != nil {
 		cause := servErrors.ErrorAs(err)
 		if cause != nil && cause.Code == servErrors.NO_SUCH_ENTITY_IN_DB {
-			return echo.NewHTTPError(http.StatusForbidden, httpErrDescr.NO_SUCH_USER)
+			return httpErrDescr.NewHTTPError(ctx, http.StatusForbidden, httpErrDescr.NO_SUCH_USER)
 		}
 		logger.Error(requestId, err.Error())
-		return echo.NewHTTPError(http.StatusInternalServerError, httpErrDescr.SERVER_ERROR)
+		return httpErrDescr.NewHTTPError(ctx, http.StatusInternalServerError, httpErrDescr.SERVER_ERROR)
 	}
 
 	if commetsDataDelivery == nil {
 		logger.Error(requestId, "from user-usecase-get-user returned userData==nil and err==nil, unknown error")
-		return echo.NewHTTPError(http.StatusInternalServerError, httpErrDescr.SERVER_ERROR)
+		return httpErrDescr.NewHTTPError(ctx, http.StatusInternalServerError, httpErrDescr.SERVER_ERROR)
 	}
 
 	commentsD := &models.GetCommentsDataDelivery{Comment: make([]models.GetCommentDataDelivery, len(commetsDataDelivery.Comment))}
@@ -92,7 +92,7 @@ func (h CommentsHandler) AddRestaurantComment(ctx echo.Context) error {
 
 	var AddCommentRestaurantUseCaseReq models.AddCommentRestaurant
 	if err := ctx.Bind(&AddCommentRestaurantUseCaseReq); err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, httpErrDescr.BAD_REQUEST_BODY)
+		return httpErrDescr.NewHTTPError(ctx, http.StatusBadRequest, httpErrDescr.BAD_REQUEST_BODY)
 	}
 
 	commetsDataDelivery, err := h.Usecase.AddRestaurantComment(models.UserId(user.Id), &models.AddCommentRestaurantUseCase{
@@ -104,22 +104,22 @@ func (h CommentsHandler) AddRestaurantComment(ctx echo.Context) error {
 		cause := servErrors.ErrorAs(err)
 		if cause == nil {
 			logger.Error(requestId, err.Error())
-			return echo.NewHTTPError(http.StatusInternalServerError, httpErrDescr.SERVER_ERROR)
+			return httpErrDescr.NewHTTPError(ctx, http.StatusInternalServerError, httpErrDescr.SERVER_ERROR)
 		}
 		switch cause.Code {
 		case servErrors.WRONG_AUTH_CODE:
-			return echo.NewHTTPError(http.StatusForbidden, httpErrDescr.WRONG_AUTH_CODE)
+			return httpErrDescr.NewHTTPError(ctx, http.StatusForbidden, httpErrDescr.WRONG_AUTH_CODE)
 		case servErrors.CACH_MISS_CODE, servErrors.NO_SUCH_ENTITY_IN_DB:
-			return echo.NewHTTPError(http.StatusNotFound, httpErrDescr.NO_SUCH_CODE_INFO)
+			return httpErrDescr.NewHTTPError(ctx, http.StatusNotFound, httpErrDescr.NO_SUCH_CODE_INFO)
 		default:
 			logger.Error(requestId, err.Error())
-			return echo.NewHTTPError(http.StatusInternalServerError, httpErrDescr.SERVER_ERROR)
+			return httpErrDescr.NewHTTPError(ctx, http.StatusInternalServerError, httpErrDescr.SERVER_ERROR)
 		}
 	}
 
 	if commetsDataDelivery == nil {
 		logger.Error(requestId, "from user-usecase-register returned userData==nil and err==nil, unknown error")
-		return echo.NewHTTPError(http.StatusInternalServerError, httpErrDescr.SERVER_ERROR)
+		return httpErrDescr.NewHTTPError(ctx, http.StatusInternalServerError, httpErrDescr.SERVER_ERROR)
 	}
 
 	comment := &models.CommentDataDelivery{
@@ -137,7 +137,7 @@ func (h CommentsHandler) AddRestaurantComment(ctx echo.Context) error {
 
 //func (h CommentsHandler) AddRestaurantComment(ctx echo.Context) error {
 //	if middleware.GetUserFromCtx(ctx) != nil {
-//		return echo.NewHTTPError(http.StatusConflict, httpErrDescr.ALREADY_AUTHORIZED)
+//		return httpErrDescr.NewHTTPError(ctx, http.StatusConflict, httpErrDescr.ALREADY_AUTHORIZED)
 //	}
 //
 //	logger := middleware.GetLoggerFromCtx(ctx)
@@ -145,7 +145,7 @@ func (h CommentsHandler) AddRestaurantComment(ctx echo.Context) error {
 //
 //	var AddCommentRestaurantUseCaseReq models.AddCommentRestaurant
 //	if err := ctx.Bind(&AddCommentRestaurantUseCaseReq); err != nil {
-//		return echo.NewHTTPError(http.StatusBadRequest, httpErrDescr.BAD_REQUEST_BODY)
+//		return httpErrDescr.NewHTTPError(ctx, http.StatusBadRequest, httpErrDescr.BAD_REQUEST_BODY)
 //	}
 //
 //	commetsDataDelivery, err := h.Usecase.AddRestaurantComment(&models.AddCommentRestaurantUseCase{
@@ -158,22 +158,22 @@ func (h CommentsHandler) AddRestaurantComment(ctx echo.Context) error {
 //		cause := servErrors.ErrorAs(err)
 //		if cause == nil {
 //			logger.Error(requestId, err.Error())
-//			return echo.NewHTTPError(http.StatusInternalServerError, httpErrDescr.SERVER_ERROR)
+//			return httpErrDescr.NewHTTPError(ctx, http.StatusInternalServerError, httpErrDescr.SERVER_ERROR)
 //		}
 //		switch cause.Code {
 //		case servErrors.WRONG_AUTH_CODE:
-//			return echo.NewHTTPError(http.StatusForbidden, httpErrDescr.WRONG_AUTH_CODE)
+//			return httpErrDescr.NewHTTPError(ctx, http.StatusForbidden, httpErrDescr.WRONG_AUTH_CODE)
 //		case servErrors.CACH_MISS_CODE, servErrors.NO_SUCH_ENTITY_IN_DB:
-//			return echo.NewHTTPError(http.StatusNotFound, httpErrDescr.NO_SUCH_CODE_INFO)
+//			return httpErrDescr.NewHTTPError(ctx, http.StatusNotFound, httpErrDescr.NO_SUCH_CODE_INFO)
 //		default:
 //			logger.Error(requestId, err.Error())
-//			return echo.NewHTTPError(http.StatusInternalServerError, httpErrDescr.SERVER_ERROR)
+//			return httpErrDescr.NewHTTPError(ctx, http.StatusInternalServerError, httpErrDescr.SERVER_ERROR)
 //		}
 //	}
 //
 //	if commetsDataDelivery == nil {
 //		logger.Error(requestId, "from user-usecase-register returned userData==nil and err==nil, unknown error")
-//		return echo.NewHTTPError(http.StatusInternalServerError, httpErrDescr.SERVER_ERROR)
+//		return httpErrDescr.NewHTTPError(ctx, http.StatusInternalServerError, httpErrDescr.SERVER_ERROR)
 //	}
 //
 //	comment := &models.CommentDataDelivery{

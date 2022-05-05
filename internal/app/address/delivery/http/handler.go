@@ -34,7 +34,7 @@ func (h SuggsHandler) Suggest(ctx echo.Context) error {
 	// fmt.Println(suggsReq)
 	// fmt.Println(ctx.Request().URL.Query())
 	if _, err := govalidator.ValidateStruct(suggsReq); err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, httpErrDescr.INVALID_DATA)
+		return httpErrDescr.NewHTTPError(ctx, http.StatusBadRequest, httpErrDescr.INVALID_DATA)
 	}
 
 	suggsResp, err := h.Usecase.Suggest(&suggsReq)
