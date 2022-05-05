@@ -45,15 +45,17 @@ func (h DishesHandler) GetDishesByRestaurants(ctx echo.Context) error {
 	if err != nil {
 		cause := servErrors.ErrorAs(err)
 		if cause != nil && cause.Code == servErrors.NO_SUCH_ENTITY_IN_DB {
-			return echo.NewHTTPError(http.StatusForbidden, httpErrDescr.NO_SUCH_USER)
+			//return httpErrDescr.NewHTTPError(ctx, http.StatusForbidden, httpErrDescr.NO_SUCH_DISHES)
+			return httpErrDescr.NewHTTPError(ctx, http.StatusForbidden, httpErrDescr.NO_SUCH_DISHES)
 		}
 		logger.Error(requestId, err.Error())
-		return echo.NewHTTPError(http.StatusInternalServerError, httpErrDescr.SERVER_ERROR)
+		//return httpErrDescr.NewHTTPError(ctx, http.StatusInternalServerError, httpErrDescr.SERVER_ERROR)
+		return httpErrDescr.NewHTTPError(ctx, http.StatusInternalServerError, httpErrDescr.SERVER_ERROR)
 	}
 
 	if restaurantData == nil {
 		logger.Error(requestId, "from user-usecase-get-user returned userData==nil and err==nil, unknown error")
-		return echo.NewHTTPError(http.StatusInternalServerError, httpErrDescr.SERVER_ERROR)
+		return httpErrDescr.NewHTTPError(ctx, http.StatusInternalServerError, httpErrDescr.SERVER_ERROR)
 	}
 
 	dishesData, err := h.Usecase.GetDishesByRestaurant(restaurantData.Id)
@@ -61,15 +63,15 @@ func (h DishesHandler) GetDishesByRestaurants(ctx echo.Context) error {
 	if err != nil {
 		cause := servErrors.ErrorAs(err)
 		if cause != nil && cause.Code == servErrors.NO_SUCH_ENTITY_IN_DB {
-			return echo.NewHTTPError(http.StatusForbidden, httpErrDescr.NO_SUCH_USER)
+			return httpErrDescr.NewHTTPError(ctx, http.StatusForbidden, httpErrDescr.NO_SUCH_USER)
 		}
 		logger.Error(requestId, err.Error())
-		return echo.NewHTTPError(http.StatusInternalServerError, httpErrDescr.SERVER_ERROR)
+		return httpErrDescr.NewHTTPError(ctx, http.StatusInternalServerError, httpErrDescr.SERVER_ERROR)
 	}
 
 	if dishesData == nil {
 		logger.Error(requestId, "from user-usecase-get-user returned userData==nil and err==nil, unknown error")
-		return echo.NewHTTPError(http.StatusInternalServerError, httpErrDescr.SERVER_ERROR)
+		return httpErrDescr.NewHTTPError(ctx, http.StatusInternalServerError, httpErrDescr.SERVER_ERROR)
 	}
 
 	rating := 0.0

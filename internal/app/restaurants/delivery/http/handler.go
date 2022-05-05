@@ -44,15 +44,16 @@ func (h RestaurantsHandler) GetAllRestaurants(ctx echo.Context) error {
 	if err != nil {
 		cause := servErrors.ErrorAs(err)
 		if cause != nil && cause.Code == servErrors.NO_SUCH_ENTITY_IN_DB {
-			return echo.NewHTTPError(http.StatusForbidden, httpErrDescr.NO_SUCH_RESTAURANTS)
+			//return httpErrDescr.NewHTTPError(ctx, http.StatusForbidden, httpErrDescr.NO_SUCH_RESTAURANTS)
+			return httpErrDescr.NewHTTPError(ctx, http.StatusForbidden, httpErrDescr.NO_SUCH_RESTAURANTS)
 		}
 		logger.Error(requestId, err.Error())
-		return echo.NewHTTPError(http.StatusInternalServerError, httpErrDescr.SERVER_ERROR)
+		return httpErrDescr.NewHTTPError(ctx, http.StatusInternalServerError, httpErrDescr.SERVER_ERROR)
 	}
 
 	if restaurantsDataDelivery == nil {
 		logger.Error(requestId, "from restaurants-handler-getall returned restaurantsDataDelivery==nil and err==nil, unknown error")
-		return echo.NewHTTPError(http.StatusInternalServerError, httpErrDescr.SERVER_ERROR)
+		return httpErrDescr.NewHTTPError(ctx, http.StatusInternalServerError, httpErrDescr.SERVER_ERROR)
 	}
 
 	restaurantsD := &models.AllRestaurantsResp{}
@@ -87,15 +88,16 @@ func (h RestaurantsHandler) GetRestaurantsByCategory(ctx echo.Context, category 
 	if err != nil {
 		cause := servErrors.ErrorAs(err)
 		if cause != nil && cause.Code == servErrors.NO_SUCH_ENTITY_IN_DB {
-			return echo.NewHTTPError(http.StatusForbidden, httpErrDescr.NO_SUCH_RESTAURANTS)
+			//return httpErrDescr.NewHTTPError(ctx, http.StatusForbidden, httpErrDescr.NO_SUCH_RESTAURANTS)
+			return httpErrDescr.NewHTTPError(ctx, http.StatusForbidden, httpErrDescr.NO_SUCH_RESTAURANTS)
 		}
 		logger.Error(requestId, err.Error())
-		return echo.NewHTTPError(http.StatusInternalServerError, httpErrDescr.SERVER_ERROR)
+		return httpErrDescr.NewHTTPError(ctx, http.StatusInternalServerError, httpErrDescr.SERVER_ERROR)
 	}
 
 	if restaurantsDataDelivery == nil {
 		logger.Error(requestId, "from restaurants-handler-getall returned restaurantsDataDelivery==nil and err==nil, unknown error")
-		return echo.NewHTTPError(http.StatusInternalServerError, httpErrDescr.SERVER_ERROR)
+		return httpErrDescr.NewHTTPError(ctx, http.StatusInternalServerError, httpErrDescr.SERVER_ERROR)
 	}
 
 	restaurantsD := &models.AllRestaurantsResp{}
@@ -130,15 +132,15 @@ func (h RestaurantsHandler) GetRestaurantsBySeachQuery(ctx echo.Context, query s
 	if err != nil {
 		cause := servErrors.ErrorAs(err)
 		if cause != nil && cause.Code == servErrors.NO_SUCH_ENTITY_IN_DB {
-			return echo.NewHTTPError(http.StatusForbidden, httpErrDescr.NO_SUCH_RESTAURANTS)
+			return httpErrDescr.NewHTTPError(ctx, http.StatusForbidden, httpErrDescr.NO_SUCH_RESTAURANTS)
 		}
 		logger.Error(requestId, err.Error())
-		return echo.NewHTTPError(http.StatusInternalServerError, httpErrDescr.SERVER_ERROR)
+		return httpErrDescr.NewHTTPError(ctx, http.StatusInternalServerError, httpErrDescr.SERVER_ERROR)
 	}
 
 	if restaurantsDataDelivery == nil {
 		logger.Error(requestId, "from restaurants-handler-getall returned restaurantsDataDelivery==nil and err==nil, unknown error")
-		return echo.NewHTTPError(http.StatusInternalServerError, httpErrDescr.SERVER_ERROR)
+		return httpErrDescr.NewHTTPError(ctx, http.StatusInternalServerError, httpErrDescr.SERVER_ERROR)
 	}
 
 	restaurantsD := &models.AllRestaurantsResp{}

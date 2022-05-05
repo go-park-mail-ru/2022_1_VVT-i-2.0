@@ -52,7 +52,7 @@ func createTokenCookie(token string, domen string, exp time.Duration) *http.Cook
 
 func (h UserHandler) Login(ctx echo.Context) error {
 	if middleware.GetUserFromCtx(ctx) != nil {
-		return echo.NewHTTPError(http.StatusConflict, httpErrDescr.ALREADY_AUTHORIZED)
+		return httpErrDescr.NewHTTPError(ctx, http.StatusConflict, httpErrDescr.ALREADY_AUTHORIZED)
 	}
 
 	logger := middleware.GetLoggerFromCtx(ctx)
@@ -60,12 +60,12 @@ func (h UserHandler) Login(ctx echo.Context) error {
 
 	var loginReq models.LoginReq
 	if err := ctx.Bind(&loginReq); err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, httpErrDescr.BAD_REQUEST_BODY)
+		return httpErrDescr.NewHTTPError(ctx, http.StatusBadRequest, httpErrDescr.BAD_REQUEST_BODY)
 	}
 	if _, err := govalidator.ValidateStruct(loginReq); err != nil {
 		fmt.Println(err)
 		fmt.Println(loginReq)
-		return echo.NewHTTPError(http.StatusBadRequest, httpErrDescr.INVALID_DATA)
+		return httpErrDescr.NewHTTPError(ctx, http.StatusBadRequest, httpErrDescr.INVALID_DATA)
 	}
 
 	userDataUcase, err := h.Usecase.Login(&models.LoginUcaseReq{Phone: loginReq.Phone, Code: loginReq.Code})
@@ -74,30 +74,30 @@ func (h UserHandler) Login(ctx echo.Context) error {
 		if cause == nil {
 			fmt.Println("-----------------cause == nil--------------")
 			logger.Error(requestId, err.Error())
-			return echo.NewHTTPError(http.StatusInternalServerError, httpErrDescr.SERVER_ERROR)
+			return httpErrDescr.NewHTTPError(ctx, http.StatusInternalServerError, httpErrDescr.SERVER_ERROR)
 		}
 		switch cause.Code {
 		case servErrors.WRONG_AUTH_CODE:
-			return echo.NewHTTPError(http.StatusForbidden, httpErrDescr.WRONG_AUTH_CODE)
+			return httpErrDescr.NewHTTPError(ctx, http.StatusForbidden, httpErrDescr.WRONG_AUTH_CODE)
 		case servErrors.CACH_MISS_CODE:
-			return echo.NewHTTPError(http.StatusNotFound, httpErrDescr.NO_SUCH_CODE_INFO)
+			return httpErrDescr.NewHTTPError(ctx, http.StatusNotFound, httpErrDescr.NO_SUCH_CODE_INFO)
 		case servErrors.NO_SUCH_ENTITY_IN_DB:
-			return echo.NewHTTPError(http.StatusNotFound, httpErrDescr.NO_SUCH_USER)
+			return httpErrDescr.NewHTTPError(ctx, http.StatusNotFound, httpErrDescr.NO_SUCH_USER)
 		default:
 			logger.Error(requestId, err.Error())
-			return echo.NewHTTPError(http.StatusInternalServerError, httpErrDescr.SERVER_ERROR)
+			return httpErrDescr.NewHTTPError(ctx, http.StatusInternalServerError, httpErrDescr.SERVER_ERROR)
 		}
 	}
 
 	if userDataUcase == nil {
 		logger.Error(requestId, "from user-usecase-register returned userData==nil and err==nil, unknown error")
-		return echo.NewHTTPError(http.StatusInternalServerError, httpErrDescr.SERVER_ERROR)
+		return httpErrDescr.NewHTTPError(ctx, http.StatusInternalServerError, httpErrDescr.SERVER_ERROR)
 	}
 
 	token, err := h.AuthManager.CreateToken(authManager.NewTokenPayload(userDataUcase.Id))
 	if err != nil {
 		logger.Error(requestId, "error creating token: "+err.Error())
-		return echo.NewHTTPError(http.StatusInternalServerError, httpErrDescr.SERVER_ERROR)
+		return httpErrDescr.NewHTTPError(ctx, http.StatusInternalServerError, httpErrDescr.SERVER_ERROR)
 	}
 
 	host, _, _ := net.SplitHostPort(ctx.Request().Host)
@@ -114,7 +114,7 @@ func (h UserHandler) Login(ctx echo.Context) error {
 func (h UserHandler) Register(ctx echo.Context) error {
 
 	if middleware.GetUserFromCtx(ctx) != nil {
-		return echo.NewHTTPError(http.StatusConflict, httpErrDescr.ALREADY_AUTHORIZED)
+		return httpErrDescr.NewHTTPError(ctx, http.StatusConflict, httpErrDescr.ALREADY_AUTHORIZED)
 	}
 
 	logger := middleware.GetLoggerFromCtx(ctx)
@@ -123,10 +123,10 @@ func (h UserHandler) Register(ctx echo.Context) error {
 	var registerReq models.RegisterReq
 
 	if err := ctx.Bind(&registerReq); err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, httpErrDescr.BAD_REQUEST_BODY)
+		return httpErrDescr.NewHTTPError(ctx, http.StatusBadRequest, httpErrDescr.BAD_REQUEST_BODY)
 	}
 	if _, err := govalidator.ValidateStruct(registerReq); err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, httpErrDescr.INVALID_DATA)
+		return httpErrDescr.NewHTTPError(ctx, http.StatusBadRequest, httpErrDescr.INVALID_DATA)
 	}
 
 	userDataUcase, err := h.Usecase.Register(&models.RegisterUcaseReq{Phone: registerReq.Phone, Code: registerReq.Code, Name: registerReq.Name, Email: registerReq.Email})
@@ -134,29 +134,29 @@ func (h UserHandler) Register(ctx echo.Context) error {
 		cause := servErrors.ErrorAs(err)
 		if cause == nil {
 			logger.Error(requestId, err.Error())
-			return echo.NewHTTPError(http.StatusInternalServerError, httpErrDescr.SERVER_ERROR)
+			return httpErrDescr.NewHTTPError(ctx, http.StatusInternalServerError, httpErrDescr.SERVER_ERROR)
 		}
 		switch cause.Code {
 		case servErrors.WRONG_AUTH_CODE:
-			return echo.NewHTTPError(http.StatusForbidden, httpErrDescr.WRONG_AUTH_CODE)
+			return httpErrDescr.NewHTTPError(ctx, http.StatusForbidden, httpErrDescr.WRONG_AUTH_CODE)
 		case servErrors.CACH_MISS_CODE:
-			return echo.NewHTTPError(http.StatusNotFound, httpErrDescr.NO_SUCH_CODE_INFO)
+			return httpErrDescr.NewHTTPError(ctx, http.StatusNotFound, httpErrDescr.NO_SUCH_CODE_INFO)
 		case servErrors.DB_INSERT:
-			return echo.NewHTTPError(http.StatusConflict, httpErrDescr.SUCH_USER_ALREADY_EXISTS)
+			return httpErrDescr.NewHTTPError(ctx, http.StatusConflict, httpErrDescr.SUCH_USER_ALREADY_EXISTS)
 		default:
 			logger.Error(requestId, err.Error())
-			return echo.NewHTTPError(http.StatusInternalServerError, httpErrDescr.SERVER_ERROR)
+			return httpErrDescr.NewHTTPError(ctx, http.StatusInternalServerError, httpErrDescr.SERVER_ERROR)
 		}
 	}
 	if userDataUcase == nil {
 		logger.Error(requestId, "from user-usecase-register returned userData==nil and err==nil, unknown error")
-		return echo.NewHTTPError(http.StatusInternalServerError, httpErrDescr.SERVER_ERROR)
+		return httpErrDescr.NewHTTPError(ctx, http.StatusInternalServerError, httpErrDescr.SERVER_ERROR)
 	}
 
 	token, err := h.AuthManager.CreateToken(authManager.NewTokenPayload(userDataUcase.Id))
 	if err != nil {
 		logger.Error(requestId, "error creating token: "+err.Error())
-		return echo.NewHTTPError(http.StatusInternalServerError, httpErrDescr.SERVER_ERROR)
+		return httpErrDescr.NewHTTPError(ctx, http.StatusInternalServerError, httpErrDescr.SERVER_ERROR)
 	}
 
 	host, _, _ := net.SplitHostPort(ctx.Request().Host)
@@ -172,7 +172,7 @@ func (h UserHandler) Register(ctx echo.Context) error {
 
 func (h UserHandler) Logout(ctx echo.Context) error {
 	if middleware.GetUserFromCtx(ctx) == nil {
-		return echo.NewHTTPError(http.StatusUnauthorized, httpErrDescr.AUTH_REQUIRED)
+		return httpErrDescr.NewHTTPError(ctx, http.StatusUnauthorized, httpErrDescr.AUTH_REQUIRED)
 	}
 	host, _, _ := net.SplitHostPort(ctx.Request().Host)
 	resetTokenCookie := createTokenCookie("", host, -time.Hour)
@@ -191,7 +191,7 @@ func (h UserHandler) Logout(ctx echo.Context) error {
 
 func (h UserHandler) SendCode(ctx echo.Context) error {
 	if middleware.GetUserFromCtx(ctx) != nil {
-		return echo.NewHTTPError(http.StatusConflict, httpErrDescr.ALREADY_AUTHORIZED)
+		return httpErrDescr.NewHTTPError(ctx, http.StatusConflict, httpErrDescr.ALREADY_AUTHORIZED)
 	}
 
 	logger := middleware.GetLoggerFromCtx(ctx)
@@ -199,16 +199,16 @@ func (h UserHandler) SendCode(ctx echo.Context) error {
 
 	var sendCodeReq models.SendCodeReq
 	if err := ctx.Bind(&sendCodeReq); err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, httpErrDescr.BAD_REQUEST_BODY)
+		return httpErrDescr.NewHTTPError(ctx, http.StatusBadRequest, httpErrDescr.BAD_REQUEST_BODY)
 	}
 	if _, err := govalidator.ValidateStruct(sendCodeReq); err != nil {
 		fmt.Println(err, sendCodeReq)
-		return echo.NewHTTPError(http.StatusBadRequest, httpErrDescr.INVALID_DATA)
+		return httpErrDescr.NewHTTPError(ctx, http.StatusBadRequest, httpErrDescr.INVALID_DATA)
 	}
 	isRegistered, err := h.Usecase.SendCode(&models.SendCodeUcaseReq{Phone: sendCodeReq.Phone})
 	if err != nil {
 		logger.Error(requestId, "error sending code: "+err.Error())
-		return echo.NewHTTPError(http.StatusInternalServerError, httpErrDescr.SERVER_ERROR)
+		return httpErrDescr.NewHTTPError(ctx, http.StatusInternalServerError, httpErrDescr.SERVER_ERROR)
 	}
 	return ctx.JSON(http.StatusOK, models.SendCodeResp{IsRegistered: isRegistered.IsRegistered})
 }
@@ -227,15 +227,15 @@ func (h UserHandler) GetUser(ctx echo.Context) error {
 	if err != nil {
 		cause := servErrors.ErrorAs(err)
 		if cause != nil && cause.Code == servErrors.NO_SUCH_ENTITY_IN_DB {
-			return echo.NewHTTPError(http.StatusForbidden, httpErrDescr.NO_SUCH_USER)
+			return httpErrDescr.NewHTTPError(ctx, http.StatusForbidden, httpErrDescr.NO_SUCH_USER)
 		}
 		logger.Error(requestId, err.Error())
-		return echo.NewHTTPError(http.StatusInternalServerError, httpErrDescr.SERVER_ERROR)
+		return httpErrDescr.NewHTTPError(ctx, http.StatusInternalServerError, httpErrDescr.SERVER_ERROR)
 	}
 
 	if userDataUcase == nil {
 		logger.Error(requestId, "from user-usecase-get-user returned userData==nil and err==nil, unknown error")
-		return echo.NewHTTPError(http.StatusInternalServerError, httpErrDescr.SERVER_ERROR)
+		return httpErrDescr.NewHTTPError(ctx, http.StatusInternalServerError, httpErrDescr.SERVER_ERROR)
 	}
 
 	csrfToken := middleware.GetCSRFTokenromCtx(ctx)
@@ -248,12 +248,12 @@ func (h UserHandler) GetUser(ctx echo.Context) error {
 func (h UserHandler) UpdateUser(ctx echo.Context) error {
 	user := middleware.GetUserFromCtx(ctx)
 	if user == nil {
-		return echo.NewHTTPError(http.StatusUnauthorized, httpErrDescr.AUTH_REQUIRED)
+		return httpErrDescr.NewHTTPError(ctx, http.StatusUnauthorized, httpErrDescr.AUTH_REQUIRED)
 	}
 
 	err := ctx.Request().ParseMultipartForm(avatarMaxSize + updateUserMaxSize)
 	if err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, httpErrDescr.BAD_REQUEST_BODY)
+		return httpErrDescr.NewHTTPError(ctx, http.StatusBadRequest, httpErrDescr.BAD_REQUEST_BODY)
 	}
 	logger := middleware.GetLoggerFromCtx(ctx)
 	requestId := middleware.GetRequestIdFromCtx(ctx)
@@ -268,7 +268,7 @@ func (h UserHandler) UpdateUser(ctx echo.Context) error {
 
 	if _, err := govalidator.ValidateStruct(updateReq); err != nil || (updateReq.Email == "" && updateReq.Name == "") {
 		fmt.Println(err)
-		return echo.NewHTTPError(http.StatusBadRequest, httpErrDescr.INVALID_DATA)
+		return httpErrDescr.NewHTTPError(ctx, http.StatusBadRequest, httpErrDescr.INVALID_DATA)
 	}
 
 	avatarImage, _, _ := ctx.Request().FormFile("avatar")
@@ -282,21 +282,21 @@ func (h UserHandler) UpdateUser(ctx echo.Context) error {
 		cause := servErrors.ErrorAs(err)
 		if cause == nil {
 			logger.Error(requestId, err.Error())
-			return echo.NewHTTPError(http.StatusInternalServerError, httpErrDescr.SERVER_ERROR)
+			return httpErrDescr.NewHTTPError(ctx, http.StatusInternalServerError, httpErrDescr.SERVER_ERROR)
 		}
 		switch cause.Code {
 		case servErrors.DB_UPDATE:
-			return echo.NewHTTPError(http.StatusConflict, httpErrDescr.SUCH_USER_ALREADY_EXISTS)
+			return httpErrDescr.NewHTTPError(ctx, http.StatusConflict, httpErrDescr.SUCH_USER_ALREADY_EXISTS)
 		case servErrors.DECODE_IMG:
-			return echo.NewHTTPError(http.StatusBadRequest, httpErrDescr.BAD_IMAGE)
+			return httpErrDescr.NewHTTPError(ctx, http.StatusBadRequest, httpErrDescr.BAD_IMAGE)
 		}
 		logger.Error(requestId, err.Error())
-		return echo.NewHTTPError(http.StatusInternalServerError, httpErrDescr.SERVER_ERROR)
+		return httpErrDescr.NewHTTPError(ctx, http.StatusInternalServerError, httpErrDescr.SERVER_ERROR)
 	}
 
 	if userDataUcase == nil {
 		logger.Error(requestId, "from user-usecase-get-user returned userData==nil and err==nil, unknown error")
-		return echo.NewHTTPError(http.StatusInternalServerError, httpErrDescr.SERVER_ERROR)
+		return httpErrDescr.NewHTTPError(ctx, http.StatusInternalServerError, httpErrDescr.SERVER_ERROR)
 	}
 
 	csrfToken := middleware.GetCSRFTokenromCtx(ctx)

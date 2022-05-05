@@ -34,15 +34,6 @@ services:
     volumes:
       - "./prometheus:/etc/prometheus"
 
-  alertmanager:
-    image: prom/alertmanager
-    ports:
-      - "9093:9093"
-    command:
-      - '--config.file=/etc/alertmanager/alertmanager.yml'
-    volumes:
-      - "./alertmanager:/etc/alertmanager"
-
   grafana:
     image: grafana/grafana-enterprise:8.2.0
     links:
