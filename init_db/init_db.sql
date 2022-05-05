@@ -150619,7 +150619,7 @@ CREATE TABLE statuses (
 
 INSERT INTO statuses (name) VALUES 
 ('В обработке'),
-('Готовится'),
+('Готовим'),
 ('В пути'),
 ('Получен');
 
