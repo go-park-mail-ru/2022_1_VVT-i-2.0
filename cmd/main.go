@@ -138,7 +138,7 @@ func main() {
 
 	userHandler := userHandler.NewUserHandler(userUcase, jwtManager, staticManager)
 	suggsHandler := suggsHandler.NewSuggsHandler(suggsUcase)
-	orderHandler := orderHandler.NewOrderHandler(orderUcase)
+	orderHandler := orderHandler.NewOrderHandler(orderUcase, staticManager)
 
 	restaurantsRepo := restaurantsRepo.NewRestaurantsRepo(pgxManager)
 	restaurantsUsecase := restaurantsUsecase.NewRestaurantsUsecase(restaurantsRepo)
@@ -167,7 +167,7 @@ func main() {
 		SuggsHandler:       suggsHandler,
 		OrderHandler:       orderHandler,
 		DishesHandler:      dishesHandler,
-		CommentsHandler: 	commentsHandler,
+		CommentsHandler:    commentsHandler,
 	}
 
 	serverRouting.ConfigureRouting(router)

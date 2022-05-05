@@ -51,7 +51,7 @@ type ShortOrderResp struct {
 }
 
 type ShortOrder struct {
-	OrderId        int64  `json:"id"`
+	OrderId        int64  `json:"orderNumber"`
 	Date           string `json:"date"`
 	TotalPrice     int64  `json:"totalPrice"`
 	RestaurantName string `json:"restName"`
@@ -59,7 +59,7 @@ type ShortOrder struct {
 }
 
 type GetUserOrdersResp struct {
-	Orders []ShortOrder `json:"orders"`
+	Orders []ShortOrder `json:"orderList"`
 }
 
 type GetUserOrderStatusesUcaseReq struct {
@@ -80,12 +80,12 @@ type GetUserOrderStatusesReq struct {
 }
 
 type OrderStatus struct {
-	OrderId int64
-	Status  string
+	OrderId int64  `json:"id"`
+	Status  string `json:"status"`
 }
 
 type GetUserOrderStatusesResp struct {
-	OrderStatuses []OrderStatus `json:"orders"`
+	OrderStatuses []OrderStatus `json:"statuses"`
 }
 
 // /////////////
@@ -120,11 +120,11 @@ type OrderPositionResp struct {
 	Count       int64  `json:"count"`
 	Price       int64  `json:"price"`
 	Calories    int64  `json:"calories"`
-	Weigth      int64  `json:"weigth"`
-	ImagePath   string `json:"imagePath"`
+	Weigth      int64  `json:"weight"`
+	ImagePath   string `json:"imgPath"`
 }
 type GetUserOrderResp struct {
-	OrderId        int64               `json:"id"`
+	OrderId        int64               `json:"orderNumber"`
 	Address        string              `json:"address"`
 	Date           string              `json:"date"`
 	TotalPrice     int64               `json:"totalPrice"`

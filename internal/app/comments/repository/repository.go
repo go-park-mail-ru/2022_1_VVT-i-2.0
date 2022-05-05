@@ -44,7 +44,7 @@ func (r *CommentsRepo) GetRestaurantBySlug(slug string) (*models.RestaurantDataS
 
 func (r *CommentsRepo) GetRestaurantComments(id int) ([]*models.CommentRestaurantDataStorage, error) {
 	comments := make([]*models.CommentRestaurantDataStorage, 0)
-	err := r.DB.Select(&comments, `SELECT restaurant_id, author, text, stars, get_ru_date(date) date FROM comments WHERE restaurant_id = $1 ORDER BY get_ru_date(date) DESC`, id)
+	err := r.DB.Select(&comments, `SELECT restaurant_id, author, text, stars, get_ru_date(date) date_creating FROM comments WHERE restaurant_id = $1 ORDER BY date DESC`, id)
 
 	switch err {
 	case nil:
@@ -72,7 +72,7 @@ func (r *CommentsRepo) GetUserById(id models.UserId) (*models.UserDataRepo, erro
 
 func (r *CommentsRepo) AddRestaurantComment(newComment *models.AddCommentRestaurantDataStorage) (*models.CommentRestaurantDataStorage, error) {
 	comment := &models.CommentRestaurantDataStorage{}
-	err := r.DB.Get(comment, `INSERT INTO comments (restaurant_id, author, text, stars) VALUES ($1,$2,$3,$4) RETURNING restaurant_id, author, text, stars, date`, newComment.Restaurant_id, newComment.User, newComment.Comment_text, newComment.Comment_rating)
+	err := r.DB.Get(comment, `INSERT INTO comments (restaurant_id, author, text, stars) VALUES ($1,$2,$3,$4) RETURNING restaurant_id, author, text, stars, date_creating`, newComment.Restaurant_id, newComment.User, newComment.Comment_text, newComment.Comment_rating)
 	if err != nil {
 		if err == sql.ErrConnDone || err == sql.ErrTxDone {
 			return nil, servErrors.NewError(servErrors.DB_ERROR, err.Error())
