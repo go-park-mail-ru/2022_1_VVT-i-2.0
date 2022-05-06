@@ -2,7 +2,6 @@ package usecase
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/models"
 	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/tools/servErrors"
@@ -21,14 +20,11 @@ func NewUsecase(orderCli orderProto.OrderServiceClient) *OrderUsecase {
 }
 
 func (u *OrderUsecase) CreateOrder(order *models.OrderUcaseReq) (*models.OrderUcaseResp, error) {
-	fmt.Println("send-code-u")
 	cart := make([]*orderProto.OrderPositionReq, len(order.Cart))
 	for i, position := range order.Cart {
 		cart[i] = &orderProto.OrderPositionReq{Id: position.Id, Count: position.Count}
 	}
 	orderResp, err := u.OrderCli.CreateOrder(context.Background(), &orderProto.CreateOrderReq{UserId: int64(order.UserId), Address: order.Address, Comment: order.Comment, Cart: cart})
-	fmt.Println("send-code-eu")
-	fmt.Println(orderResp, err)
 	if err != nil {
 		return nil, servErrors.NewError(int(status.Code(err)), err.Error())
 	}
@@ -52,7 +48,6 @@ func (u *OrderUsecase) GetUserOrders(order *models.GetUserOrdersUcaseReq) (*mode
 func (u *OrderUsecase) GetUserOrderStatuses(order *models.GetUserOrderStatusesUcaseReq) (*models.GetUserOrderStatusesUcaseResp, error) {
 	orders, err := u.OrderCli.GetUserOrderStatuses(context.Background(), &orderProto.GetUserOrderStatusesReq{UserId: int64(order.UserId)})
 
-	fmt.Println(orders)
 	if err != nil {
 		return nil, servErrors.NewError(int(status.Code(err)), err.Error())
 	}
@@ -61,7 +56,6 @@ func (u *OrderUsecase) GetUserOrderStatuses(order *models.GetUserOrderStatusesUc
 	for i, order := range orders.OrderStatuses {
 		ordersResp[i] = models.OrderStatusUcase{OrderId: order.OrderId, Status: order.Status}
 	}
-	fmt.Println(ordersResp)
 	return &models.GetUserOrderStatusesUcaseResp{OrderStatuses: ordersResp}, err
 }
 
@@ -72,7 +66,7 @@ func (u *OrderUsecase) GetUserOrder(req *models.GetUserOrderUcaseReq) (*models.G
 		return nil, servErrors.NewError(int(status.Code(err)), err.Error())
 	}
 
-	resp := models.GetUserOrderUcaseResp{OrderId: order.OrderId, Address: order.Address, Date: order.Date, RestaurantName: order.RestaurantName, TotalPrice: order.TotalPrice, Status: order.Status, Cart: make([]models.OrderPositionUcaseResp, len(order.Cart))}
+	resp := models.GetUserOrderUcaseResp{OrderId: order.OrderId, Address: order.Address, Date: order.Date, RestaurantName: order.RestaurantName, RestaurantSlug: order.RestaurantSlug, TotalPrice: order.TotalPrice, Status: order.Status, Cart: make([]models.OrderPositionUcaseResp, len(order.Cart))}
 	for i, poz := range order.Cart {
 		resp.Cart[i] = models.OrderPositionUcaseResp{Name: poz.Name, Description: poz.Description, ImagePath: poz.ImagePath, Calories: poz.Calories, Count: poz.Count, Price: poz.Price, Weigth: poz.Weigth}
 	}

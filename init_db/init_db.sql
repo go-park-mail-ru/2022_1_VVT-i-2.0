@@ -150644,5 +150644,5 @@ DECLARE
 $$ LANGUAGE plpgsql;
 
 CREATE VIEW orders AS
-    SELECT o.id id, o.address address, o.user_id user_id, to_char(o.date, 'DD.MM.YYYY') date, o.date  fulldate,get_order_status(statuses) status, r.name restaurant_name, o.total_price total_price, o.cart
+    SELECT o.id id, o.address address, o.user_id user_id, to_char(o.date, 'DD.MM.YYYY') date, o.date  fulldate,get_order_status(statuses) status, r.name restaurant_name, r.slug restaurant_slug, o.total_price total_price, o.cart
     FROM orders_internal o JOIN restaurants r ON o.restaurant_id=r.id;

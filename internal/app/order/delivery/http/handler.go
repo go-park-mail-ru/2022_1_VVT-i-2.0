@@ -151,7 +151,7 @@ func (h OrderHandler) GetUserOrder(ctx echo.Context) error {
 		return httpErrDescr.NewHTTPError(ctx, http.StatusInternalServerError, httpErrDescr.SERVER_ERROR)
 	}
 	fmt.Println(orderUcaseData.Status)
-	resp := models.GetUserOrderResp{OrderId: orderUcaseData.OrderId, Address: orderUcaseData.Address, Date: orderUcaseData.Date, RestaurantName: orderUcaseData.RestaurantName, Status: orderUcaseData.Status, TotalPrice: orderUcaseData.TotalPrice, Cart: make([]models.OrderPositionResp, len(orderUcaseData.Cart))}
+	resp := models.GetUserOrderResp{OrderId: orderUcaseData.OrderId, Address: orderUcaseData.Address, Date: orderUcaseData.Date, RestaurantName: orderUcaseData.RestaurantName, RestaurantSlug: orderUcaseData.RestaurantSlug, Status: orderUcaseData.Status, TotalPrice: orderUcaseData.TotalPrice, Cart: make([]models.OrderPositionResp, len(orderUcaseData.Cart))}
 	for i, order := range orderUcaseData.Cart {
 		order.ImagePath = h.StaticManager.GetDishesUrl(order.ImagePath)
 		resp.Cart[i] = models.OrderPositionResp(order)

@@ -2,7 +2,6 @@ package grpc
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/tools/servErrors"
 	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/microservices/order"
@@ -25,14 +24,11 @@ func NewOrderHandler(usecase order.Usecase) *grpcOrderHandler {
 }
 
 func (h grpcOrderHandler) CreateOrder(ctx context.Context, req *proto.CreateOrderReq) (*proto.CreateOrderResp, error) {
-	fmt.Println("grpc-h")
 	cart := make([]models.OrderPositionUcase, len(req.Cart))
 	for i, position := range req.Cart {
 		cart[i] = models.OrderPositionUcase{Id: position.Id, Count: position.Count}
 	}
 	orderResp, err := h.Usecase.CreateOrder(&models.CreateOrderUcaseReq{Address: req.Address, Comment: req.Comment, UserId: req.UserId, Cart: cart})
-	fmt.Println("grpc-eh")
-	fmt.Println(orderResp, err)
 	if err != nil {
 		cause := servErrors.ErrorAs(err)
 		if cause == nil {
@@ -43,14 +39,8 @@ func (h grpcOrderHandler) CreateOrder(ctx context.Context, req *proto.CreateOrde
 	return &proto.CreateOrderResp{OrderId: orderResp.OrderId}, nil
 }
 
-// GetUserOrder(context.Context, *GetUserOrderReq) (*GetUserOrderResp, error)
-// GetUserOrderStatuses(context.Context, *GetUserOrderStatusesReq) (*GetUserOrderStatusesResp, error)
-
 func (h grpcOrderHandler) GetUserOrders(ctx context.Context, req *proto.GetUserOrdersReq) (*proto.GetUserOrdersResp, error) {
-	fmt.Println("grpc-h")
 	ordersUcaseResp, err := h.Usecase.GetUserOrders(&models.GetUserOrdersUcaseReq{UserId: req.UserId})
-	fmt.Println("grpc-eh")
-	fmt.Println(ordersUcaseResp, err)
 	if err != nil {
 		cause := servErrors.ErrorAs(err)
 		if cause == nil {
@@ -66,10 +56,7 @@ func (h grpcOrderHandler) GetUserOrders(ctx context.Context, req *proto.GetUserO
 }
 
 func (h grpcOrderHandler) GetUserOrderStatuses(ctx context.Context, req *proto.GetUserOrderStatusesReq) (*proto.GetUserOrderStatusesResp, error) {
-	fmt.Println("grpc-h")
 	ordersUcaseResp, err := h.Usecase.GetUserOrders(&models.GetUserOrdersUcaseReq{UserId: req.UserId})
-	fmt.Println("grpc-eh")
-	fmt.Println(ordersUcaseResp, err)
 	if err != nil {
 		cause := servErrors.ErrorAs(err)
 		if cause == nil {
@@ -81,16 +68,11 @@ func (h grpcOrderHandler) GetUserOrderStatuses(ctx context.Context, req *proto.G
 	for i, position := range ordersUcaseResp.Orders {
 		ordersStatusesResp[i] = &proto.OrderStatus{OrderId: position.OrderId, Status: position.Status}
 	}
-	fmt.Println("------------------------------")
-	fmt.Println(ordersStatusesResp)
 	return &proto.GetUserOrderStatusesResp{OrderStatuses: ordersStatusesResp}, nil
 }
 
 func (h grpcOrderHandler) GetUserOrder(ctx context.Context, req *proto.GetUserOrderReq) (*proto.GetUserOrderResp, error) {
-	fmt.Println("grpc-h")
 	order, err := h.Usecase.GetUserOrder(&models.GetUserOrderUcaseReq{UserId: req.UserId, OrderId: req.OrderId})
-	fmt.Println("grpc-eh")
-	fmt.Println(order, err)
 	if err != nil {
 		cause := servErrors.ErrorAs(err)
 		if cause == nil {
@@ -104,5 +86,5 @@ func (h grpcOrderHandler) GetUserOrder(ctx context.Context, req *proto.GetUserOr
 		cart[i] = &proto.OrderPositionResp{Name: poz.Name, Description: poz.Description, ImagePath: poz.ImagePath, Calories: poz.Calories, Count: poz.Count, Price: poz.Price, Weigth: poz.Weigth}
 	}
 
-	return &proto.GetUserOrderResp{OrderId: order.OrderId, Address: order.Address, Date: order.Date, RestaurantName: order.RestaurantName, TotalPrice: order.TotalPrice, Status: order.Status, Cart: cart}, nil
+	return &proto.GetUserOrderResp{OrderId: order.OrderId, Address: order.Address, Date: order.Date, RestaurantName: order.RestaurantName, RestaurantSlug: order.RestaurantSlug, TotalPrice: order.TotalPrice, Status: order.Status, Cart: cart}, nil
 }
