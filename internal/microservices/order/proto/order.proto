@@ -55,9 +55,10 @@ message GetUserOrderResp {
   string Date = 2;
   int64 TotalPrice = 3;
   string RestaurantName = 4;
-  string Status = 5;
-  string Address = 6;
-  repeated OrderPositionResp Cart = 7;
+  string RestaurantSlug = 5;
+  string Status = 6;
+  string Address = 7;
+  repeated OrderPositionResp Cart = 8;
 }
 
 message GetUserOrderStatusesReq {

@@ -76,12 +76,5 @@ func (u *OrderUsecase) GetUserOrder(req *models.GetUserOrderUcaseReq) (*models.G
 		cart[i] = models.OrderPositionUcaseResp{Name: poz.Name, Description: poz.Description, ImagePath: poz.ImagePath, Calories: poz.Calories, Count: poz.Count, Price: poz.Price, Weigth: poz.Weight}
 	}
 
-	return &models.GetUserOrderUcaseResp{OrderId: order.OrderId, Address: order.Address, Date: order.Date, RestaurantName: order.RestaurantName, TotalPrice: order.TotalPrice, Status: order.Status, Cart: cart}, nil
+	return &models.GetUserOrderUcaseResp{OrderId: order.OrderId, Address: order.Address, Date: order.Date, RestaurantName: order.RestaurantName, RestaurantSlug: order.RestaurantSlug, TotalPrice: order.TotalPrice, Status: order.Status, Cart: cart}, nil
 }
-
-// ordersResp := make([]models.ShortOrderUcase, len(orders.OrderStatuses))
-// for i, position := range orders.OrderStatuses {
-// ordersResp[i] = models.ShortOrderUcase(position)
-// }
-// return &models.GetUserOrderUcaseResp{Address: order.Address}, nil
-// }
