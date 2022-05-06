@@ -72,7 +72,7 @@ func CSRFWithConfig(config CSRFConfig) echo.MiddlewareFunc {
 				// Validate token only for requests which are not defined as 'safe' by RFC7231
 				clientToken := ctx.Request().Header.Get(echo.HeaderXCSRFToken)
 				if clientToken != token {
-					return echo.NewHTTPError(http.StatusForbidden, httpErrDescr.INVALID_CSRF)
+					return httpErrDescr.NewHTTPError(ctx, http.StatusForbidden, httpErrDescr.INVALID_CSRF)
 				}
 			}
 

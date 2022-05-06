@@ -9,6 +9,7 @@ import (
 	restaurantsHandler "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/restaurants/delivery/http"
 	userHandler "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/user/delivery/http"
 	"github.com/labstack/echo/v4"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 	// echoSwagger "github.com/swaggo/echo-swagger"
 )
 
@@ -19,6 +20,7 @@ type ServerHandlers struct {
 	SuggsHandler       *suggestHandler.SuggsHandler
 	OrderHandler       *orderHandler.OrderHandler
 	CommentsHandler    *commentHandler.CommentsHandler
+
 }
 
 const (
@@ -27,6 +29,7 @@ const (
 
 // TODO:  убрать миддлвар авторизации с suggests
 func (sh *ServerHandlers) ConfigureRouting(router *echo.Echo) {
+	router.GET("/metrics", echo.WrapHandler(promhttp.Handler()))
 	router.Static("/static", "static")
 	//router.GET("/swagger/*", echoSwagger.WrapHandler)
 	router.POST(v1Prefix+"login", sh.UserHandler.Login)

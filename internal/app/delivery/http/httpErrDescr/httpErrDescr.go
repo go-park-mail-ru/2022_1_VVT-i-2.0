@@ -1,5 +1,7 @@
 package httpErrDescr
 
+import "github.com/labstack/echo/v4"
+
 const (
 	AUTH_REQUIRED                  = "для этого действия необходимо авторизоваться"
 	BAD_AUTH_TOKEN                 = "невалидный токен авторизации"
@@ -20,3 +22,8 @@ const (
 	ALREADY_AUTHORIZED             = "пользователь уже авторизован"
 	INVALID_CSRF                   = "невалидный csrf-токен"
 )
+
+func NewHTTPError(ctx echo.Context, httpStatusCode int, descr string) error {
+	ctx.Response().Status = httpStatusCode
+	return echo.NewHTTPError(httpStatusCode, descr)
+}
