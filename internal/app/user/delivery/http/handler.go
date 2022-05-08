@@ -1,7 +1,6 @@
 package userHandler
 
 import (
-	"fmt"
 	"net"
 	"net/http"
 	"time"
@@ -26,14 +25,14 @@ const (
 )
 
 type UserHandler struct {
-	Usecase       user.Usecase
+	Ucase         user.Ucase
 	AuthManager   authManager.AuthManager
 	StaticManager staticManager.FileManager
 }
 
-func NewUserHandler(usecase user.Usecase, authManager authManager.AuthManager, staticManager staticManager.FileManager) *UserHandler {
+func NewUserHandler(ucase user.Ucase, authManager authManager.AuthManager, staticManager staticManager.FileManager) *UserHandler {
 	return &UserHandler{
-		Usecase:       usecase,
+		Ucase:         ucase,
 		AuthManager:   authManager,
 		StaticManager: staticManager,
 	}
@@ -63,16 +62,13 @@ func (h UserHandler) Login(ctx echo.Context) error {
 		return httpErrDescr.NewHTTPError(ctx, http.StatusBadRequest, httpErrDescr.BAD_REQUEST_BODY)
 	}
 	if _, err := govalidator.ValidateStruct(loginReq); err != nil {
-		fmt.Println(err)
-		fmt.Println(loginReq)
 		return httpErrDescr.NewHTTPError(ctx, http.StatusBadRequest, httpErrDescr.INVALID_DATA)
 	}
 
-	userDataUcase, err := h.Usecase.Login(&models.LoginUcaseReq{Phone: loginReq.Phone, Code: loginReq.Code})
+	userDataUcase, err := h.Ucase.Login(&models.LoginUcaseReq{Phone: loginReq.Phone, Code: loginReq.Code})
 	if err != nil {
 		cause := servErrors.ErrorAs(err)
 		if cause == nil {
-			fmt.Println("-----------------cause == nil--------------")
 			logger.Error(requestId, err.Error())
 			return httpErrDescr.NewHTTPError(ctx, http.StatusInternalServerError, httpErrDescr.SERVER_ERROR)
 		}
@@ -87,11 +83,6 @@ func (h UserHandler) Login(ctx echo.Context) error {
 			logger.Error(requestId, err.Error())
 			return httpErrDescr.NewHTTPError(ctx, http.StatusInternalServerError, httpErrDescr.SERVER_ERROR)
 		}
-	}
-
-	if userDataUcase == nil {
-		logger.Error(requestId, "from user-usecase-register returned userData==nil and err==nil, unknown error")
-		return httpErrDescr.NewHTTPError(ctx, http.StatusInternalServerError, httpErrDescr.SERVER_ERROR)
 	}
 
 	token, err := h.AuthManager.CreateToken(authManager.NewTokenPayload(userDataUcase.Id))
@@ -129,7 +120,7 @@ func (h UserHandler) Register(ctx echo.Context) error {
 		return httpErrDescr.NewHTTPError(ctx, http.StatusBadRequest, httpErrDescr.INVALID_DATA)
 	}
 
-	userDataUcase, err := h.Usecase.Register(&models.RegisterUcaseReq{Phone: registerReq.Phone, Code: registerReq.Code, Name: registerReq.Name, Email: registerReq.Email})
+	userDataUcase, err := h.Ucase.Register(&models.RegisterUcaseReq{Phone: registerReq.Phone, Code: registerReq.Code, Name: registerReq.Name, Email: registerReq.Email})
 	if err != nil {
 		cause := servErrors.ErrorAs(err)
 		if cause == nil {
@@ -147,10 +138,6 @@ func (h UserHandler) Register(ctx echo.Context) error {
 			logger.Error(requestId, err.Error())
 			return httpErrDescr.NewHTTPError(ctx, http.StatusInternalServerError, httpErrDescr.SERVER_ERROR)
 		}
-	}
-	if userDataUcase == nil {
-		logger.Error(requestId, "from user-usecase-register returned userData==nil and err==nil, unknown error")
-		return httpErrDescr.NewHTTPError(ctx, http.StatusInternalServerError, httpErrDescr.SERVER_ERROR)
 	}
 
 	token, err := h.AuthManager.CreateToken(authManager.NewTokenPayload(userDataUcase.Id))
@@ -202,15 +189,14 @@ func (h UserHandler) SendCode(ctx echo.Context) error {
 		return httpErrDescr.NewHTTPError(ctx, http.StatusBadRequest, httpErrDescr.BAD_REQUEST_BODY)
 	}
 	if _, err := govalidator.ValidateStruct(sendCodeReq); err != nil {
-		fmt.Println(err, sendCodeReq)
 		return httpErrDescr.NewHTTPError(ctx, http.StatusBadRequest, httpErrDescr.INVALID_DATA)
 	}
-	isRegistered, err := h.Usecase.SendCode(&models.SendCodeUcaseReq{Phone: sendCodeReq.Phone})
+	isRegistered, err := h.Ucase.SendCode(&models.SendCodeUcaseReq{Phone: sendCodeReq.Phone})
 	if err != nil {
 		logger.Error(requestId, "error sending code: "+err.Error())
 		return httpErrDescr.NewHTTPError(ctx, http.StatusInternalServerError, httpErrDescr.SERVER_ERROR)
 	}
-	return ctx.JSON(http.StatusOK, models.SendCodeResp{IsRegistered: isRegistered.IsRegistered})
+	return ctx.JSON(http.StatusOK, models.SendCodeResp(isRegistered))
 }
 
 func (h UserHandler) GetUser(ctx echo.Context) error {
@@ -222,7 +208,7 @@ func (h UserHandler) GetUser(ctx echo.Context) error {
 	logger := middleware.GetLoggerFromCtx(ctx)
 	requestId := middleware.GetRequestIdFromCtx(ctx)
 
-	userDataUcase, err := h.Usecase.GetUser(user.Id)
+	userDataUcase, err := h.Ucase.GetUser(user.Id)
 
 	if err != nil {
 		cause := servErrors.ErrorAs(err)
@@ -230,11 +216,6 @@ func (h UserHandler) GetUser(ctx echo.Context) error {
 			return httpErrDescr.NewHTTPError(ctx, http.StatusForbidden, httpErrDescr.NO_SUCH_USER)
 		}
 		logger.Error(requestId, err.Error())
-		return httpErrDescr.NewHTTPError(ctx, http.StatusInternalServerError, httpErrDescr.SERVER_ERROR)
-	}
-
-	if userDataUcase == nil {
-		logger.Error(requestId, "from user-usecase-get-user returned userData==nil and err==nil, unknown error")
 		return httpErrDescr.NewHTTPError(ctx, http.StatusInternalServerError, httpErrDescr.SERVER_ERROR)
 	}
 
@@ -263,11 +244,7 @@ func (h UserHandler) UpdateUser(ctx echo.Context) error {
 		Email: ctx.Request().FormValue("email"),
 	}
 
-	fmt.Println(updateReq.Email)
-	fmt.Println(updateReq.Name)
-
 	if _, err := govalidator.ValidateStruct(updateReq); err != nil || (updateReq.Email == "" && updateReq.Name == "") {
-		fmt.Println(err)
 		return httpErrDescr.NewHTTPError(ctx, http.StatusBadRequest, httpErrDescr.INVALID_DATA)
 	}
 
@@ -276,7 +253,7 @@ func (h UserHandler) UpdateUser(ctx echo.Context) error {
 		defer avatarImage.Close()
 	}
 
-	userDataUcase, err := h.Usecase.UpdateUser(&models.UpdateUserUsecase{Id: user.Id, Email: updateReq.Email, Name: updateReq.Name, AvatarImg: avatarImage})
+	userDataUcase, err := h.Ucase.UpdateUser(&models.UpdateUserUcase{Id: user.Id, Email: updateReq.Email, Name: updateReq.Name, AvatarImg: avatarImage})
 
 	if err != nil {
 		cause := servErrors.ErrorAs(err)
@@ -291,11 +268,6 @@ func (h UserHandler) UpdateUser(ctx echo.Context) error {
 			return httpErrDescr.NewHTTPError(ctx, http.StatusBadRequest, httpErrDescr.BAD_IMAGE)
 		}
 		logger.Error(requestId, err.Error())
-		return httpErrDescr.NewHTTPError(ctx, http.StatusInternalServerError, httpErrDescr.SERVER_ERROR)
-	}
-
-	if userDataUcase == nil {
-		logger.Error(requestId, "from user-usecase-get-user returned userData==nil and err==nil, unknown error")
 		return httpErrDescr.NewHTTPError(ctx, http.StatusInternalServerError, httpErrDescr.SERVER_ERROR)
 	}
 

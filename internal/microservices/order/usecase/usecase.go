@@ -1,4 +1,4 @@
-package usecase
+package ucase
 
 import (
 	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/tools/servErrors"
@@ -7,17 +7,17 @@ import (
 	"github.com/pkg/errors"
 )
 
-type OrderUsecase struct {
+type OrderUcase struct {
 	OrderRepo order.Repository
 }
 
-func NewOrderUcase(orderRepo order.Repository) *OrderUsecase {
-	return &OrderUsecase{
+func NewOrderUcase(orderRepo order.Repository) *OrderUcase {
+	return &OrderUcase{
 		OrderRepo: orderRepo,
 	}
 }
 
-func (u *OrderUsecase) CreateOrder(order *models.CreateOrderUcaseReq) (*models.CreateOrderUcaseResp, error) {
+func (u *OrderUcase) CreateOrder(order *models.CreateOrderUcaseReq) (*models.CreateOrderUcaseResp, error) {
 	// TODO: сделать проверку, есть ли такой адрес
 	cart := make([]models.OrderPositionRepo, len(order.Cart))
 	for i, position := range order.Cart {
@@ -32,21 +32,21 @@ func (u *OrderUsecase) CreateOrder(order *models.CreateOrderUcaseReq) (*models.C
 
 }
 
-func (u *OrderUsecase) GetUserOrders(user *models.GetUserOrdersUcaseReq) (*models.GetUserOrdersUcaseResp, error) {
+func (u *OrderUcase) GetUserOrders(user *models.GetUserOrdersUcaseReq) (*models.GetUserOrdersUcaseResp, error) {
 
 	orders, err := u.OrderRepo.GetUserOrders(&models.GetUserOrdersRepoReq{UserId: user.UserId})
 
 	if err != nil || orders == nil {
 		return nil, errors.Wrap(err, "error getting orders from storage")
 	}
-	ordersResp := make([]models.ShortOrderUcase, len(orders.OrderStatuses))
-	for i, position := range orders.OrderStatuses {
+	ordersResp := make([]models.ShortOrderUcase, len(orders.Orders))
+	for i, position := range orders.Orders {
 		ordersResp[i] = models.ShortOrderUcase(position)
 	}
 	return &models.GetUserOrdersUcaseResp{Orders: ordersResp}, nil
 }
 
-func (u *OrderUsecase) GetUserOrderStatuses(user *models.GetUserOrderStatusesUcaseReq) (*models.GetUserOrderStatusesUcaseResp, error) {
+func (u *OrderUcase) GetUserOrderStatuses(user *models.GetUserOrderStatusesUcaseReq) (*models.GetUserOrderStatusesUcaseResp, error) {
 
 	orderStatuses, err := u.OrderRepo.GetUserOrderStatuses(&models.GetUserOrderStatusesRepoReq{UserId: user.UserId})
 
@@ -60,7 +60,7 @@ func (u *OrderUsecase) GetUserOrderStatuses(user *models.GetUserOrderStatusesUca
 	return &models.GetUserOrderStatusesUcaseResp{OrderStatuses: orderStatusesResp}, nil
 }
 
-func (u *OrderUsecase) GetUserOrder(req *models.GetUserOrderUcaseReq) (*models.GetUserOrderUcaseResp, error) {
+func (u *OrderUcase) GetUserOrder(req *models.GetUserOrderUcaseReq) (*models.GetUserOrderUcaseResp, error) {
 
 	order, err := u.OrderRepo.GetUserOrder(&models.GetUserOrderRepoReq{OrderId: req.OrderId})
 

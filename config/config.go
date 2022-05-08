@@ -10,8 +10,6 @@ type Config struct {
 	ServConfig            ServerConfig      `toml:"server"`
 	LoggerConfig          LogConfig         `toml:"logger"`
 	AuthentificatorConfig AuthManagerConfig `toml:"authManager"`
-	NotificatorConfig     NotificatorConfig `toml:"notificator"`
-	CacherConfig          CachConfig        `toml:"cacher"`
 	DatabaseConfig        DatabaseConfig    `toml:"database"`
 	CorsConfig            CorsConfig        `toml:"cors"`
 	CsrfConfig            CsrfConfig        `toml:"csrf"`

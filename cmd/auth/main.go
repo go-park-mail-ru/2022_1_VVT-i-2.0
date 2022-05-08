@@ -2,11 +2,12 @@ package main
 
 import (
 	"flag"
+	"log"
+	"net"
+
 	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/tools/postgresqlx"
 	"github.com/pkg/errors"
 	"google.golang.org/grpc"
-	"log"
-	"net"
 
 	conf "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/config"
 
@@ -34,8 +35,6 @@ func main() {
 		log.Fatal(errors.Wrap(err, "error creating postgres agent"))
 	}
 	defer pgxManager.Close()
-
-
 
 	// jwtManager := jwt.NewJwtManager(config.AuthentificatorConfig)
 

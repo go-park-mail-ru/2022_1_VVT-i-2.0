@@ -87,7 +87,7 @@ type UpdateUserReq struct {
 	Email string `json:"email" valid:"email"`
 }
 
-type UpdateUserUsecase struct {
+type UpdateUserUcase struct {
 	Id        UserId
 	Name      string
 	Email     string

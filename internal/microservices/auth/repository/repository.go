@@ -2,7 +2,6 @@ package repository
 
 import (
 	"database/sql"
-	"fmt"
 
 	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/tools/servErrors"
 	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/microservices/auth/models"
@@ -20,8 +19,6 @@ func NewAuthRepo(db *sqlx.DB) *AuthRepo {
 func (r *AuthRepo) GetUserByPhone(phone models.UserByPhoneRepoReq) (*models.UserDataRepo, error) {
 	user := &models.UserDataRepo{}
 	err := r.DB.Get(user, `SELECT id, phone, email, name, avatar FROM users WHERE phone = $1`, phone.Phone)
-	fmt.Println(err)
-	fmt.Println(user)
 	switch err {
 	case nil:
 		return user, nil
@@ -51,8 +48,6 @@ func (r *AuthRepo) AddUser(newUser *models.AddUserRepoReq) (*models.UserDataRepo
 func (r *AuthRepo) HasUserByPhone(phone models.UserByPhoneRepoReq) (models.HasSuchUserRepoResp, error) {
 	user := &models.UserDataRepo{}
 	err := r.DB.Get(user, `SELECT id FROM users WHERE phone = $1`, phone.Phone)
-	fmt.Println(err)
-	fmt.Println(user)
 	switch err {
 	case nil:
 		return models.HasSuchUserRepoResp{IsRegistered: true}, nil

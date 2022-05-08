@@ -1,0 +1,20 @@
+mode: set
+github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/comments/usecase/usecase.go:13.76,17.2 1 1
+github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/comments/usecase/usecase.go:19.105,21.16 2 1
+github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/comments/usecase/usecase.go:25.2,26.16 2 1
+github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/comments/usecase/usecase.go:30.2,32.39 2 1
+github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/comments/usecase/usecase.go:42.2,42.24 1 1
+github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/comments/usecase/usecase.go:21.16,23.3 1 0
+github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/comments/usecase/usecase.go:26.16,28.3 1 0
+github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/comments/usecase/usecase.go:32.39,41.3 2 1
+github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/comments/usecase/usecase.go:45.150,47.16 2 1
+github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/comments/usecase/usecase.go:51.2,52.16 2 1
+github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/comments/usecase/usecase.go:56.2,62.16 2 1
+github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/comments/usecase/usecase.go:66.2,67.16 2 1
+github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/comments/usecase/usecase.go:71.2,72.16 2 1
+github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/comments/usecase/usecase.go:76.2,82.8 1 1
+github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/comments/usecase/usecase.go:47.16,49.3 1 0
+github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/comments/usecase/usecase.go:52.16,54.3 1 0
+github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/comments/usecase/usecase.go:62.16,64.3 1 0
+github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/comments/usecase/usecase.go:67.16,69.3 1 0
+github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/comments/usecase/usecase.go:72.16,74.3 1 0

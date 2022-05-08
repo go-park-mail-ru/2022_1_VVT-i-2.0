@@ -1,4 +1,4 @@
-package usecase
+package ucase
 
 import (
 	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/dishes"
@@ -6,55 +6,42 @@ import (
 	"github.com/pkg/errors"
 )
 
-type DishesUsecase struct {
-	DishesRepo dishes.Repository
+type DishesUcase struct {
+	Repo dishes.Repository
 }
 
-func NewDishesUsecase(restaurantsRepo dishes.Repository) *DishesUsecase {
-	return &DishesUsecase{
-		DishesRepo: restaurantsRepo,
+func NewDishesUcase(restaurantsRepo dishes.Repository) *DishesUcase {
+	return &DishesUcase{
+		Repo: restaurantsRepo,
 	}
 }
 
-func (u *DishesUsecase) GetRestaurantBySlug(slug string) (*models.RestaurantUcase, error) {
-	restaurantData, err := u.DishesRepo.GetRestaurantBySlug(slug)
+func (u *DishesUcase) GetRestaurantDishes(req models.GetRestaurantDishesUcaseReq) (*models.GetRestaurantDishesUcaseResp, error) {
+	restaurant, err := u.Repo.GetRestaurantBySlug(models.GetRestaurantBySlugRepoReq(req))
 	if err != nil {
-		return nil, errors.Wrapf(err, "error getting restaurants")
+		return nil, errors.Wrap(err, "error getting restaurant")
 	}
-	return &models.RestaurantUcase{
-		Id:                   restaurantData.Id,
-		Name:                 restaurantData.Name,
-		ImagePath:            restaurantData.ImagePath,
-		Slug:                 restaurantData.Slug,
-		MinPrice:             restaurantData.MinPrice,
-		AggRating:            restaurantData.AggRating,
-		ReviewCount:          restaurantData.ReviewCount,
-		UpMinutsToDelivery:   restaurantData.UpMinutsToDelivery,
-		DownMinutsToDelivery: restaurantData.DownMinutsToDelivery,
-	}, nil
-}
-
-func (u *DishesUsecase) GetDishesByRestaurant(id int) (*models.DishesUcase, error) {
-	dishesData, err := u.DishesRepo.GetDishesByRestaurant(id)
+	dishes, err := u.Repo.GetRestaurantDishes(models.GetRestaurantDishesRepoReq{Id: restaurant.Id})
 	if err != nil {
-		return nil, errors.Wrapf(err, "error getting restaurants")
+		return nil, errors.Wrap(err, "error getting restaurant dishes")
 	}
 
-	dishesUC := &models.DishesUcase{}
-
-	for _, dish := range dishesData {
-		item := &models.DishUcase{
-			Id:           dish.Id,
-			RestaurantId: dish.RestaurantId,
-			Name:         dish.Name,
-			Description:  dish.Description,
-			ImagePath:    dish.ImagePath,
-			Calories:     dish.Calories,
-			Weight:       dish.Weight,
-			Price:        dish.Price,
-		}
-		dishesUC.Dishes = append(dishesUC.Dishes, *item)
+	Resp := &models.GetRestaurantDishesUcaseResp{
+		Id:                   restaurant.Id,
+		Name:                 restaurant.Name,
+		ImagePath:            restaurant.ImagePath,
+		Slug:                 restaurant.Slug,
+		MinPrice:             restaurant.MinPrice,
+		AggRating:            restaurant.AggRating,
+		ReviewCount:          restaurant.ReviewCount,
+		UpMinutsToDelivery:   restaurant.UpMinutsToDelivery,
+		DownMinutsToDelivery: restaurant.DownMinutsToDelivery,
+		Dishes:               make([]models.DishUcase, len(dishes.Dishes)),
 	}
 
-	return dishesUC, nil
+	for i, dish := range dishes.Dishes {
+		Resp.Dishes[i] = models.DishUcase(dish)
+	}
+
+	return Resp, nil
 }

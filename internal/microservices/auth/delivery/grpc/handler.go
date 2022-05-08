@@ -2,7 +2,6 @@ package grpc
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/tools/servErrors"
 	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/microservices/auth"
@@ -13,27 +12,23 @@ import (
 )
 
 type grpcAuthHandler struct {
-	Usecase auth.Usecase
+	Ucase auth.Ucase
 	proto.UnimplementedAuthServiceServer
 }
 
-func NewAuthHandler(userUsecase auth.Usecase) *grpcAuthHandler {
+func NewAuthHandler(userUcase auth.Ucase) *grpcAuthHandler {
 	return &grpcAuthHandler{
-		Usecase: userUsecase,
+		Ucase: userUcase,
 	}
 }
 
 func (h *grpcAuthHandler) SendCode(ctx context.Context, req *proto.SendCodeReq) (*proto.IsRegistered, error) {
-	fmt.Println("grpc-h")
-	isRegistered, err := h.Usecase.SendCode(&models.SendCodeUcaseReq{Phone: req.GetPhone()})
-	fmt.Println("grpc-eh")
+	isRegistered, err := h.Ucase.SendCode(&models.SendCodeUcaseReq{Phone: req.GetPhone()})
 	return &proto.IsRegistered{IsRegistered: isRegistered.IsRegistered}, err
 }
 
 func (h *grpcAuthHandler) Login(ctx context.Context, req *proto.LoginReq) (*proto.UserData, error) {
-	fmt.Println("grpc-h")
-	userDataUcase, err := h.Usecase.Login(&models.LoginUcaseReq{Phone: req.GetPhone(), Code: req.Code})
-	fmt.Println("grpc-eh")
+	userDataUcase, err := h.Ucase.Login(&models.LoginUcaseReq{Phone: req.GetPhone(), Code: req.Code})
 	if err != nil {
 		cause := servErrors.ErrorAs(err)
 		if cause == nil {
@@ -45,9 +40,7 @@ func (h *grpcAuthHandler) Login(ctx context.Context, req *proto.LoginReq) (*prot
 }
 
 func (h *grpcAuthHandler) Register(ctx context.Context, req *proto.RegisterReq) (*proto.UserData, error) {
-	fmt.Println("grpc-h")
-	userDataUcase, err := h.Usecase.Register(&models.RegisterUcaseReq{Phone: req.GetPhone(), Code: req.Code, Email: req.Email, Name: req.Name})
-	fmt.Println("grpc-eh")
+	userDataUcase, err := h.Ucase.Register(&models.RegisterUcaseReq{Phone: req.GetPhone(), Code: req.Code, Email: req.Email, Name: req.Name})
 	if userDataUcase == nil {
 		return &proto.UserData{}, err
 	}

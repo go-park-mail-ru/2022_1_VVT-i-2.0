@@ -2,10 +2,11 @@ package main
 
 import (
 	"flag"
-	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/metrics"
 	"log"
 	"net/http"
 	"time"
+
+	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/metrics"
 
 	"github.com/labstack/echo/v4"
 	"github.com/pkg/errors"
@@ -18,10 +19,8 @@ import (
 	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/delivery/http/middleware"
 	jwt "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/tools/authManager/jwtManager"
 
-	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/tools/cacher/memcacher"
 	servLog "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/tools/logger"
 	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/tools/logger/zaplogger"
-	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/tools/notification/flashcall"
 	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/tools/postgresqlx"
 	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/tools/staticManager/localStaticManager"
 
@@ -36,12 +35,12 @@ import (
 	commentUcase "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/comments/usecase"
 	dishesHandler "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/dishes/delivery/http"
 	dishesRepo "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/dishes/repository"
-	dishesUsecase "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/dishes/usecase"
+	dishesUcase "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/dishes/usecase"
 	orderHandler "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/order/delivery/http"
 	orderUcase "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/order/usecase"
 	restaurantsHandler "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/restaurants/delivery/http"
 	restaurantsRepo "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/restaurants/repository"
-	restaurantsUsecase "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/restaurants/usecase"
+	restaurantsUcase "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/restaurants/usecase"
 	userHandler "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/user/delivery/http"
 	userRepo "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/user/repository"
 	userUcase "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/user/usecase"
@@ -97,13 +96,6 @@ func main() {
 		log.Fatal(errors.Wrap(err, "error creating jwt-manager object"))
 	}
 
-	memcacher, err := memcacher.NewMemcacher(&config.CacherConfig)
-	if err != nil {
-		log.Fatal(errors.Wrap(err, "error creating memcacher"))
-	}
-
-	flashcaller := flashcall.NewFlashcaller(&config.NotificatorConfig)
-
 	staticManager := localStaticManager.NewLocalFileManager(config.ServConfig.StaticUrl, config.ServConfig.StaticPath)
 
 	authGrpcConn, err := grpc.Dial(
@@ -132,25 +124,25 @@ func main() {
 	userRepo := userRepo.NewUserRepo(pgxManager)
 	suggsRepo := suggsRepo.NewAddrRepo(pgxManager)
 
-	userUcase := userUcase.NewUsecase(flashcaller, memcacher, userRepo, staticManager, authorizerCli)
-	suggsUcase := suggsUcase.NewAddrUsecase(suggsRepo)
-	orderUcase := orderUcase.NewUsecase(orderCli)
+	userUcase := userUcase.NewUcase(userRepo, staticManager, authorizerCli)
+	suggsUcase := suggsUcase.NewAddrUcase(suggsRepo)
+	orderUcase := orderUcase.NewUcase(orderCli)
 
 	userHandler := userHandler.NewUserHandler(userUcase, jwtManager, staticManager)
 	suggsHandler := suggsHandler.NewSuggsHandler(suggsUcase)
 	orderHandler := orderHandler.NewOrderHandler(orderUcase, staticManager)
 
 	restaurantsRepo := restaurantsRepo.NewRestaurantsRepo(pgxManager)
-	restaurantsUsecase := restaurantsUsecase.NewRestaurantsUsecase(restaurantsRepo)
-	restaurantsHandler := restaurantsHandler.NewRestaurantsHandler(restaurantsUsecase, staticManager)
+	restaurantsUcase := restaurantsUcase.NewRestaurantsUcase(restaurantsRepo)
+	restaurantsHandler := restaurantsHandler.NewRestaurantsHandler(restaurantsUcase, staticManager)
 
 	dishesRepo := dishesRepo.NewDishesRepo(pgxManager)
-	dishesUsecase := dishesUsecase.NewDishesUsecase(dishesRepo)
-	dishesHandler := dishesHandler.NewDishesHandler(dishesUsecase, staticManager)
+	dishesUcase := dishesUcase.NewDishesUcase(dishesRepo)
+	dishesHandler := dishesHandler.NewDishesHandler(dishesUcase, staticManager)
 
 	commentsRepo := commentRepo.NewCommentsRepo(pgxManager)
-	commentsUsecase := commentUcase.NewCommentsUsecase(commentsRepo)
-	commentsHandler := commentHandler.NewCommentsHandler(commentsUsecase)
+	commentsUcase := commentUcase.NewCommentsUsecase(commentsRepo)
+	commentsHandler := commentHandler.NewCommentsHandler(commentsUcase)
 
 	router := echo.New()
 

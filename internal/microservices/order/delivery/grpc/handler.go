@@ -13,13 +13,13 @@ import (
 )
 
 type grpcOrderHandler struct {
-	Usecase order.Usecase
+	Ucase order.Ucase
 	proto.UnimplementedOrderServiceServer
 }
 
-func NewOrderHandler(usecase order.Usecase) *grpcOrderHandler {
+func NewOrderHandler(ucase order.Ucase) *grpcOrderHandler {
 	return &grpcOrderHandler{
-		Usecase: usecase,
+		Ucase: ucase,
 	}
 }
 
@@ -28,7 +28,7 @@ func (h grpcOrderHandler) CreateOrder(ctx context.Context, req *proto.CreateOrde
 	for i, position := range req.Cart {
 		cart[i] = models.OrderPositionUcase{Id: position.Id, Count: position.Count}
 	}
-	orderResp, err := h.Usecase.CreateOrder(&models.CreateOrderUcaseReq{Address: req.Address, Comment: req.Comment, UserId: req.UserId, Cart: cart})
+	orderResp, err := h.Ucase.CreateOrder(&models.CreateOrderUcaseReq{Address: req.Address, Comment: req.Comment, UserId: req.UserId, Cart: cart})
 	if err != nil {
 		cause := servErrors.ErrorAs(err)
 		if cause == nil {
@@ -40,7 +40,7 @@ func (h grpcOrderHandler) CreateOrder(ctx context.Context, req *proto.CreateOrde
 }
 
 func (h grpcOrderHandler) GetUserOrders(ctx context.Context, req *proto.GetUserOrdersReq) (*proto.GetUserOrdersResp, error) {
-	ordersUcaseResp, err := h.Usecase.GetUserOrders(&models.GetUserOrdersUcaseReq{UserId: req.UserId})
+	ordersUcaseResp, err := h.Ucase.GetUserOrders(&models.GetUserOrdersUcaseReq{UserId: req.UserId})
 	if err != nil {
 		cause := servErrors.ErrorAs(err)
 		if cause == nil {
@@ -56,7 +56,7 @@ func (h grpcOrderHandler) GetUserOrders(ctx context.Context, req *proto.GetUserO
 }
 
 func (h grpcOrderHandler) GetUserOrderStatuses(ctx context.Context, req *proto.GetUserOrderStatusesReq) (*proto.GetUserOrderStatusesResp, error) {
-	ordersUcaseResp, err := h.Usecase.GetUserOrders(&models.GetUserOrdersUcaseReq{UserId: req.UserId})
+	ordersUcaseResp, err := h.Ucase.GetUserOrders(&models.GetUserOrdersUcaseReq{UserId: req.UserId})
 	if err != nil {
 		cause := servErrors.ErrorAs(err)
 		if cause == nil {
@@ -72,7 +72,7 @@ func (h grpcOrderHandler) GetUserOrderStatuses(ctx context.Context, req *proto.G
 }
 
 func (h grpcOrderHandler) GetUserOrder(ctx context.Context, req *proto.GetUserOrderReq) (*proto.GetUserOrderResp, error) {
-	order, err := h.Usecase.GetUserOrder(&models.GetUserOrderUcaseReq{UserId: req.UserId, OrderId: req.OrderId})
+	order, err := h.Ucase.GetUserOrder(&models.GetUserOrderUcaseReq{UserId: req.UserId, OrderId: req.OrderId})
 	if err != nil {
 		cause := servErrors.ErrorAs(err)
 		if cause == nil {

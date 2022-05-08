@@ -10,3 +10,6 @@ cmd/static
 cmd/static_1
 
 db_t.go
+
+.out
+.html

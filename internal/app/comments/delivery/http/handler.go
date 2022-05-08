@@ -52,11 +52,6 @@ func (h CommentsHandler) GetRestaurantComments(ctx echo.Context) error {
 		return httpErrDescr.NewHTTPError(ctx, http.StatusInternalServerError, httpErrDescr.SERVER_ERROR)
 	}
 
-	if commetsDataDelivery == nil {
-		logger.Error(requestId, "from user-usecase-get-user returned userData==nil and err==nil, unknown error")
-		return httpErrDescr.NewHTTPError(ctx, http.StatusInternalServerError, httpErrDescr.SERVER_ERROR)
-	}
-
 	commentsD := &models.GetCommentsDataDelivery{Comment: make([]models.GetCommentDataDelivery, len(commetsDataDelivery.Comment))}
 
 	for i, comment := range commetsDataDelivery.Comment {
@@ -96,9 +91,9 @@ func (h CommentsHandler) AddRestaurantComment(ctx echo.Context) error {
 	}
 
 	commetsDataDelivery, err := h.Usecase.AddRestaurantComment(models.UserId(user.Id), &models.AddCommentRestaurantUseCase{
-		Restaurant:     AddCommentRestaurantUseCaseReq.Restaurant,
-		Comment_text:   AddCommentRestaurantUseCaseReq.Comment_text,
-		Comment_rating: AddCommentRestaurantUseCaseReq.Comment_rating,
+		Slug:          AddCommentRestaurantUseCaseReq.Slug,
+		CommentText:   AddCommentRestaurantUseCaseReq.CommentText,
+		CommentRating: AddCommentRestaurantUseCaseReq.CommentRating,
 	})
 	if err != nil {
 		cause := servErrors.ErrorAs(err)
@@ -117,17 +112,12 @@ func (h CommentsHandler) AddRestaurantComment(ctx echo.Context) error {
 		}
 	}
 
-	if commetsDataDelivery == nil {
-		logger.Error(requestId, "from user-usecase-register returned userData==nil and err==nil, unknown error")
-		return httpErrDescr.NewHTTPError(ctx, http.StatusInternalServerError, httpErrDescr.SERVER_ERROR)
-	}
-
 	comment := &models.CommentDataDelivery{
-		Restaurant_id: commetsDataDelivery.Restaurant_id,
-		Author:        commetsDataDelivery.Author,
-		Text:          commetsDataDelivery.Text,
-		Stars:         commetsDataDelivery.Stars,
-		Date:          commetsDataDelivery.Date,
+		RestaurantId: commetsDataDelivery.RestaurantId,
+		Author:       commetsDataDelivery.Author,
+		Text:         commetsDataDelivery.Text,
+		Stars:        commetsDataDelivery.Stars,
+		Date:         commetsDataDelivery.Date,
 	}
 
 	result, _ := json.Marshal(comment)

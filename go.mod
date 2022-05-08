@@ -14,7 +14,7 @@ require (
 	github.com/jmoiron/sqlx v1.3.4
 	github.com/labstack/echo/v4 v4.7.2
 	github.com/pkg/errors v0.9.1
-	github.com/stretchr/testify v1.7.0
+	github.com/stretchr/testify v1.7.1
 	go.uber.org/zap v1.21.0
 	gopkg.in/DATA-DOG/go-sqlmock.v1 v1.3.0
 )
