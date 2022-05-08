@@ -40,3 +40,4 @@ jobs:
             sudo docker-compose stop
             sudo docker rm -f $(sudo docker ps -aq)
             sudo docker-compose up -d
+
