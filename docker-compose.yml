@@ -20,7 +20,7 @@ services:
     links:
         - "db:db"
     ports:
-      - 8090:8080
+      - "8090:8080"
 
   memcached:
     image: 'memcached:latest'

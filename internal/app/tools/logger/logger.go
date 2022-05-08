@@ -16,12 +16,12 @@ type Logger interface {
 }
 
 type ServLogger struct {
-	Logger *Logger
+	Logger Logger
 }
 
 func NewServLogger(logger Logger) *ServLogger {
 	return &ServLogger{
-		Logger: &logger,
+		Logger: logger,
 	}
 }
 
@@ -36,7 +36,7 @@ const (
 )
 
 func (l ServLogger) Access(requestId uint64, method, remoteAddr, url string, procesingTime time.Duration) {
-	(*l.Logger).Infow(
+	l.Logger.Infow(
 		AccessMsg,
 		ReqIdTitle, requestId,
 		MethodTitle, method,
@@ -47,7 +47,7 @@ func (l ServLogger) Access(requestId uint64, method, remoteAddr, url string, pro
 }
 
 func (l ServLogger) Error(reqId uint64, errorMsg string) {
-	(*l.Logger).Infow(
+	l.Logger.Infow(
 		"error",
 		ReqIdTitle, reqId,
 		ErrorMsgTitle, errorMsg,

@@ -1,3 +1,6 @@
+authMicroserviceAddr = "localhost:8081"
+orderMicroserviceAddr = "localhost:8082"
+
 [server]
 bindAddr = ":8080"
 readTimeout = 10
@@ -31,10 +34,6 @@ key="!@1eqQWERwer$%^YWFgsfghw$%%^E67ws"
 method="HS256"
 expiryTime="168h" #duration type
 
-[notificator]
-apiKey="PkzvymZDAVs0qasTSsdz1bxhhA"
-email="nat-s.skv@yandex.ru"
-
 [database]
 user = "yutfut" # TODO установить норм имя
 password = "example"
@@ -44,8 +43,3 @@ host = "127.0.0.1"
 connectionMax = 500
 dbname = "vvti"
 # dbname = "test"
-
-[cacher]
-# host = "memcached"
-host = "127.0.0.1"
-port = 11211

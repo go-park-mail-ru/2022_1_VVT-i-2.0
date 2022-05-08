@@ -4,6 +4,6 @@ import (
 	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/models"
 )
 
-type Usecase interface {
-	Suggest(req *models.SuggestReq) (*models.SuggestResp, error)
+type Ucase interface {
+	Suggest(req *models.SuggestUcaseReq) (*models.SuggestUcaseResp, error)
 }

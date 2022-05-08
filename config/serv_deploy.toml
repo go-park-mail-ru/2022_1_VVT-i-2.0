@@ -1,3 +1,6 @@
+authMicroserviceAddr = "auth:8081"
+orderMicroserviceAddr = "order:8082"
+
 [server]
 bindAddr = ":8080"
 readTimeout = 10

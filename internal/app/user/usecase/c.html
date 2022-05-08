@@ -1,0 +1,246 @@
+
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<title>usecase: Go Coverage Report</title>
+		<style>
+			body {
+				background: black;
+				color: rgb(80, 80, 80);
+			}
+			body, pre, #legend span {
+				font-family: Menlo, monospace;
+				font-weight: bold;
+			}
+			#topbar {
+				background: black;
+				position: fixed;
+				top: 0; left: 0; right: 0;
+				height: 42px;
+				border-bottom: 1px solid rgb(80, 80, 80);
+			}
+			#content {
+				margin-top: 50px;
+			}
+			#nav, #legend {
+				float: left;
+				margin-left: 10px;
+			}
+			#legend {
+				margin-top: 12px;
+			}
+			#nav {
+				margin-top: 10px;
+			}
+			#legend span {
+				margin: 0 5px;
+			}
+			.cov0 { color: rgb(192, 0, 0) }
+.cov1 { color: rgb(128, 128, 128) }
+.cov2 { color: rgb(116, 140, 131) }
+.cov3 { color: rgb(104, 152, 134) }
+.cov4 { color: rgb(92, 164, 137) }
+.cov5 { color: rgb(80, 176, 140) }
+.cov6 { color: rgb(68, 188, 143) }
+.cov7 { color: rgb(56, 200, 146) }
+.cov8 { color: rgb(44, 212, 149) }
+.cov9 { color: rgb(32, 224, 152) }
+.cov10 { color: rgb(20, 236, 155) }
+
+		</style>
+	</head>
+	<body>
+		<div id="topbar">
+			<div id="nav">
+				<select id="files">
+				
+				<option value="file0">github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/user/usecase/usecase.go (38.5%)</option>
+				
+				</select>
+			</div>
+			<div id="legend">
+				<span>not tracked</span>
+			
+				<span class="cov0">not covered</span>
+				<span class="cov8">covered</span>
+			
+			</div>
+		</div>
+		<div id="content">
+		
+		<pre class="file" id="file0" style="display: none">package ucase
+
+import (
+        "context"
+        "io"
+
+        "github.com/disintegration/imaging"
+        "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/models"
+        cacher "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/tools/cacher"
+        "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/tools/servErrors"
+        "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/tools/staticManager"
+        "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/user"
+        authProto "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/microservices/auth/proto"
+        "github.com/google/uuid"
+        "github.com/pkg/errors"
+        "google.golang.org/grpc/status"
+)
+
+// TODO: удалить
+var LOGIN_CODE string
+
+// avatarSide           = 300
+// avatarSide = 30
+// )
+
+type UserUcase struct {
+        Cacher        cacher.Cacher
+        UserRepo      user.Repository
+        StaticManager staticManager.FileManager
+        Authorizer    authProto.AuthServiceClient
+}
+
+func NewUcase(cacher cacher.Cacher, userRepo user.Repository, staticManager staticManager.FileManager, authorizer authProto.AuthServiceClient) *UserUcase <span class="cov8" title="1">{
+        return &amp;UserUcase{
+                Cacher:        cacher,
+                UserRepo:      userRepo,
+                StaticManager: staticManager,
+                Authorizer:    authorizer,
+        }
+}</span>
+
+func (u *UserUcase) SendCode(req *models.SendCodeUcaseReq) (models.SendCodeUcaseResp, error) <span class="cov8" title="1">{
+        isRegistered, err := u.Authorizer.SendCode(context.Background(), &amp;authProto.SendCodeReq{Phone: req.Phone})
+        if err != nil </span><span class="cov0" title="0">{
+                return models.SendCodeUcaseResp{IsRegistered: false}, servErrors.NewError(int(status.Code(err)), err.Error())
+        }</span>
+        <span class="cov8" title="1">return models.SendCodeUcaseResp{IsRegistered: isRegistered.IsRegistered}, err</span>
+}
+
+func (u *UserUcase) Register(req *models.RegisterUcaseReq) (*models.UserDataUcase, error) <span class="cov8" title="1">{
+        userData, err := u.Authorizer.Register(context.Background(), &amp;authProto.RegisterReq{Phone: req.Phone, Code: req.Code, Name: req.Name, Email: req.Email})
+        if err != nil </span><span class="cov0" title="0">{
+                return nil, servErrors.NewError(int(status.Code(err)), err.Error())
+        }</span>
+        <span class="cov8" title="1">return &amp;models.UserDataUcase{Id: models.UserId(userData.Id), Phone: userData.Phone, Name: userData.Name, Email: userData.Email, Avatar: userData.Avatar}, err</span>
+}
+
+func (u *UserUcase) Login(req *models.LoginUcaseReq) (*models.UserDataUcase, error) <span class="cov8" title="1">{
+        userData, err := u.Authorizer.Login(context.Background(), &amp;authProto.LoginReq{Phone: req.Phone, Code: req.Code})
+        if err != nil </span><span class="cov0" title="0">{
+                return nil, servErrors.NewError(int(status.Code(err)), err.Error())
+        }</span>
+        <span class="cov8" title="1">return &amp;models.UserDataUcase{Id: models.UserId(userData.Id), Phone: userData.Phone, Name: userData.Name, Email: userData.Email, Avatar: userData.Avatar}, err</span>
+}
+
+func (u *UserUcase) GetUser(id models.UserId) (*models.UserDataUcase, error) <span class="cov8" title="1">{
+        userData, err := u.UserRepo.GetUserById(id)
+        if err != nil </span><span class="cov0" title="0">{
+                return nil, errors.Wrapf(err, "error getting user by id %d", id)
+        }</span>
+        <span class="cov8" title="1">return &amp;models.UserDataUcase{
+                Id:     userData.Id,
+                Phone:  userData.Phone,
+                Name:   userData.Name,
+                Email:  userData.Email,
+                Avatar: userData.Avatar.String,
+        }, nil</span>
+}
+
+func (u *UserUcase) UpdateUser(updates *models.UpdateUserUcase) (*models.UserDataUcase, error) <span class="cov8" title="1">{
+        var newAvatarName string
+        var err error
+        if updates.AvatarImg != nil </span><span class="cov0" title="0">{
+                newAvatarName, err = u.saveNewAvatar(updates.AvatarImg)
+                if err != nil </span><span class="cov0" title="0">{
+                        return nil, errors.Wrap(err, "error saving new avatar to server")
+                }</span>
+        }
+        <span class="cov8" title="1">updUser, err := u.UserRepo.UpdateUser(&amp;models.UpdateUserStorage{Id: updates.Id, Email: updates.Email, Name: updates.Name, Avatar: newAvatarName})
+        if err != nil </span><span class="cov0" title="0">{
+                if newAvatarName != "" </span><span class="cov0" title="0">{
+                        u.StaticManager.RemoveAvatar(newAvatarName)
+                }</span>
+                <span class="cov0" title="0">return nil, errors.Wrap(err, "error updating user")</span>
+        }
+        <span class="cov8" title="1">if updUser == nil </span><span class="cov0" title="0">{
+                if newAvatarName != "" </span><span class="cov0" title="0">{
+                        u.StaticManager.RemoveAvatar(newAvatarName)
+                }</span>
+                <span class="cov0" title="0">updUser, err = u.UserRepo.GetUserById(updates.Id)
+                if err != nil </span><span class="cov0" title="0">{
+                        return nil, errors.Wrapf(err, "error getting user by id %d", updates.Id)
+                }</span>
+        }
+        <span class="cov8" title="1">return &amp;models.UserDataUcase{
+                Id:     updUser.Id,
+                Phone:  updUser.Phone,
+                Name:   updUser.Name,
+                Email:  updUser.Email,
+                Avatar: updUser.Avatar.String,
+        }, nil</span>
+}
+
+func (u *UserUcase) saveNewAvatar(avatar io.Reader) (string, error) <span class="cov0" title="0">{
+        avatarImg, err := imaging.Decode(avatar)
+        if err != nil </span><span class="cov0" title="0">{
+                return "", servErrors.NewError(servErrors.DECODE_IMG, err.Error())
+        }</span>
+
+        <span class="cov0" title="0">var avatarName string
+        for i := 0; i &lt; 10; i++ </span><span class="cov0" title="0">{
+                avatarName = newAvatarName() + ".png"
+                if u.StaticManager.IsNotSuchAvatarExist(avatarName) </span><span class="cov0" title="0">{
+                        break</span>
+                }
+                <span class="cov0" title="0">avatarName = ""</span>
+        }
+        <span class="cov0" title="0">if avatarName == "" </span><span class="cov0" title="0">{
+                return "", servErrors.NewError(servErrors.CANT_CREATE_AVATAR_NAME, "")
+        }</span>
+
+        <span class="cov0" title="0">err = u.StaticManager.SafeAvatar(avatarImg, avatarName)
+        if err != nil </span><span class="cov0" title="0">{
+                return "", servErrors.NewError(servErrors.CANT_SAVE_AVATAR, err.Error())
+        }</span>
+
+        <span class="cov0" title="0">return avatarName, nil</span>
+}
+
+func newAvatarName() string <span class="cov0" title="0">{
+        fname, _ := uuid.NewUUID()
+        return fname.String()
+}</span>
+</pre>
+		
+		</div>
+	</body>
+	<script>
+	(function() {
+		var files = document.getElementById('files');
+		var visible;
+		files.addEventListener('change', onChange, false);
+		function select(part) {
+			if (visible)
+				visible.style.display = 'none';
+			visible = document.getElementById(part);
+			if (!visible)
+				return;
+			files.value = part;
+			visible.style.display = 'block';
+			location.hash = part;
+		}
+		function onChange() {
+			select(files.value);
+			window.scrollTo(0, 0);
+		}
+		if (location.hash != "") {
+			select(location.hash.substr(1));
+		}
+		if (!visible) {
+			select("file0");
+		}
+	})();
+	</script>
+</html>

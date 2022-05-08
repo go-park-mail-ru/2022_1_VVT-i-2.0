@@ -6,33 +6,41 @@ import (
 	"net/http"
 	"time"
 
-	conf "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/config"
-	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/config/configRouting"
+	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/metrics"
+
 	"github.com/labstack/echo/v4"
 	"github.com/pkg/errors"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
 
-	jwt "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/authManager/jwtManager"
+	conf "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/config"
+	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/config/configRouting"
+
 	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/delivery/http/middleware"
+	jwt "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/tools/authManager/jwtManager"
 
-	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/tools/cacher/memcacher"
 	servLog "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/tools/logger"
 	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/tools/logger/zaplogger"
-	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/tools/notification/flashcall"
 	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/tools/postgresqlx"
 	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/tools/staticManager/localStaticManager"
+
+	authProto "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/microservices/auth/proto"
+	orderProto "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/microservices/order/proto"
 
 	suggsHandler "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/address/delivery/http"
 	suggsRepo "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/address/repository"
 	suggsUcase "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/address/usecase"
+	commentHandler "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/comments/delivery/http"
+	commentRepo "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/comments/repository"
+	commentUcase "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/comments/usecase"
 	dishesHandler "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/dishes/delivery/http"
 	dishesRepo "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/dishes/repository"
-	dishesUsecase "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/dishes/usecase"
+	dishesUcase "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/dishes/usecase"
 	orderHandler "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/order/delivery/http"
-	orderRepo "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/order/repository"
 	orderUcase "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/order/usecase"
 	restaurantsHandler "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/restaurants/delivery/http"
 	restaurantsRepo "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/restaurants/repository"
-	restaurantsUsecase "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/restaurants/usecase"
+	restaurantsUcase "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/restaurants/usecase"
 	userHandler "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/user/delivery/http"
 	userRepo "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/user/repository"
 	userUcase "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/user/usecase"
@@ -63,7 +71,7 @@ func main() {
 		log.Fatal(errors.Wrap(err, "error reading config"))
 	}
 
-	pgxManager, err := postgresqlx.NewPostgresqlX(&config.DatabaseCongig)
+	pgxManager, err := postgresqlx.NewPostgresqlX(&config.DatabaseConfig)
 	if err != nil {
 		log.Fatal(errors.Wrap(err, "error creating postgres agent"))
 	}
@@ -88,36 +96,62 @@ func main() {
 		log.Fatal(errors.Wrap(err, "error creating jwt-manager object"))
 	}
 
-	memcacher, err := memcacher.NewMemcacher(&config.CacherConfig)
-	if err != nil {
-		log.Fatal(errors.Wrap(err, "error creating memcacher"))
-	}
-
-	flashcaller := flashcall.NewFlashcaller(&config.NotificatorConfig)
-
 	staticManager := localStaticManager.NewLocalFileManager(config.ServConfig.StaticUrl, config.ServConfig.StaticPath)
+
+	authGrpcConn, err := grpc.Dial(
+		config.AuthMicroserverAddr,
+		// grpc.WithInsecure(),
+		grpc.WithTransportCredentials(insecure.NewCredentials()),
+	)
+	if err != nil {
+		log.Fatal(errors.Wrap(err, "error connecting to grpc-auth-microserver"))
+	}
+	defer authGrpcConn.Close()
+
+	authorizerCli := authProto.NewAuthServiceClient(authGrpcConn)
+
+	orderGrpcConn, err := grpc.Dial(
+		config.OrderMicroserverAddr,
+		grpc.WithTransportCredentials(insecure.NewCredentials()),
+	)
+	if err != nil {
+		log.Fatal(errors.Wrap(err, "error connecting to grpc-auth-microserver"))
+	}
+	defer authGrpcConn.Close()
+
+	orderCli := orderProto.NewOrderServiceClient(orderGrpcConn)
 
 	userRepo := userRepo.NewUserRepo(pgxManager)
 	suggsRepo := suggsRepo.NewAddrRepo(pgxManager)
-	orderRepo := orderRepo.NewOrderRepo(pgxManager)
 
-	userUcase := userUcase.NewUsecase(flashcaller, memcacher, userRepo, staticManager)
-	suggsUcase := suggsUcase.NewAddrUsecase(suggsRepo)
-	orderUcase := orderUcase.NewUsecase(orderRepo)
+	userUcase := userUcase.NewUcase(userRepo, staticManager, authorizerCli)
+	suggsUcase := suggsUcase.NewAddrUcase(suggsRepo)
+	orderUcase := orderUcase.NewUcase(orderCli)
 
 	userHandler := userHandler.NewUserHandler(userUcase, jwtManager, staticManager)
 	suggsHandler := suggsHandler.NewSuggsHandler(suggsUcase)
-	orderHandler := orderHandler.NewOrderHandler(orderUcase)
+	orderHandler := orderHandler.NewOrderHandler(orderUcase, staticManager)
 
 	restaurantsRepo := restaurantsRepo.NewRestaurantsRepo(pgxManager)
-	restaurantsUsecase := restaurantsUsecase.NewRestaurantsUsecase(restaurantsRepo)
-	restaurantsHandler := restaurantsHandler.NewRestaurantsHandler(restaurantsUsecase, staticManager)
+	restaurantsUcase := restaurantsUcase.NewRestaurantsUcase(restaurantsRepo)
+	restaurantsHandler := restaurantsHandler.NewRestaurantsHandler(restaurantsUcase, staticManager)
 
 	dishesRepo := dishesRepo.NewDishesRepo(pgxManager)
-	dishesUsecase := dishesUsecase.NewDishesUsecase(dishesRepo)
-	dishesHandler := dishesHandler.NewDishesHandler(dishesUsecase, staticManager)
+	dishesUcase := dishesUcase.NewDishesUcase(dishesRepo)
+	dishesHandler := dishesHandler.NewDishesHandler(dishesUcase, staticManager)
+
+	commentsRepo := commentRepo.NewCommentsRepo(pgxManager)
+	commentsUcase := commentUcase.NewCommentsUsecase(commentsRepo)
+	commentsHandler := commentHandler.NewCommentsHandler(commentsUcase)
 
 	router := echo.New()
+
+	m, err := metrics.CreateNewMetric("main")
+	if err != nil {
+		panic(err)
+	}
+
+	router.Use(m.CollectMetrics)
 
 	serverRouting := configRouting.ServerHandlers{
 		UserHandler:        userHandler,
@@ -125,6 +159,7 @@ func main() {
 		SuggsHandler:       suggsHandler,
 		OrderHandler:       orderHandler,
 		DishesHandler:      dishesHandler,
+		CommentsHandler:    commentsHandler,
 	}
 
 	serverRouting.ConfigureRouting(router)

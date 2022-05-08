@@ -1,43 +1,65 @@
-package usecase
+package ucase
 
 import (
+	"strings"
+
 	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/models"
 	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/restaurants"
 	"github.com/pkg/errors"
 )
 
-type RestaurantsUsecase struct {
+type RestaurantsUcase struct {
 	RestaurantsRepo restaurants.Repository
 }
 
-func NewRestaurantsUsecase(restaurantsRepo restaurants.Repository) *RestaurantsUsecase {
-	return &RestaurantsUsecase{
+func NewRestaurantsUcase(restaurantsRepo restaurants.Repository) *RestaurantsUcase {
+	return &RestaurantsUcase{
 		RestaurantsRepo: restaurantsRepo,
 	}
 }
 
-func (u *RestaurantsUsecase) GetAllRestaurants() (*models.RestaurantsUcase, error) {
-	restaurantsData, err := u.RestaurantsRepo.GetRestaurants()
+func (u *RestaurantsUcase) GetAllRestaurants() (*models.RestaurantsUcase, error) {
+	restaurantsRepoResp, err := u.RestaurantsRepo.GetRestaurants()
 	if err != nil {
 		return nil, errors.Wrapf(err, "error getting restaurants")
 	}
 
-	restaurants := &models.RestaurantsUcase{}
+	restaurantsResp := &models.RestaurantsUcase{Restaurants: make([]models.RestaurantUcase, len(restaurantsRepoResp.Restaurants))}
 
-	for _, rest := range restaurantsData {
-		item := models.RestaurantUcase{
-			Id:                   rest.Id,
-			Name:                 rest.Name,
-			ImagePath:            rest.ImagePath,
-			Slug:                 rest.Slug,
-			MinPrice:             rest.MinPrice,
-			AggRating:            rest.AggRating,
-			ReviewCount:          rest.ReviewCount,
-			UpMinutsToDelivery:   rest.UpMinutsToDelivery,
-			DownMinutsToDelivery: rest.DownMinutsToDelivery,
-		}
-		restaurants.Restaurants = append(restaurants.Restaurants, item)
+	for i, rest := range restaurantsRepoResp.Restaurants {
+		restaurantsResp.Restaurants[i] = models.RestaurantUcase(rest)
 	}
 
-	return restaurants, nil
+	return restaurantsResp, nil
+}
+
+func (u *RestaurantsUcase) GetRestaurantsByCategory(category models.GetRestaurantByCategoryUcaseReq) (*models.RestaurantsUcase, error) {
+	restaurantsRepoResp, err := u.RestaurantsRepo.GetRestaurantsByCategory(models.GetRestaurantByCategoryRepoReq(category))
+	if err != nil {
+		return nil, errors.Wrapf(err, "error getting restaurants")
+	}
+
+	restaurantsResp := &models.RestaurantsUcase{Restaurants: make([]models.RestaurantUcase, len(restaurantsRepoResp.Restaurants))}
+
+	for i, rest := range restaurantsRepoResp.Restaurants {
+		restaurantsResp.Restaurants[i] = models.RestaurantUcase(rest)
+	}
+
+	return restaurantsResp, nil
+}
+
+func (u *RestaurantsUcase) GetRestaurantBySearchQuery(query models.GetRestaurantBySearchQueryUcaseReq) (*models.RestaurantsUcase, error) {
+	query.Query = strings.Trim(query.Query, " \n\t")
+	restaurantsRepoResp, err := u.RestaurantsRepo.GetRestaurantsBySeachQuery(models.GetRestaurantBySearchQueryRepoReq(query))
+	if err != nil {
+		return nil, errors.Wrapf(err, "error getting restaurants")
+	}
+
+	restaurantsResp := &models.RestaurantsUcase{Restaurants: make([]models.RestaurantUcase, len(restaurantsRepoResp.Restaurants))}
+
+	for i, rest := range restaurantsRepoResp.Restaurants {
+		restaurantsResp.Restaurants[i] = models.RestaurantUcase(rest)
+	}
+
+	return restaurantsResp, nil
 }

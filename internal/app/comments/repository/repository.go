@@ -12,13 +12,26 @@ type CommentsRepo struct {
 	DB *sqlx.DB
 }
 
-func NewRestaurantsRepo(db *sqlx.DB) *CommentsRepo {
+func NewCommentsRepo(db *sqlx.DB) *CommentsRepo {
 	return &CommentsRepo{DB: db}
 }
 
-func (r *CommentsRepo) GetRestaurantByID(id int) (*models.RestaurantDataStorage, error) {
-	restaurant := &models.RestaurantDataStorage{}
-	err := r.DB.Get(restaurant, "SELECT id, name, image_path, slug, min_price,  rating, count_rating FROM restaurants WHERE id = $1", id)
+func (r *CommentsRepo) GetRestaurantByID(id int) (*models.RestaurantRepo, error) {
+	restaurant := &models.RestaurantRepo{}
+	err := r.DB.Get(restaurant, "SELECT id, name, image_path, slug, min_price, up_time_to_delivery, down_time_to_delivery, review_count, agg_rating FROM restaurants WHERE id = $1", id)
+	switch err {
+	case nil:
+		return restaurant, nil
+	case sql.ErrNoRows:
+		return nil, servErrors.NewError(servErrors.NO_SUCH_ENTITY_IN_DB, err.Error())
+	default:
+		return nil, servErrors.NewError(servErrors.DB_ERROR, err.Error())
+	}
+}
+
+func (r *CommentsRepo) GetRestaurantBySlug(slug string) (*models.RestaurantRepo, error) {
+	restaurant := &models.RestaurantRepo{}
+	err := r.DB.Get(restaurant, "SELECT id, name,  image_path, slug, min_price, agg_rating, review_count, up_time_to_delivery, down_time_to_delivery FROM restaurants WHERE slug = $1", slug)
 	switch err {
 	case nil:
 		return restaurant, nil
@@ -30,8 +43,8 @@ func (r *CommentsRepo) GetRestaurantByID(id int) (*models.RestaurantDataStorage,
 }
 
 func (r *CommentsRepo) GetRestaurantComments(id int) ([]*models.CommentRestaurantDataStorage, error) {
-	comments := make([]*models.CommentRestaurantDataStorage, 0, 3)
-	err := r.DB.Select(&comments, `SELECT id, restaurant, user_id, comment_text, comment_rating FROM comment_restaurants WHERE restaurant = $1`, id)
+	comments := make([]*models.CommentRestaurantDataStorage, 0)
+	err := r.DB.Select(&comments, `SELECT restaurant_id, author, text, stars, get_ru_date(date) FROM comments WHERE restaurant_id = $1 ORDER BY date DESC`, id)
 
 	switch err {
 	case nil:
@@ -43,9 +56,23 @@ func (r *CommentsRepo) GetRestaurantComments(id int) ([]*models.CommentRestauran
 	}
 }
 
+func (r *CommentsRepo) GetUserById(id models.UserId) (*models.UserDataRepo, error) {
+	user := &models.UserDataRepo{}
+	err := r.DB.Get(user, `SELECT id, phone, email, name, avatar FROM users WHERE id = $1`, id)
+
+	switch err {
+	case nil:
+		return user, nil
+	case sql.ErrNoRows:
+		return nil, servErrors.NewError(servErrors.NO_SUCH_ENTITY_IN_DB, err.Error())
+	default:
+		return nil, servErrors.NewError(servErrors.DB_ERROR, err.Error())
+	}
+}
+
 func (r *CommentsRepo) AddRestaurantComment(newComment *models.AddCommentRestaurantDataStorage) (*models.CommentRestaurantDataStorage, error) {
 	comment := &models.CommentRestaurantDataStorage{}
-	err := r.DB.Get(comment, `INSERT INTO comment_restaurants (restaurant, user_id, comment_text, comment_rating) VALUES ($1,$2,$3,$4) RETURNING id, restaurant, user_id, comment_text, comment_rating`, newComment.Restaurant, newComment.User_id, newComment.Comment_text, newComment.Comment_rating)
+	err := r.DB.Get(comment, `INSERT INTO comments (restaurant_id, author, text, stars) VALUES ($1,$2,$3,$4) RETURNING restaurant_id, author, text, stars, get_ru_date(date)`, newComment.RestaurantId, newComment.User, newComment.CommentText, newComment.CommentRating)
 	if err != nil {
 		if err == sql.ErrConnDone || err == sql.ErrTxDone {
 			return nil, servErrors.NewError(servErrors.DB_ERROR, err.Error())
@@ -58,9 +85,9 @@ func (r *CommentsRepo) AddRestaurantComment(newComment *models.AddCommentRestaur
 	return comment, nil
 }
 
-func (r *CommentsRepo) UpdateRestaurantRating(restId int, newRestRating int, countRating int) (*models.RestaurantDataStorage, error) {
-	restaurant := &models.RestaurantDataStorage{}
-	err := r.DB.Get(restaurant, `UPDATE restaurants SET rating=$1, count_rating=$2 WHERE id=$3 RETURNING id, name, city, address, image_path, slug, min_price, avg_price, rating, count_rating`, newRestRating, countRating, restId)
+func (r *CommentsRepo) UpdateRestaurantRating(restId int, newRestRating int, countRating int) (*models.RestaurantRepo, error) {
+	restaurant := &models.RestaurantRepo{}
+	err := r.DB.Get(restaurant, `UPDATE restaurants SET agg_rating=$1, review_count=$2 WHERE id=$3 RETURNING id, name, image_path, slug, image_path, slug, min_price, up_time_to_delivery, down_time_to_delivery, review_count, agg_rating`, newRestRating, countRating, restId)
 	if err != nil {
 		if err == sql.ErrConnDone || err == sql.ErrTxDone {
 			return nil, servErrors.NewError(servErrors.DB_ERROR, err.Error())

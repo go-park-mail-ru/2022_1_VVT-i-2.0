@@ -1,0 +1,620 @@
+
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<title>http: Go Coverage Report</title>
+		<style>
+			body {
+				background: black;
+				color: rgb(80, 80, 80);
+			}
+			body, pre, #legend span {
+				font-family: Menlo, monospace;
+				font-weight: bold;
+			}
+			#topbar {
+				background: black;
+				position: fixed;
+				top: 0; left: 0; right: 0;
+				height: 42px;
+				border-bottom: 1px solid rgb(80, 80, 80);
+			}
+			#content {
+				margin-top: 50px;
+			}
+			#nav, #legend {
+				float: left;
+				margin-left: 10px;
+			}
+			#legend {
+				margin-top: 12px;
+			}
+			#nav {
+				margin-top: 10px;
+			}
+			#legend span {
+				margin: 0 5px;
+			}
+			.cov0 { color: rgb(192, 0, 0) }
+.cov1 { color: rgb(128, 128, 128) }
+.cov2 { color: rgb(116, 140, 131) }
+.cov3 { color: rgb(104, 152, 134) }
+.cov4 { color: rgb(92, 164, 137) }
+.cov5 { color: rgb(80, 176, 140) }
+.cov6 { color: rgb(68, 188, 143) }
+.cov7 { color: rgb(56, 200, 146) }
+.cov8 { color: rgb(44, 212, 149) }
+.cov9 { color: rgb(32, 224, 152) }
+.cov10 { color: rgb(20, 236, 155) }
+
+		</style>
+	</head>
+	<body>
+		<div id="topbar">
+			<div id="nav">
+				<select id="files">
+				
+				<option value="file0">github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/address/delivery/http/handler.go (100.0%)</option>
+				
+				<option value="file1">github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/address/mock/AddressRepository.go (65.0%)</option>
+				
+				<option value="file2">github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/address/mock/SuggestUcase.go (100.0%)</option>
+				
+				<option value="file3">github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/address/repository/repository.go (94.7%)</option>
+				
+				<option value="file4">github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/address/ucase/ucase.go (76.2%)</option>
+				
+				</select>
+			</div>
+			<div id="legend">
+				<span>not tracked</span>
+			
+				<span class="cov0">not covered</span>
+				<span class="cov8">covered</span>
+			
+			</div>
+		</div>
+		<div id="content">
+		
+		<pre class="file" id="file0" style="display: none">package suggestHandler
+
+import (
+        "net/http"
+
+        "github.com/asaskevich/govalidator"
+        addr "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/address"
+        "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/delivery/http/httpErrDescr"
+        "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/delivery/http/middleware"
+        "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/models"
+        _ "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/tools/validator"
+        "github.com/labstack/echo/v4"
+)
+
+type SuggsHandler struct {
+        Ucase addr.Ucase
+}
+
+func NewSuggsHandler(ucase addr.Ucase) *SuggsHandler <span class="cov8" title="1">{
+        return &amp;SuggsHandler{
+                Ucase: ucase,
+        }
+}</span>
+
+func (h SuggsHandler) Suggest(ctx echo.Context) error <span class="cov8" title="1">{
+        logger := middleware.GetLoggerFromCtx(ctx)
+        requestId := middleware.GetRequestIdFromCtx(ctx)
+        var suggsReq models.SuggestReq
+        suggsReq.Address = ctx.QueryParam("q")
+        if _, err := govalidator.ValidateStruct(suggsReq); err != nil </span><span class="cov8" title="1">{
+                return httpErrDescr.NewHTTPError(ctx, http.StatusBadRequest, httpErrDescr.INVALID_DATA)
+        }</span>
+
+        <span class="cov8" title="1">suggsResp, err := h.Ucase.Suggest(&amp;suggsReq)
+
+        if err != nil </span><span class="cov8" title="1">{
+                logger.Error(requestId, err.Error())
+                return httpErrDescr.NewHTTPError(ctx, http.StatusInternalServerError, httpErrDescr.SERVER_ERROR)
+        }</span>
+
+        <span class="cov8" title="1">return ctx.JSON(http.StatusOK, suggsResp)</span>
+
+}
+</pre>
+		
+		<pre class="file" id="file1" style="display: none">package mock
+
+import (
+        "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/models"
+        "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/tools/servErrors"
+        "github.com/stretchr/testify/mock"
+)
+
+type AddrRepo struct {
+        mock.Mock
+}
+
+func (r *AddrRepo) SuggestStreet(address *models.SuggestStreetRepoInput) (*models.SuggestStreetRepoAnsw, error) <span class="cov8" title="1">{
+        return &amp;models.SuggestStreetRepoAnsw{StreetSuggests: []string{"Измайловская улица", "Измайловский проспект"}}, nil
+}</span>
+
+func (r *AddrRepo) SuggestHouse(addres *models.SuggestHouseRepoInput) (*models.SuggestHouseRepoAnsw, error) <span class="cov0" title="0">{
+        return &amp;models.SuggestHouseRepoAnsw{HouseSuggests: []string{"1"}}, nil
+}</span>
+
+func (r *AddrRepo) GetCity(city string) (*models.GetCityRepoAnsw, error) <span class="cov8" title="1">{
+        return &amp;models.GetCityRepoAnsw{CityId: 1, Name: "Москва"}, nil
+}</span>
+
+func (r *AddrRepo) GetStreet(street *models.GetStreetRepoInput) (*models.GetStreetRepoAnsw, error) <span class="cov8" title="1">{
+        return &amp;models.GetStreetRepoAnsw{StreetId: 1, Name: "Измайловский проспект"}, nil
+}</span>
+
+func (r *AddrRepo) GetHouse(house *models.GetHouseRepoInput) (*models.GetHouseRepoAnsw, error) <span class="cov8" title="1">{
+        return &amp;models.GetHouseRepoAnsw{House: "1"}, nil
+}</span>
+
+type AddrRepoErr struct {
+        mock.Mock
+}
+
+func (r *AddrRepoErr) SuggestStreet(address *models.SuggestStreetRepoInput) (*models.SuggestStreetRepoAnsw, error) <span class="cov0" title="0">{
+        return nil, servErrors.NewError(servErrors.NO_SUCH_ENTITY_IN_DB, "")
+}</span>
+
+func (r *AddrRepoErr) SuggestHouse(addres *models.SuggestHouseRepoInput) (*models.SuggestHouseRepoAnsw, error) <span class="cov0" title="0">{
+        return nil, servErrors.NewError(servErrors.NO_SUCH_ENTITY_IN_DB, "")
+}</span>
+
+func (r *AddrRepoErr) GetCity(city string) (*models.GetCityRepoAnsw, error) <span class="cov8" title="1">{
+        return nil, servErrors.NewError(servErrors.NO_SUCH_ENTITY_IN_DB, "")
+}</span>
+
+func (r *AddrRepoErr) GetStreet(street *models.GetStreetRepoInput) (*models.GetStreetRepoAnsw, error) <span class="cov0" title="0">{
+        return nil, servErrors.NewError(servErrors.NO_SUCH_ENTITY_IN_DB, "")
+}</span>
+
+func (r *AddrRepoErr) GetHouse(house *models.GetHouseRepoInput) (*models.GetHouseRepoAnsw, error) <span class="cov0" title="0">{
+        return nil, servErrors.NewError(servErrors.NO_SUCH_ENTITY_IN_DB, "")
+}</span>
+
+type AddrRepoHouseErr struct {
+        mock.Mock
+}
+
+func (r *AddrRepoHouseErr) SuggestHouse(addres *models.SuggestHouseRepoInput) (*models.SuggestHouseRepoAnsw, error) <span class="cov8" title="1">{
+        return nil, servErrors.NewError(servErrors.NO_SUCH_ENTITY_IN_DB, "")
+}</span>
+
+func (r *AddrRepoHouseErr) GetHouse(house *models.GetHouseRepoInput) (*models.GetHouseRepoAnsw, error) <span class="cov8" title="1">{
+        return nil, servErrors.NewError(servErrors.NO_SUCH_ENTITY_IN_DB, "")
+}</span>
+
+func (r *AddrRepoHouseErr) SuggestStreet(address *models.SuggestStreetRepoInput) (*models.SuggestStreetRepoAnsw, error) <span class="cov0" title="0">{
+        return &amp;models.SuggestStreetRepoAnsw{StreetSuggests: []string{"Измайловская улица", "Измайловский проспект"}}, nil
+}</span>
+
+func (r *AddrRepoHouseErr) GetCity(city string) (*models.GetCityRepoAnsw, error) <span class="cov8" title="1">{
+        return &amp;models.GetCityRepoAnsw{CityId: 1, Name: "Москва"}, nil
+}</span>
+
+func (r *AddrRepoHouseErr) GetStreet(street *models.GetStreetRepoInput) (*models.GetStreetRepoAnsw, error) <span class="cov8" title="1">{
+        return &amp;models.GetStreetRepoAnsw{StreetId: 1, Name: "Измайловский проспект"}, nil
+}</span>
+
+type AddrRepoGetHouseErr struct {
+        mock.Mock
+}
+
+func (r *AddrRepoGetHouseErr) SuggestHouse(addres *models.SuggestHouseRepoInput) (*models.SuggestHouseRepoAnsw, error) <span class="cov8" title="1">{
+        return &amp;models.SuggestHouseRepoAnsw{HouseSuggests: []string{"1"}}, nil
+}</span>
+
+func (r *AddrRepoGetHouseErr) GetHouse(house *models.GetHouseRepoInput) (*models.GetHouseRepoAnsw, error) <span class="cov8" title="1">{
+        return nil, servErrors.NewError(servErrors.NO_SUCH_ENTITY_IN_DB, "")
+}</span>
+
+func (r *AddrRepoGetHouseErr) SuggestStreet(address *models.SuggestStreetRepoInput) (*models.SuggestStreetRepoAnsw, error) <span class="cov0" title="0">{
+        return &amp;models.SuggestStreetRepoAnsw{StreetSuggests: []string{"Измайловская улица", "Измайловский проспект"}}, nil
+}</span>
+
+func (r *AddrRepoGetHouseErr) GetCity(city string) (*models.GetCityRepoAnsw, error) <span class="cov8" title="1">{
+        return &amp;models.GetCityRepoAnsw{CityId: 1, Name: "Москва"}, nil
+}</span>
+
+func (r *AddrRepoGetHouseErr) GetStreet(street *models.GetStreetRepoInput) (*models.GetStreetRepoAnsw, error) <span class="cov8" title="1">{
+        return &amp;models.GetStreetRepoAnsw{StreetId: 1, Name: "Измайловский проспект"}, nil
+}</span>
+</pre>
+		
+		<pre class="file" id="file2" style="display: none">package mock
+
+import (
+        "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/models"
+        "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/tools/servErrors"
+        "github.com/stretchr/testify/mock"
+)
+
+type AddrUcase struct {
+        mock.Mock
+}
+
+func (s AddrUcase) Suggest(req *models.SuggestReq) (*models.SuggestResp, error) <span class="cov8" title="1">{
+        return &amp;models.SuggestResp{AddressFull: false, Suggests: []string{"Москва, Тверская улица, 12"}}, nil
+}</span>
+
+type AddrUcaseErr struct {
+        mock.Mock
+}
+
+func (s AddrUcaseErr) Suggest(req *models.SuggestReq) (*models.SuggestResp, error) <span class="cov8" title="1">{
+        return &amp;models.SuggestResp{}, servErrors.NewError(servErrors.DB_ERROR, "")
+}</span>
+</pre>
+		
+		<pre class="file" id="file3" style="display: none">package repository
+
+import (
+        "database/sql"
+        "strings"
+
+        "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/models"
+        "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/tools/servErrors"
+        "github.com/jmoiron/sqlx"
+)
+
+const (
+        suggsLimit = 5
+)
+
+type AddrRepo struct {
+        DB *sqlx.DB
+}
+
+func NewAddrRepo(db *sqlx.DB) *AddrRepo <span class="cov8" title="1">{
+        return &amp;AddrRepo{DB: db}
+}</span>
+
+// user := &amp;models.UserDataStorage{}
+//         err := r.DB.Get(user, `SELECT id, phone, email, name FROM users WHERE phone = $1`, phone)
+//         switch err {
+//         case nil:
+//                 return user, nil
+//         case sql.ErrNoRows:
+//                 return nil, servErrors.NewError(servErrors.NO_SUCH_ENTITY_IN_DB, err.Error())
+//         default:
+//                 return nil, servErrors.NewError(servErrors.DB_ERROR, err.Error())
+//         }
+// items := make([]*Item, 0, 10)
+// err := repo.DB.Select(&amp;items, "SELECT id, title, updated FROM items")
+
+func (r *AddrRepo) SuggestStreet(address *models.SuggestStreetRepoInput) (*models.SuggestStreetRepoAnsw, error) <span class="cov8" title="1">{
+        // suggs := make([]*[]rune, 0, suggsLimit)
+        suggs := make([]*string, 0, suggsLimit)
+        // err := repo.DB.Select(&amp;items, "SELECT id, title, updated FROM items")
+        // var suggs []string
+        err := r.DB.Select(&amp;suggs, `SELECT name FROM streets WHERE name ILIKE $1 LIMIT $2`, address.Street+"%", suggsLimit)
+        // err := r.DB.Select(&amp;suggs, `SELECT name FROM msc_streets WHERE name ILIKE $1 LIMIT $2`, "%"+"Измайл"+"%", suggsLimit)
+        // fmt.Println(suggs)
+        // fmt.Println(err)
+        // fmt.Println(len(suggs))
+        switch err </span>{
+        case nil:<span class="cov8" title="1">
+                if len(suggs) == 0 </span><span class="cov0" title="0">{
+                        return nil, servErrors.NewError(servErrors.NO_SUCH_ENTITY_IN_DB, "")
+                }</span>
+                <span class="cov8" title="1">suggsRepo := make([]string, len(suggs))
+                for i := 0; i &lt; suggsLimit &amp;&amp; i &lt; len(suggs) &amp;&amp; (suggs[i]) != nil; i++ </span><span class="cov8" title="1">{
+                        suggsRepo[i] = *suggs[i]
+                }</span>
+                <span class="cov8" title="1">return &amp;models.SuggestStreetRepoAnsw{StreetSuggests: suggsRepo}, nil</span>
+        case sql.ErrNoRows:<span class="cov8" title="1">
+                return nil, servErrors.NewError(servErrors.NO_SUCH_ENTITY_IN_DB, err.Error())</span>
+        default:<span class="cov8" title="1">
+                return nil, servErrors.NewError(servErrors.DB_ERROR, err.Error())</span>
+        }
+}
+
+func (r *AddrRepo) SuggestHouse(address *models.SuggestHouseRepoInput) (*models.SuggestHouseRepoAnsw, error) <span class="cov8" title="1">{
+        suggs := make([]*string, 0, suggsLimit)
+
+        err := r.DB.Select(&amp;suggs, `SELECT house FROM houses WHERE street_id =$1 AND house ILIKE $2  LIMIT $3`, address.StreetId, address.House+"%", suggsLimit)
+        // fmt.Println(suggs)
+        // fmt.Println(err)
+        // fmt.Println(len(suggs))
+        switch err </span>{
+        case nil:<span class="cov8" title="1">
+                if len(suggs) == 0 </span><span class="cov0" title="0">{
+                        return nil, servErrors.NewError(servErrors.NO_SUCH_ENTITY_IN_DB, "")
+                }</span>
+                <span class="cov8" title="1">suggsRepo := make([]string, len(suggs))
+                for i := 0; i &lt; suggsLimit &amp;&amp; i &lt; len(suggs) &amp;&amp; (suggs[i]) != nil; i++ </span><span class="cov8" title="1">{
+                        suggsRepo[i] = *suggs[i]
+                }</span>
+                <span class="cov8" title="1">return &amp;models.SuggestHouseRepoAnsw{HouseSuggests: suggsRepo}, nil</span>
+        case sql.ErrNoRows:<span class="cov8" title="1">
+                return nil, servErrors.NewError(servErrors.NO_SUCH_ENTITY_IN_DB, err.Error())</span>
+        default:<span class="cov8" title="1">
+                return nil, servErrors.NewError(servErrors.DB_ERROR, err.Error())</span>
+        }
+}
+
+func (r *AddrRepo) GetCity(city string) (*models.GetCityRepoAnsw, error) <span class="cov8" title="1">{
+        if strings.ToLower(city) == "москва" </span><span class="cov8" title="1">{
+                return &amp;models.GetCityRepoAnsw{CityId: 0, Name: "Москва"}, nil
+        }</span>
+        <span class="cov8" title="1">return nil, servErrors.NewError(servErrors.NO_SUCH_ENTITY_IN_DB, "")</span>
+}
+
+func (r *AddrRepo) GetStreet(street *models.GetStreetRepoInput) (*models.GetStreetRepoAnsw, error) <span class="cov8" title="1">{
+        streetAnsw := &amp;models.GetStreetRepoAnsw{}
+        err := r.DB.Get(streetAnsw, `SELECT id as streetid, name FROM streets WHERE name ILIKE $1`, street.Street)
+        switch err </span>{
+        case nil:<span class="cov8" title="1">
+                return streetAnsw, nil</span>
+        case sql.ErrNoRows:<span class="cov8" title="1">
+                return nil, servErrors.NewError(servErrors.NO_SUCH_ENTITY_IN_DB, err.Error())</span>
+        default:<span class="cov8" title="1">
+                return nil, servErrors.NewError(servErrors.DB_ERROR, err.Error())</span>
+        }
+}
+
+func (r *AddrRepo) GetHouse(house *models.GetHouseRepoInput) (*models.GetHouseRepoAnsw, error) <span class="cov8" title="1">{
+        houseAnsw := &amp;models.GetHouseRepoAnsw{}
+        err := r.DB.Get(houseAnsw, `SELECT house FROM houses WHERE street_id =$1 AND house ILIKE $2`, house.StreetId, house.House)
+        switch err </span>{
+        case nil:<span class="cov8" title="1">
+                return houseAnsw, nil</span>
+        case sql.ErrNoRows:<span class="cov8" title="1">
+                return nil, servErrors.NewError(servErrors.NO_SUCH_ENTITY_IN_DB, err.Error())</span>
+        default:<span class="cov8" title="1">
+                return nil, servErrors.NewError(servErrors.DB_ERROR, err.Error())</span>
+        }
+}
+</pre>
+		
+		<pre class="file" id="file4" style="display: none">package ucase
+
+import (
+        "regexp"
+        "strings"
+        "unicode/utf8"
+
+        "github.com/pkg/errors"
+
+        addr "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/address"
+        "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/models"
+        "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/tools/servErrors"
+)
+
+type AddrUcase struct {
+        AddrRepo      addr.Repository
+        replaceRegexp regexp.Regexp
+}
+
+func NewAddrUcase(repo addr.Repository) *AddrUcase <span class="cov8" title="1">{
+        return &amp;AddrUcase{
+                AddrRepo:      repo,
+                replaceRegexp: *regexp.MustCompile(toDeleteRegexp),
+        }
+}</span>
+
+const (
+        city = iota
+        street
+        house
+        ready
+
+        toDeleteRegexp = `^ *гор\.|^ *гор |^ *г |^ *г\.|^ *город | ул\.| ул | дом | д.| д `
+        separator      = ","
+)
+
+var defaultRes = []string{"Москва, ", "Москва, Бауманская Улица, ", "Москва, Тверская Улица, "}
+
+type addressT struct {
+        city       string
+        street     string
+        house      string
+        toComplite int
+}
+
+func (u *AddrUcase) parseAddress(addrStr string) *addressT <span class="cov8" title="1">{
+        addrStr = string(u.replaceRegexp.ReplaceAll([]byte(addrStr), []byte(" ")))
+        addrParts := strings.Split(addrStr, separator)
+        for i := range addrParts </span><span class="cov8" title="1">{
+                addrParts[i] = strings.TrimSpace(addrParts[i])
+        }</span>
+        <span class="cov8" title="1">switch len(addrParts) - 1 </span>{
+        case 0:<span class="cov8" title="1">
+                return &amp;addressT{
+                        toComplite: city,
+                }</span>
+        case 1:<span class="cov8" title="1">
+                return &amp;addressT{
+                        street:     addrParts[0],
+                        toComplite: street,
+                }</span>
+        // case 2:
+        //         return &amp;addressT{
+        //                 city:       addrParts[0],
+        //                 street:     addrParts[1],
+        //                 toComplite: street,
+        //         }
+
+        default:<span class="cov8" title="1">
+                return &amp;addressT{
+                        city:       addrParts[0],
+                        street:     addrParts[1],
+                        house:      addrParts[2],
+                        toComplite: house,
+                }</span>
+        }
+}
+
+func (u *AddrUcase) suggestCity() (*models.SuggestResp, error) <span class="cov8" title="1">{
+        return &amp;models.SuggestResp{Suggests: defaultRes}, nil
+}</span>
+
+func (u *AddrUcase) suggestStreet(address addressT) (*models.SuggestResp, error) <span class="cov8" title="1">{
+        city, err := u.AddrRepo.GetCity(address.city)
+        if err != nil </span><span class="cov8" title="1">{
+                cause := servErrors.ErrorAs(err)
+                switch </span>{
+                case cause == nil:<span class="cov0" title="0">
+                        </span><span class="cov0" title="0">{
+                                return nil, errors.Wrap(err, "unexpected error")
+                        }</span>
+                case cause.Code == servErrors.NO_SUCH_ENTITY_IN_DB:<span class="cov8" title="1">
+                        </span><span class="cov8" title="1">{
+                                return u.suggestCity()
+                        }</span>
+                default:<span class="cov0" title="0">
+                        return nil, errors.Wrap(err, "error getting city from db")</span>
+                }
+        }
+        <span class="cov8" title="1">var suggs *models.SuggestStreetRepoAnsw
+
+        pozToCut := len(address.street)
+        for i := 0; i &lt; 3 &amp;&amp; suggs == nil &amp;&amp; pozToCut &gt;= 0; i++ </span><span class="cov8" title="1">{
+
+                street := []rune(address.street[:(pozToCut)])
+                suggs, err = u.AddrRepo.SuggestStreet(&amp;models.SuggestStreetRepoInput{Street: string(street)})
+                if len(address.street)-i*3 &lt;= 0 </span><span class="cov0" title="0">{
+                        break</span>
+                }
+
+                <span class="cov8" title="1">pozToCut--
+                for j := 0; j &lt; 2 &amp;&amp; pozToCut &gt;= 0; pozToCut-- </span><span class="cov8" title="1">{
+                        if utf8.ValidString(address.street[pozToCut:]) </span><span class="cov8" title="1">{
+                                j++
+                        }</span>
+                }
+                <span class="cov8" title="1">pozToCut++</span>
+        }
+        <span class="cov8" title="1">if suggs == nil </span><span class="cov0" title="0">{
+                return nil, errors.Wrap(err, "error suggesting street")
+        }</span>
+        <span class="cov8" title="1">var suggsResp models.SuggestResp
+        for _, addr := range suggs.StreetSuggests </span><span class="cov8" title="1">{
+                suggsResp.Suggests = append(suggsResp.Suggests, city.Name+separator+" "+addr+", ")
+        }</span>
+        <span class="cov8" title="1">return &amp;suggsResp, err</span>
+}
+
+func (u *AddrUcase) suggestHouse(address addressT) (*models.SuggestResp, error) <span class="cov8" title="1">{
+        city, err := u.AddrRepo.GetCity(address.city)
+        if err != nil </span><span class="cov0" title="0">{
+                cause := servErrors.ErrorAs(err)
+                switch </span>{
+                case cause == nil:<span class="cov0" title="0">
+                        </span><span class="cov0" title="0">{
+                                return nil, errors.Wrap(err, "unexpected error")
+                        }</span>
+                case cause.Code == servErrors.NO_SUCH_ENTITY_IN_DB:<span class="cov0" title="0">
+                        </span><span class="cov0" title="0">{
+                                return u.suggestCity()
+                        }</span>
+                default:<span class="cov0" title="0">
+                        return nil, errors.Wrap(err, "error getting city from db")</span>
+                }
+        }
+        <span class="cov8" title="1">street, err := u.AddrRepo.GetStreet(&amp;models.GetStreetRepoInput{Street: address.street, CityId: city.CityId})
+        if err != nil </span><span class="cov0" title="0">{
+                cause := servErrors.ErrorAs(err)
+                switch </span>{
+                case cause == nil:<span class="cov0" title="0">
+                        </span><span class="cov0" title="0">{
+                                return nil, errors.Wrap(err, "unexpected error")
+                        }</span>
+                case cause.Code == servErrors.NO_SUCH_ENTITY_IN_DB:<span class="cov0" title="0">
+                        </span><span class="cov0" title="0">{
+                                return u.suggestStreet(address)
+                        }</span>
+                default:<span class="cov0" title="0">
+                        return nil, errors.Wrap(err, "error getting street from db")</span>
+                }
+        }
+
+        <span class="cov8" title="1">house, err := u.AddrRepo.GetHouse(&amp;models.GetHouseRepoInput{StreetId: street.StreetId, House: address.house})
+        if err == nil &amp;&amp; house != nil &amp;&amp; house.House != "" </span><span class="cov8" title="1">{
+                return &amp;models.SuggestResp{Suggests: []string{city.Name + separator + " " + street.Name + ", " + house.House}, AddressFull: true}, nil
+        }</span>
+
+        <span class="cov8" title="1">var suggs *models.SuggestHouseRepoAnsw
+        pozToCut := len(address.house)
+        for i := 0; i &lt; 3 &amp;&amp; suggs == nil &amp;&amp; pozToCut &gt;= 0; i++ </span><span class="cov8" title="1">{
+
+                house := []rune(address.house[:pozToCut])
+                // fmt.Println(string(house))
+                suggs, err = u.AddrRepo.SuggestHouse(&amp;models.SuggestHouseRepoInput{StreetId: street.StreetId, House: string(house)})
+                if len(address.house)-i*1 &lt;= 0 </span><span class="cov8" title="1">{
+                        break</span>
+                }
+
+                <span class="cov8" title="1">for pozToCut--; !utf8.ValidString(address.house[pozToCut:]) &amp;&amp; pozToCut &gt;= 0; pozToCut-- </span>{<span class="cov0" title="0">
+                }</span>
+        }
+        <span class="cov8" title="1">if suggs == nil </span><span class="cov8" title="1">{
+                return nil, errors.Wrap(err, "error suggesting house")
+        }</span>
+        <span class="cov8" title="1">var suggsResp models.SuggestResp
+        for _, house := range suggs.HouseSuggests </span><span class="cov8" title="1">{
+                suggsResp.Suggests = append(suggsResp.Suggests, city.Name+separator+" "+street.Name+", "+house)
+        }</span>
+        <span class="cov8" title="1">suggsResp.AddressFull = true
+        return &amp;suggsResp, err</span>
+}
+
+func (u *AddrUcase) Suggest(address *models.SuggestReq) (*models.SuggestResp, error) <span class="cov8" title="1">{
+        if address == nil </span><span class="cov8" title="1">{
+                return u.suggestCity()
+        }</span>
+        <span class="cov8" title="1">addr := u.parseAddress(address.Address)
+        if addr == nil </span><span class="cov0" title="0">{
+                return u.suggestCity()
+        }</span>
+        <span class="cov8" title="1">switch addr.toComplite </span>{
+        case street:<span class="cov8" title="1">
+                </span><span class="cov8" title="1">{
+                        return u.suggestStreet(*addr)
+                }</span>
+        case house:<span class="cov8" title="1">
+                </span><span class="cov8" title="1">{
+                        return u.suggestHouse(*addr)
+                }</span>
+        default:<span class="cov8" title="1">
+                return u.suggestCity()</span>
+        }
+}
+</pre>
+		
+		</div>
+	</body>
+	<script>
+	(function() {
+		var files = document.getElementById('files');
+		var visible;
+		files.addEventListener('change', onChange, false);
+		function select(part) {
+			if (visible)
+				visible.style.display = 'none';
+			visible = document.getElementById(part);
+			if (!visible)
+				return;
+			files.value = part;
+			visible.style.display = 'block';
+			location.hash = part;
+		}
+		function onChange() {
+			select(files.value);
+			window.scrollTo(0, 0);
+		}
+		if (location.hash != "") {
+			select(location.hash.substr(1));
+		}
+		if (!visible) {
+			select("file0");
+		}
+	})();
+	</script>
+</html>

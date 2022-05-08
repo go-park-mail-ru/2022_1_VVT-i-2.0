@@ -1,0 +1,24 @@
+mode: set
+github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/microservices/order/usecase/usecase.go:14.60,18.2 1 1
+github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/microservices/order/usecase/usecase.go:20.107,23.38 2 1
+github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/microservices/order/usecase/usecase.go:26.2,28.40 2 1
+github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/microservices/order/usecase/usecase.go:31.2,31.68 1 1
+github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/microservices/order/usecase/usecase.go:23.38,25.3 1 1
+github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/microservices/order/usecase/usecase.go:28.40,30.3 1 0
+github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/microservices/order/usecase/usecase.go:35.112,39.33 2 1
+github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/microservices/order/usecase/usecase.go:42.2,43.41 2 1
+github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/microservices/order/usecase/usecase.go:46.2,46.64 1 1
+github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/microservices/order/usecase/usecase.go:39.33,41.3 1 0
+github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/microservices/order/usecase/usecase.go:43.41,45.3 1 1
+github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/microservices/order/usecase/usecase.go:49.133,53.40 2 1
+github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/microservices/order/usecase/usecase.go:56.2,57.55 2 1
+github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/microservices/order/usecase/usecase.go:60.2,60.85 1 1
+github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/microservices/order/usecase/usecase.go:53.40,55.3 1 0
+github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/microservices/order/usecase/usecase.go:57.55,59.3 1 1
+github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/microservices/order/usecase/usecase.go:63.108,67.16 2 1
+github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/microservices/order/usecase/usecase.go:71.2,71.32 1 1
+github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/microservices/order/usecase/usecase.go:74.2,75.33 2 1
+github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/microservices/order/usecase/usecase.go:79.2,79.249 1 1
+github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/microservices/order/usecase/usecase.go:67.16,69.3 1 0
+github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/microservices/order/usecase/usecase.go:71.32,73.3 1 1
+github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/microservices/order/usecase/usecase.go:75.33,77.3 1 1

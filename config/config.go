@@ -10,11 +10,32 @@ type Config struct {
 	ServConfig            ServerConfig      `toml:"server"`
 	LoggerConfig          LogConfig         `toml:"logger"`
 	AuthentificatorConfig AuthManagerConfig `toml:"authManager"`
-	NotificatorConfig     NotificatorConfig `toml:"notificator"`
-	CacherConfig          CachConfig        `toml:"cacher"`
-	DatabaseCongig        DatabaseConfig    `toml:"database"`
+	DatabaseConfig        DatabaseConfig    `toml:"database"`
 	CorsConfig            CorsConfig        `toml:"cors"`
 	CsrfConfig            CsrfConfig        `toml:"csrf"`
+	AuthMicroserverAddr   string            `toml:"authMicroserviceAddr"`
+	OrderMicroserverAddr  string            `toml:"orderMicroserviceAddr"`
+}
+
+type AuthMicroserviceConfig struct {
+	AuthServConfig        AuthServerConfig  `toml:"server"`
+	AuthentificatorConfig AuthManagerConfig `toml:"authManager"`
+	NotificatorConfig     NotificatorConfig `toml:"notificator"`
+	CacherConfig          CachConfig        `toml:"cacher"`
+	DatabaseConfig        DatabaseConfig    `toml:"database"`
+}
+
+type AuthServerConfig struct {
+	BindAddr string `toml:"bindAddr"`
+}
+
+type OrderMicroserviceConfig struct {
+	OrderServConfig OrderServerConfig `toml:"server"`
+	DatabaseConfig  DatabaseConfig    `toml:"database"`
+}
+
+type OrderServerConfig struct {
+	BindAddr string `toml:"bindAddr"`
 }
 
 type ServerConfig struct {
@@ -84,6 +105,14 @@ type CsrfConfig struct {
 
 func NewConfig() *Config {
 	return &Config{}
+}
+
+func NewAuthMicroserviceConfig() *AuthMicroserviceConfig {
+	return &AuthMicroserviceConfig{}
+}
+
+func NewOrderMicroserviceConfig() *OrderMicroserviceConfig {
+	return &OrderMicroserviceConfig{}
 }
 
 func ReadConfigFile(configPath string, dst interface{}) error {

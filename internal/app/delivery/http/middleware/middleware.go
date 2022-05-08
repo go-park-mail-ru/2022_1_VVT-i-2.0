@@ -1,7 +1,7 @@
 package middleware
 
 import (
-	auth "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/authManager"
+	auth "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/tools/authManager"
 	log "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/tools/logger"
 )
 

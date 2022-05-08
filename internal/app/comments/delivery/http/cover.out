@@ -1,0 +1,21 @@
+mode: set
+github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/comments/delivery/http/handler.go:22.68,26.2 1 1
+github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/comments/delivery/http/handler.go:36.72,46.16 5 1
+github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/comments/delivery/http/handler.go:55.2,57.54 2 1
+github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/comments/delivery/http/handler.go:66.2,68.44 3 1
+github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/comments/delivery/http/handler.go:46.16,48.68 2 1
+github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/comments/delivery/http/handler.go:51.3,52.99 2 1
+github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/comments/delivery/http/handler.go:48.68,50.4 1 0
+github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/comments/delivery/http/handler.go:57.54,64.3 1 1
+github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/comments/delivery/http/handler.go:79.71,81.17 2 1
+github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/comments/delivery/http/handler.go:85.2,89.66 4 1
+github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/comments/delivery/http/handler.go:93.2,98.16 2 1
+github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/comments/delivery/http/handler.go:115.2,125.44 4 1
+github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/comments/delivery/http/handler.go:81.17,83.3 1 0
+github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/comments/delivery/http/handler.go:89.66,91.3 1 0
+github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/comments/delivery/http/handler.go:98.16,100.19 2 1
+github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/comments/delivery/http/handler.go:104.3,104.21 1 1
+github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/comments/delivery/http/handler.go:100.19,103.4 2 0
+github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/comments/delivery/http/handler.go:105.35,106.93 1 0
+github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/comments/delivery/http/handler.go:107.67,108.94 1 0
+github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/comments/delivery/http/handler.go:109.11,111.100 2 1

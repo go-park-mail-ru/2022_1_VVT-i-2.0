@@ -7,7 +7,7 @@ import (
 
 type UserId uint64
 
-type UserDataStorage struct {
+type UserDataRepo struct {
 	Id     UserId
 	Name   string
 	Phone  string
@@ -22,7 +22,7 @@ type UserAddDataStorage struct {
 	Avatar string
 }
 
-type UserDataUsecase struct {
+type UserDataUcase struct {
 	Id     UserId
 	Name   string
 	Phone  string
@@ -47,6 +47,11 @@ type LoginReq struct {
 	Code  string `json:"code" valid:"required"`
 }
 
+type LoginUcaseReq struct {
+	Phone string
+	Code  string
+}
+
 type RegisterReq struct {
 	Phone string `json:"phone" valid:"phone, required"`
 	Code  string `json:"code" valid:"required"`
@@ -54,12 +59,12 @@ type RegisterReq struct {
 	Email string `json:"email" valid:"email,required"`
 }
 
-// type RegisterReq struct {
-// Phone string `json:"phone" valid:"phone, required"`
-// Code  string `json:"code" valid:"required"`
-// Name  string `json:"name" valid:"name,required"`
-// 	Email string `json:"email" valid:"email,required"`
-// }
+type RegisterUcaseReq struct {
+	Phone string
+	Code  string
+	Name  string
+	Email string
+}
 
 type SendCodeReq struct {
 	Phone string `json:"phone" valid:"phone, required"`
@@ -69,12 +74,20 @@ type SendCodeResp struct {
 	IsRegistered bool `json:"registered"`
 }
 
+type SendCodeUcaseReq struct {
+	Phone string
+}
+
+type SendCodeUcaseResp struct {
+	IsRegistered bool
+}
+
 type UpdateUserReq struct {
 	Name  string `json:"name" valid:"name"`
 	Email string `json:"email" valid:"email"`
 }
 
-type UpdateUserUsecase struct {
+type UpdateUserUcase struct {
 	Id        UserId
 	Name      string
 	Email     string

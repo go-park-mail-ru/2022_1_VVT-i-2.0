@@ -1,12 +1,21 @@
 package models
 
 type SuggestReq struct {
-	Address string `json:"address" valid:"required"`
+	Address string `json:"address" valid:"address,required"`
 }
 
 type SuggestResp struct {
 	Suggests    []string `json:"suggests"`
 	AddressFull bool     `json:"end"`
+}
+
+type SuggestUcaseReq struct {
+	Address string
+}
+
+type SuggestUcaseResp struct {
+	Suggests    []string
+	AddressFull bool
 }
 
 type SuggestStreetRepoInput struct {
