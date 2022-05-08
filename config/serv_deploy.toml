@@ -9,7 +9,7 @@ staticPath="static/"
 staticUrl="https://tavide.xyz/static/"
 
 [cors]
-allowOrigins=["", "http://localhost:3000", "http://tavide.xyz:3000"]
+allowOrigins=["", "http://95.163.180.8:80", "http://localhost:3000", "http://tavide.xyz:3000"]
 maxAge=86400
 
 [csrf]
