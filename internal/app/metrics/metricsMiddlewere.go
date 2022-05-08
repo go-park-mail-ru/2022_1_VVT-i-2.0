@@ -13,7 +13,7 @@ func (m *Metric) CollectMetrics(next echo.HandlerFunc) echo.HandlerFunc {
 
 		defer func() {
 			m.TotalHits.Inc()
-			if context.Response().Status != http.StatusOK {
+			if context.Response().Status != http.StatusOK && context.Response().Status != http.StatusNoContent {
 				m.Errors.WithLabelValues(strconv.Itoa(context.Response().Status), context.Request().Method, context.Request().RequestURI).Inc()
 			} else {
 				m.Hits.WithLabelValues(strconv.Itoa(context.Response().Status), context.Request().Method, context.Request().RequestURI).Inc()
