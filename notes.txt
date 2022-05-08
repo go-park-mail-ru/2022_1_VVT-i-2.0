@@ -1,0 +1,152 @@
+valid jwt eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHBpcmVkIjoiMjAyMi0wNC0wN1QyMDo0NDo1MS42NzM5NzEzMDUrMDM6MDAiLCJpZCI6MTB9.qXXxCTDcnRM113z40jciFgX1Kk3kzw-r88MBGGr9rzg
+invalid jwt expired eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHBpcmVkIjoiMjAyMi0wMy0zMFQxMjo0NjoxMi45NjAxNTYxNiswMzowMCIsImlkIjoxMH0.Utc7TuTHcVN4JFebbZ5UicxGL7hq6WhFtwSQLL2W1Hg
+invalid jwt id=0 eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHBpcmVkIjoiMjAyMi0wNC0wN1QyMDo0NzoxMi44OTgyOTgzMDMrMDM6MDAiLCJpZCI6MH0.QxmsHZ35QQkgtl9aoY3z1goQxfymo7MvO5UQu_IOEzc
+
+
+---------зависимости-----------
+ngrok https://developer.vonage.com/tools/ngrok
+Обратите внимание, что каждый раз, когда вы запускаете туннель Ngrok, вы получаете новый URL-адрес, поэтому не забудьте соответствующим образом обновить конфигурацию веб-перехватчиков!
+https://developer.vonage.com/tools/ngrok
+ ngrok http 80
+ my token 27Fa4QPhMEdU5FbkfQn7MN9TWL3_6NUcxKtpygAKMiYmXCci9
+
+
+---------запросы curl-------
+curl --header "Content-Type: application/json"   --request POST   --data '{"phone":"79015020456","code":"1234"}'   127.0.0.1:8080/api/v1/login
+
+
+ **********вопросы Диме***********
+ 1. А стоит сделать веб-хуки для смс-отправщика, или нет? https://developer.vonage.com/api/sms
+    1.1 есла да, то нужно ли поднимать новый сервер? или нужно установить новый обработчик на основной сервер?
+2. норм ли что, например, в user-ucase передается  notificator по значению? или надо по указателю?
+3. не понимаю как защититься от xss на стороне сервера. 
+4. непонятно, как лучше делать валидацию адреса при создании заказа? обращаться в другой репозиторий?
+
+
+
+ebXV0R7XWj/QqKv4J/JHN/xfYsOpMGC25fJadRLYAJpS6cfj
+
+
+-------------------sms------------------
+curl -X GET "https://nat-s.skv%40yandex.ru:PkzvymZDAVs0qasTSsdz1bxhhA@gate.smsaero.ru/v2/balance"
+curl -X GET "https://nat-s.skv%40yandex.ru:PkzvymZDAVs0qasTSsdz1bxhhA@gate.smsaero.ru/v2/flashcall/send?phone=79015020456&code=1234"
+
+curl -s -w 'Total: %{time_total}s\n'  "https://nat-s.skv%40yandex.ru:PkzvymZDAVs0qasTSsdz1bxhhA@gate.smsaero.ru/v2/flashcall/send?phone=79015020456&code=1234" 
+{"success":true,"data":{"status":0,"code":"1234","phone":"79015020456","cost":"0.69","timeCreate":1649518138,"timeUpdate":1649518138,"id":32071},"message":null}Total: 0,653357s
+
+ curl --cookie "token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHBpcmVkIjoiMjAyMi0wNC0xOFQwMjo0MDozMS4xNTU4Mzc1MDYrMDM6MDAiLCJpZCI6MTF9.Kepi2sF5eCwIrHaXmdNuQg9GAB89T8hf1rwWFIjpxNk"  --header "Content-Type: application/json"   --request POST   --data '{ "name":"Катюшка","email":"kati-upd@mail.ru"}'   127.0.0.1:8080/api/v1/update -i
+
+curl --cookie "token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHBpcmVkIjoiMjAyMi0wNC0xOFQwMjo0MDozMS4xNTU4Mzc1MDYrMDM6MDAiLCJpZCI6MTF9.Kepi2sF5eCwIrHaXmdNuQg9GAB89T8hf1rwWFIjpxNk" 127.0.0.1:8080/api/v1/user -i
+
+
+telnet 127.0.0.1:11211
+
+
+
+curl --cookie "token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHBpcmVkIjoiMjAyMi0wNC0xOFQwMjo0MDozMS4xNTU4Mzc1MDYrMDM6MDAiLCJpZCI6MTF9.Kepi2sF5eCwIrHaXmdNuQg9GAB89T8hf1rwWFIjpxNk" 127.0.0.1:8080/api/v1/user -i
+HTTP/1.1 200 OK
+Content-Type: application/json; charset=UTF-8
+Set-Cookie: _csrf=axtlwU1ivwhrWm2u1C1lzEmzgNDOXSSV; Path=/; Expires=Tue, 12 Apr 2022 12:40:28 GMT; Secure; SameSite=None
+Vary: Origin
+Vary: Cookie
+X-Content-Type-Options: nosniff
+X-Csrf-Token: axtlwU1ivwhrWm2u1C1lzEmzgNDOXSSV
+X-Frame-Options: SAMEORIGIN
+X-Xss-Protection: 1; mode=block
+Date: Mon, 11 Apr 2022 12:40:28 GMT
+Content-Length: 75
+
+{"name":"Катюшка","phone":"79015020454","email":"kati-upd@mail.ru"}
+
+
+
+ns@ns-Aspire-A315-55G:~/tp/bd/back/cmd$ curl --cookie "token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHBpcmVkIjoiMjAyMi0wNC0xOFQwMjo0MDozMS4xNTU4Mzc1MDYrMDM6MDAiLCJpZCI6MTF9.Kepi2sF5eCwIrHaXmdNuQg9GAB89T8hf1rwWFIjpxNk; _csrf=axtlwU1ivwhrWm2u1C1lzEmzgNDOXSSV"    --header "Content-Type: application/json" --header "X-Csrf-Token: axtlwU1ivwhrWm2u1C1lzEmzgNDOXSSV"  --request POST   --data '{ "name":"Катюшка","email":"kati-upd@mail.ru"}'   127.0.0.1:8080/api/v1/update -i 
+HTTP/1.1 200 OK
+Content-Type: application/json; charset=UTF-8
+Set-Cookie: _csrf=axtlwU1ivwhrWm2u1C1lzEmzgNDOXSSV; Path=/; Expires=Tue, 12 Apr 2022 13:03:54 GMT; Secure; SameSite=None
+Vary: Origin
+Vary: Cookie
+X-Content-Type-Options: nosniff
+X-Csrf-Token: axtlwU1ivwhrWm2u1C1lzEmzgNDOXSSV
+X-Frame-Options: SAMEORIGIN
+X-Xss-Protection: 1; mode=block
+Date: Mon, 11 Apr 2022 13:03:54 GMT
+Content-Length: 75
+
+{"name":"Катюшка","phone":"79015020454","email":"kati-upd@mail.ru"}
+
+
+
+curl --cookie "token= ; _csrf= " --header "X-Csrf-Token: " --header "Content-Type: application/json" --request POST   --data '{ "name":"Катюшка","email":"kati-upd@mail.ru"}'   127.0.0.1:8080/api/v1/update -i 
+
+
+-------------------фронтам------------
+1. баги на саджестах: можно отредачить адрес не через саджесты. он меняется в хранилище и становится невальдным
+
+
+curl -X POST  --header "Content-Type: application/json" --data '{"phone": "79877555051"}'  "127.0.0.1:8080/api/v1/send_code" -i
+curl -X POST  --header "Content-Type: application/json" --data '{"phone":"79015020456", "code":"4166"}'  "127.0.0.1:8080/api/v1/login" -i
+curl --cookie "token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHBpcmVkIjoiMjAyMi0wNC0yM1QwNDoxMToxNi42ODk3NTY5ODMrMDM6MDAiLCJpZCI6MTd9.zBKlYn8T4DN4jHhZy_bootT8zJwONmicS6gYgTZ7U0w"  "127.0.0.1:8080/api/v1/user" -i
+curl -X POST --cookie "token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHBpcmVkIjoiMjAyMi0wNS0wNFQwMjo1NjoyOS4wMjQzMjcwMDQrMDM6MDAiLCJpZCI6MTl9.BS4FlaO98oFB40pN8LSavIdTd7HskG7Ohxs-7959_xM;_csrf=GUtZuLwhmxAFs8ifWKjjGh6887lMI991"  --header "Content-Type: application/json" --header "X-Csrf-Token:GUtZuLwhmxAFs8ifWKjjGh6887lMI991" --data '{"address":"Москва, Измайловский проспект, 73/3","comment":"трезвого курьера выберите!","cart":[{"id":1,"count":7},{"id":4,"count":7}]}'  "127.0.0.1:8080/api/v1/order" -i
+curl -X POST --cookie "token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHBpcmVkIjoiMjAyMi0wNS0wOFQxODowMzozNi45MTMzNzg1ODIrMDM6MDAiLCJpZCI6NH0.gvxupPJwelk73rMggKw9zOpuVHetskeQTkpBN6NuHZ4;_csrf=ivom7z96RLikARHC9VDZAMhTSsQ4Og9i"  --header "Content-Type: application/json" --header "X-Csrf-Token:ivom7z96RLikARHC9VDZAMhTSsQ4Og9i" --data '{"address":"Москва, Измайловский проспект, 73/3","comment":"трезвого курьера выберите!","cart":[{"id":1,"count":7},{"id":4,"count":7}]}'  "127.0.0.1:8080/api/v1/order" -i
+
+
+sudo apt-get install libvips-tools
+
+curl -vi  -F "name=Joe Smith" -F "avatar=@/home/ns/Изображения/10FyrBtthgfOc.jpg" http://localhost:8080/
+*   Trying 127.0.0.1:8080...
+* TCP_NODELAY set
+* Connected to localhost (127.0.0.1) port 8080 (#0)
+> POST / HTTP/1.1
+> Host: localhost:8080
+> User-Agent: curl/7.68.0
+> Accept: */*
+> Content-Length: 944
+> Content-Type: multipart/form-data; boundary=------------------------7a105d888435c171
+> 
+* We are completely uploaded and fine
+* Mark bundle as not supporting multiuse
+< HTTP/1.1 400 Bad Request
+HTTP/1.1 400 Bad Request
+< Content-Type: application/json; charset=UTF-8
+Content-Type: application/json; charset=UTF-8
+< Vary: Origin
+Vary: Origin
+< Date: Wed, 20 Apr 2022 12:04:10 GMT
+Date: Wed, 20 Apr 2022 12:04:10 GMT
+< Content-Length: 49
+Content-Length: 49
+
+< 
+{"error":"missing csrf token in request header"}
+* Connection #0 to host localhost left intact
+
+
+curl --cookie "token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHBpcmVkIjoiMjAyMi0wNC0yM1QwNDoxMToxNi42ODk3NTY5ODMrMDM6MDAiLCJpZCI6MTd9.zBKlYn8T4DN4jHhZy_bootT8zJwONmicS6gYgTZ7U0w;_csrf=rGE8U9ksyqnhvPP8BPqk32wNpu3BgKiS"  --header "X-Csrf-Token:rGE8U9ksyqnhvPP8BPqk32wNpu3BgKiS" -F "newData="{"name":"kati"\,"email":"kati-upd@mail.ru"}"" -F "avatar=@/home/ns/Изображения/2.png"   127.0.0.1:8080/api/v1/update -iv
+
+
+
+go install google.golang.org/protobuf/cmd/protoc-gen-go@v1.28
+
+
+* у микросервиса должны быть свои моделсы, в общих можелсах должны быть прописаны структуры запроса-ответа на микросервиса
+
+protoc --go_out=. *.proto
+protoc --go-grpc_out=. *.proto
+
+ gtht
+
+
+https://api.delivery-club.ru/api1.2/vendor/124490/menu?data=menu,products,actions&cacheBreaker=1651146283
+https://api.delivery-club.ru/api1.2/vendor/30585/menu?data=menu,products,actions&cacheBreaker=1651146390
+
+curl --cookie "token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHBpcmVkIjoiMjAyMi0wNS0wOFQxODowMzozNi45MTMzNzg1ODIrMDM6MDAiLCJpZCI6NH0.gvxupPJwelk73rMggKw9zOpuVHetskeQTkpBN6NuHZ4;_csrf=ivom7z96RLikARHC9VDZAMhTSsQ4Og9i"  --header "Content-Type: application/json" --header "X-Csrf-Token:ivom7z96RLikARHC9VDZAMhTSsQ4Og9i"  "127.0.0.1:8080/api/v1/order/1" -i
+ curl --cookie "token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHBpcmVkIjoiMjAyMi0wNS0wOFQxODowMzozNi45MTMzNzg1ODIrMDM6MDAiLCJpZCI6NH0.gvxupPJwelk73rMggKw9zOpuVHetskeQTkpBN6NuHZ4;_csrf=ivom7z96RLikARHC9VDZAMhTSsQ4Og9i"  --header "Content-Type: application/json" --header "X-Csrf-Token:ivom7z96RLikARHC9VDZAMhTSsQ4Og9i"  "127.0.0.1:8080/api/v1/orders" -i
+curl --cookie "token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHBpcmVkIjoiMjAyMi0wNS0wOFQxODowMzozNi45MTMzNzg1ODIrMDM6MDAiLCJpZCI6NH0.gvxupPJwelk73rMggKw9zOpuVHetskeQTkpBN6NuHZ4;_csrf=ivom7z96RLikARHC9VDZAMhTSsQ4Og9i"  --header "Content-Type: application/json" --header "X-Csrf-Token:ivom7z96RLikARHC9VDZAMhTSsQ4Og9i" --data '{"address":"Москва, Измайловский проспект, 73/3","comment":"трезвого курьера выберите!","cart":[{"id":1,"count":7},{"id":4,"count":7}]}'  "127.0.0.1:8080/api/v1/order" -i
+
+go test ./... --cover  --coverpkg ./... --coverprofile cover.out
+cat cover.out | grep -v ".pb.go" > cover_without_gen.out
+go tool cover -func cover_without_gen.out
+
+go tool cover -func cover.out
+go tool cover -html=cover.out

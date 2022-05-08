@@ -1,37 +1,61 @@
-package usecase
+package ucase
 
 import (
-	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/domain/interfaces"
-	data "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/domain/models"
-	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/models"
-	"github.com/stretchr/testify/require"
 	"io"
 	"reflect"
 	"testing"
+
+	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/models"
+	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/tools/staticManager/localStaticManager"
+	mockAuthCli "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/microservices/auth/mock"
+	"github.com/stretchr/testify/assert"
+
+	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/user/mock"
 )
 
-func TestUserUseCase_Login(t *testing.T) {
-	mockUserRepo := new(interfaces.UserRepository)
-	mockCacher := new(interfaces.Memcacher)
-	useCase := UserUsecase{
-		Cacher: 	mockCacher,
-		UserRepo: 	mockUserRepo,
+func TestUserUseCase_SendCode(t *testing.T) {
+	mockUserRepo := new(mock.UserRepository)
+	mockAuthCli := new(mockAuthCli.GrpcAuthHandler)
+	staticManager := localStaticManager.NewLocalFileManager("", "")
+	useCase := NewUcase(mockUserRepo, staticManager, mockAuthCli)
+
+	sendCodeReq := &models.SendCodeUcaseReq{
+		Phone: "79999999999",
 	}
 
-	addUser := &models.LoginReq{
-		Phone: "79166152595",
-		Code: "1234",
+	resp, err := useCase.SendCode(sendCodeReq)
+	assert.NoError(t, err)
+
+	mockUser := models.SendCodeUcaseResp{
+		IsRegistered: false,
+	}
+
+	if !reflect.DeepEqual(resp, mockUser) {
+		t.Errorf("results not match, want %v, have %v", resp, mockUser)
+		return
+	}
+}
+
+func TestUserUseCase_Login(t *testing.T) {
+	mockUserRepo := new(mock.UserRepository)
+	mockAuthCli := new(mockAuthCli.GrpcAuthHandler)
+	staticManager := localStaticManager.NewLocalFileManager("", "")
+	useCase := NewUcase(mockUserRepo, staticManager, mockAuthCli)
+
+	addUser := &models.LoginUcaseReq{
+		Phone: "79999999999",
+		Code:  "1234",
 	}
 
 	restData, err := useCase.Login(addUser)
-	require.NoError(t, err)
+	assert.NoError(t, err)
 
-	mockUser := &models.UserDataUsecase{
-		Id: 	models.UserId(data.User.Id),
-		Name:   data.User.Name,
-		Phone: 	data.User.Phone,
-		Email: 	data.User.Email,
-		Avatar: data.User.Avatar.String,
+	mockUser := &models.UserDataUcase{
+		Id:     1,
+		Name:   "Name",
+		Phone:  "79999999999",
+		Email:  "email@mail.com",
+		Avatar: "avatar.png",
 	}
 
 	if !reflect.DeepEqual(restData, mockUser) {
@@ -41,29 +65,26 @@ func TestUserUseCase_Login(t *testing.T) {
 }
 
 func TestUserUsecase_Register(t *testing.T) {
-	mockUserRepo := new(interfaces.UserRepository)
-	mockCacher := new(interfaces.Memcacher)
-	useCase := UserUsecase{
-		Cacher: 	mockCacher,
-		UserRepo: 	mockUserRepo,
-	}
+	mockUserRepo := new(mock.UserRepository)
+	mockAuthCli := new(mockAuthCli.GrpcAuthHandler)
+	staticManager := localStaticManager.NewLocalFileManager("", "")
+	useCase := NewUcase(mockUserRepo, staticManager, mockAuthCli)
 
-	user := &models.RegisterReq{
-		Phone: 	data.User.Phone,
-		Code: "1234",
-		Name:   data.User.Name,
-		Email: 	data.User.Email,
+	user := &models.RegisterUcaseReq{
+		Name:  "Name",
+		Phone: "79999999999",
+		Email: "email@mail.com",
 	}
 
 	restData, err := useCase.Register(user)
-	require.NoError(t, err)
+	assert.NoError(t, err)
 
-	mockUser := &models.UserDataUsecase{
-		Id: models.UserId(data.User.Id),
-		Name:   data.User.Name,
-		Phone: data.User.Phone,
-		Email: data.User.Email,
-		Avatar: "",
+	mockUser := &models.UserDataUcase{
+		Id:     1,
+		Name:   "Name",
+		Phone:  "79999999999",
+		Email:  "email@mail.com",
+		Avatar: "avatar.png",
 	}
 
 	if !reflect.DeepEqual(restData, mockUser) {
@@ -73,24 +94,22 @@ func TestUserUsecase_Register(t *testing.T) {
 }
 
 func TestUserUsecase_GetUser(t *testing.T) {
-	mockUserRepo := new(interfaces.UserRepository)
-	mockCacher := new(interfaces.Memcacher)
-	useCase := UserUsecase{
-		Cacher: 	mockCacher,
-		UserRepo: 	mockUserRepo,
-	}
+	mockUserRepo := new(mock.UserRepository)
+	mockAuthCli := new(mockAuthCli.GrpcAuthHandler)
+	staticManager := localStaticManager.NewLocalFileManager("", "")
+	useCase := NewUcase(mockUserRepo, staticManager, mockAuthCli)
 
 	user := models.UserId(1)
 
 	restData, err := useCase.GetUser(user)
-	require.NoError(t, err)
+	assert.NoError(t, err)
 
-	mockUser := &models.UserDataUsecase{
-		Id: models.UserId(data.User.Id),
-		Name:   data.User.Name,
-		Phone: data.User.Phone,
-		Email: data.User.Email,
-		Avatar:  data.User.Avatar.String,
+	mockUser := &models.UserDataUcase{
+		Id:     1,
+		Name:   "Name",
+		Phone:  "79999999999",
+		Email:  "email@mail.com",
+		Avatar: "avatar.png",
 	}
 
 	if !reflect.DeepEqual(restData, mockUser) {
@@ -100,29 +119,27 @@ func TestUserUsecase_GetUser(t *testing.T) {
 }
 
 func TestUserUsecase_UpdateUser(t *testing.T) {
-	mockUserRepo := new(interfaces.UserRepository)
-	mockCacher := new(interfaces.Memcacher)
-	useCase := UserUsecase{
-		Cacher: 	mockCacher,
-		UserRepo: 	mockUserRepo,
-	}
+	mockUserRepo := new(mock.UserRepository)
+	mockAuthCli := new(mockAuthCli.GrpcAuthHandler)
+	staticManager := localStaticManager.NewLocalFileManager("", "")
+	useCase := NewUcase(mockUserRepo, staticManager, mockAuthCli)
 
-	user := &models.UpdateUserUsecase{
-		Id: 	models.UserId(data.User.Id),
-		Name:   data.User.Name,
-		Email:  data.User.Email,
+	user := &models.UpdateUserUcase{
+		Id:        1,
+		Name:      "Name",
+		Email:     "email@mail.com",
 		AvatarImg: io.Reader(nil),
 	}
 
 	restData, err := useCase.UpdateUser(user)
-	require.NoError(t, err)
+	assert.NoError(t, err)
 
-	mockUser := &models.UserDataUsecase{
-		Id: models.UserId(data.User.Id),
-		Name:   data.User.Name,
-		Phone: data.User.Phone,
-		Email: data.User.Email,
-		Avatar:  data.User.Avatar.String,
+	mockUser := &models.UserDataUcase{
+		Id:     1,
+		Name:   "Name",
+		Phone:  "79999999999",
+		Email:  "email@mail.com",
+		Avatar: "avatar.png",
 	}
 
 	if !reflect.DeepEqual(restData, mockUser) {
@@ -130,28 +147,3 @@ func TestUserUsecase_UpdateUser(t *testing.T) {
 		return
 	}
 }
-
-//func TestUserUsecase_saveNewAvatar(t *testing.T) {
-//	mockUserRepo := new(interfaces.UserRepository)
-//	mockCacher := new(interfaces.Memcacher)
-//	useCase := UserUsecase{
-//		Cacher: 	mockCacher,
-//		UserRepo: 	mockUserRepo,
-//	}
-//
-//	restData, err := useCase.saveNewAvatar()
-//	require.NoError(t, err)
-//
-//	mockUser := &models.UserDataUsecase{
-//		Id: models.UserId(data.User.Id),
-//		Name:   data.User.Name,
-//		Phone: data.User.Phone,
-//		Email: data.User.Email,
-//		Avatar:  data.User.Avatar.String,
-//	}
-//
-//	if !reflect.DeepEqual(restData, mockUser) {
-//		t.Errorf("results not match, want %v, have %v", restData, mockUser)
-//		return
-//	}
-//}

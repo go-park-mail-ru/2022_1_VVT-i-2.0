@@ -1,16 +1,10 @@
 package models
 
-type Dish struct {
-	Id           int
-	RestaurantId string
-	Name         string
-	Description  string
-	Image_path   string
-	Calories     int
-	Price        int
+type GetRestaurantDishesRepoReq struct {
+	Id int
 }
 
-type DishDataStorage struct {
+type DishRepo struct {
 	Id           int
 	RestaurantId int `db:"restaurant_id"`
 	Name         string
@@ -19,6 +13,14 @@ type DishDataStorage struct {
 	Calories     int
 	Price        int
 	Weight       int
+}
+
+type GetRestaurantDishesRepoResp struct {
+	Dishes []DishRepo
+}
+
+type GetRestaurantDishesUcaseReq struct {
+	Slug string
 }
 
 type DishUcase struct {
@@ -32,12 +34,17 @@ type DishUcase struct {
 	Weight       int
 }
 
-type DishesDataStorage struct {
-	Dishes []DishDataStorage
-}
-
-type DishesUcase struct {
-	Dishes []DishUcase
+type GetRestaurantDishesUcaseResp struct {
+	Id                   int
+	Name                 string
+	ImagePath            string
+	Slug                 string
+	MinPrice             int
+	AggRating            int
+	ReviewCount          int
+	UpMinutsToDelivery   int
+	DownMinutsToDelivery int
+	Dishes               []DishUcase
 }
 
 type DishResp struct {
@@ -51,14 +58,14 @@ type DishResp struct {
 	Weight       int    `json:"weight"`
 }
 
-type RestaurantDishesResp struct {
-	Id            	int        	`json:"id"`
-	Name          	string     	`json:"restName"`
-	ImagePath     	string     	`json:"imgPath"`
-	Slug          	string     	`json:"slug"`
-	MinPrice      	int        	`json:"minPrice"`
-	Rating        	float64    	`json:"rating"`
-	TimeToDelivery 	string     	`json:"timeToDeliver"`
-	ReviewCount		int			`json:"reviewCount"`
-	Dishes         	[]DishResp 	`json:"dishes"`
+type GetRestaurantDishesResp struct {
+	Id             int        `json:"id"`
+	Name           string     `json:"restName"`
+	ImagePath      string     `json:"imgPath"`
+	Slug           string     `json:"slug"`
+	MinPrice       int        `json:"minPrice"`
+	Rating         float64    `json:"rating"`
+	TimeToDelivery string     `json:"timeToDeliver"`
+	ReviewCount    int        `json:"reviewCount"`
+	Dishes         []DishResp `json:"dishes"`
 }

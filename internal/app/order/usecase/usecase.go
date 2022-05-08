@@ -1,4 +1,4 @@
-package usecase
+package ucase
 
 import (
 	"context"
@@ -9,17 +9,17 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-type OrderUsecase struct {
+type OrderUcase struct {
 	OrderCli orderProto.OrderServiceClient
 }
 
-func NewUsecase(orderCli orderProto.OrderServiceClient) *OrderUsecase {
-	return &OrderUsecase{
+func NewUcase(orderCli orderProto.OrderServiceClient) *OrderUcase {
+	return &OrderUcase{
 		OrderCli: orderCli,
 	}
 }
 
-func (u *OrderUsecase) CreateOrder(order *models.OrderUcaseReq) (*models.OrderUcaseResp, error) {
+func (u *OrderUcase) CreateOrder(order *models.OrderUcaseReq) (*models.OrderUcaseResp, error) {
 	cart := make([]*orderProto.OrderPositionReq, len(order.Cart))
 	for i, position := range order.Cart {
 		cart[i] = &orderProto.OrderPositionReq{Id: position.Id, Count: position.Count}
@@ -31,7 +31,7 @@ func (u *OrderUsecase) CreateOrder(order *models.OrderUcaseReq) (*models.OrderUc
 	return &models.OrderUcaseResp{OrderId: orderResp.OrderId}, err
 }
 
-func (u *OrderUsecase) GetUserOrders(order *models.GetUserOrdersUcaseReq) (*models.GetUserOrdersUcaseResp, error) {
+func (u *OrderUcase) GetUserOrders(order *models.GetUserOrdersUcaseReq) (*models.GetUserOrdersUcaseResp, error) {
 	orders, err := u.OrderCli.GetUserOrders(context.Background(), &orderProto.GetUserOrdersReq{UserId: int64(order.UserId)})
 
 	if err != nil {
@@ -45,7 +45,7 @@ func (u *OrderUsecase) GetUserOrders(order *models.GetUserOrdersUcaseReq) (*mode
 	return &models.GetUserOrdersUcaseResp{Orders: ordersResp}, err
 }
 
-func (u *OrderUsecase) GetUserOrderStatuses(order *models.GetUserOrderStatusesUcaseReq) (*models.GetUserOrderStatusesUcaseResp, error) {
+func (u *OrderUcase) GetUserOrderStatuses(order *models.GetUserOrderStatusesUcaseReq) (*models.GetUserOrderStatusesUcaseResp, error) {
 	orders, err := u.OrderCli.GetUserOrderStatuses(context.Background(), &orderProto.GetUserOrderStatusesReq{UserId: int64(order.UserId)})
 
 	if err != nil {
@@ -59,7 +59,7 @@ func (u *OrderUsecase) GetUserOrderStatuses(order *models.GetUserOrderStatusesUc
 	return &models.GetUserOrderStatusesUcaseResp{OrderStatuses: ordersResp}, err
 }
 
-func (u *OrderUsecase) GetUserOrder(req *models.GetUserOrderUcaseReq) (*models.GetUserOrderUcaseResp, error) {
+func (u *OrderUcase) GetUserOrder(req *models.GetUserOrderUcaseReq) (*models.GetUserOrderUcaseResp, error) {
 	order, err := u.OrderCli.GetUserOrder(context.Background(), &orderProto.GetUserOrderReq{UserId: int64(req.UserId), OrderId: req.OrderId})
 
 	if err != nil {

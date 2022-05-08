@@ -16,13 +16,13 @@ import (
 )
 
 type DishesHandler struct {
-	Usecase       dishes.Usecase
+	Ucase         dishes.Ucase
 	StaticManager staticManager.FileManager
 }
 
-func NewDishesHandler(usecase dishes.Usecase, staticManager staticManager.FileManager) *DishesHandler {
+func NewDishesHandler(ucase dishes.Ucase, staticManager staticManager.FileManager) *DishesHandler {
 	return &DishesHandler{
-		Usecase:       usecase,
+		Ucase:         ucase,
 		StaticManager: staticManager,
 	}
 }
@@ -40,57 +40,44 @@ func (h DishesHandler) GetDishesByRestaurants(ctx echo.Context) error {
 	requestId := middleware.GetRequestIdFromCtx(ctx)
 
 	slug := ctx.Param("slug")
-	restaurantData, err := h.Usecase.GetRestaurantBySlug(slug)
+	if slug == "" {
+		return httpErrDescr.NewHTTPError(ctx, http.StatusBadRequest, httpErrDescr.INVALID_DATA)
+	}
+
+	restaurantDishes, err := h.Ucase.GetRestaurantDishes(models.GetRestaurantDishesUcaseReq{Slug: slug})
 
 	if err != nil {
 		cause := servErrors.ErrorAs(err)
 		if cause != nil && cause.Code == servErrors.NO_SUCH_ENTITY_IN_DB {
-			//return httpErrDescr.NewHTTPError(ctx, http.StatusForbidden, httpErrDescr.NO_SUCH_DISHES)
-			return httpErrDescr.NewHTTPError(ctx, http.StatusForbidden, httpErrDescr.NO_SUCH_DISHES)
-		}
-		logger.Error(requestId, err.Error())
-		//return httpErrDescr.NewHTTPError(ctx, http.StatusInternalServerError, httpErrDescr.SERVER_ERROR)
-		return httpErrDescr.NewHTTPError(ctx, http.StatusInternalServerError, httpErrDescr.SERVER_ERROR)
-	}
-
-	if restaurantData == nil {
-		logger.Error(requestId, "from user-usecase-get-user returned userData==nil and err==nil, unknown error")
-		return httpErrDescr.NewHTTPError(ctx, http.StatusInternalServerError, httpErrDescr.SERVER_ERROR)
-	}
-
-	dishesData, err := h.Usecase.GetDishesByRestaurant(restaurantData.Id)
-
-	if err != nil {
-		cause := servErrors.ErrorAs(err)
-		if cause != nil && cause.Code == servErrors.NO_SUCH_ENTITY_IN_DB {
-			return httpErrDescr.NewHTTPError(ctx, http.StatusForbidden, httpErrDescr.NO_SUCH_USER)
+			return httpErrDescr.NewHTTPError(ctx, http.StatusForbidden, httpErrDescr.NO_SUCH_RESTAURANT)
 		}
 		logger.Error(requestId, err.Error())
 		return httpErrDescr.NewHTTPError(ctx, http.StatusInternalServerError, httpErrDescr.SERVER_ERROR)
 	}
 
-	if dishesData == nil {
-		logger.Error(requestId, "from user-usecase-get-user returned userData==nil and err==nil, unknown error")
+	if restaurantDishes == nil {
+		logger.Error(requestId, "from user-ucase-get-user returned userData==nil and err==nil, unknown error")
 		return httpErrDescr.NewHTTPError(ctx, http.StatusInternalServerError, httpErrDescr.SERVER_ERROR)
 	}
 
 	rating := 0.0
-	if restaurantData.ReviewCount != 0 {
-		rating = math.Round(float64(restaurantData.AggRating)*10/float64(restaurantData.ReviewCount)) / 10
+	if restaurantDishes.ReviewCount != 0 {
+		rating = math.Round(float64(restaurantDishes.AggRating)*10/float64(restaurantDishes.ReviewCount)) / 10
 	}
-	restaurantD := &models.RestaurantDishesResp{
-		Id:             restaurantData.Id,
-		Name:           restaurantData.Name,
-		ImagePath:      h.StaticManager.GetRestaurantUrl(restaurantData.ImagePath),
-		Slug:           restaurantData.Slug,
-		MinPrice:       restaurantData.MinPrice,
+	resp := &models.GetRestaurantDishesResp{
+		Id:             restaurantDishes.Id,
+		Name:           restaurantDishes.Name,
+		ImagePath:      h.StaticManager.GetRestaurantUrl(restaurantDishes.ImagePath),
+		Slug:           restaurantDishes.Slug,
+		MinPrice:       restaurantDishes.MinPrice,
 		Rating:         rating,
-		ReviewCount: 	restaurantData.ReviewCount,
-		TimeToDelivery: strconv.Itoa(restaurantData.DownMinutsToDelivery) + "-" + strconv.Itoa(restaurantData.UpMinutsToDelivery),
+		ReviewCount:    restaurantDishes.ReviewCount,
+		TimeToDelivery: strconv.Itoa(restaurantDishes.DownMinutsToDelivery) + "-" + strconv.Itoa(restaurantDishes.UpMinutsToDelivery),
+		Dishes:         make([]models.DishResp, len(restaurantDishes.Dishes)),
 	}
 
-	for _, dish := range dishesData.Dishes {
-		item := &models.DishResp{
+	for i, dish := range restaurantDishes.Dishes {
+		resp.Dishes[i] = models.DishResp{
 			Id:           dish.Id,
 			RestaurantId: dish.RestaurantId,
 			Name:         dish.Name,
@@ -100,10 +87,9 @@ func (h DishesHandler) GetDishesByRestaurants(ctx echo.Context) error {
 			Price:        dish.Price,
 			Weight:       dish.Weight,
 		}
-		restaurantD.Dishes = append(restaurantD.Dishes, *item)
 	}
 
-	result, _ := json.Marshal(restaurantD)
+	result, _ := json.Marshal(resp)
 	ctx.Response().Header().Add(echo.HeaderContentLength, strconv.Itoa(len(result)))
 	return ctx.JSONBlob(http.StatusOK, result)
 }

@@ -70,7 +70,7 @@ type ShortOrderRepo struct {
 }
 
 type GetUserOrdersRepoResp struct {
-	OrderStatuses []ShortOrderRepo
+	Orders []ShortOrderRepo
 }
 
 type GetUserOrderStatusesUcaseReq struct {

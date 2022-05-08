@@ -2,7 +2,6 @@ package repository
 
 import (
 	"database/sql"
-	"fmt"
 
 	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/models"
 	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/tools/servErrors"
@@ -15,21 +14,6 @@ type UserRepo struct {
 
 func NewUserRepo(db *sqlx.DB) *UserRepo {
 	return &UserRepo{DB: db}
-}
-
-func (r *UserRepo) GetUserByPhone(phone string) (*models.UserDataRepo, error) {
-	user := &models.UserDataRepo{}
-	err := r.DB.Get(user, `SELECT id, phone, email, name, avatar FROM users WHERE phone = $1`, phone)
-	fmt.Println(err)
-	fmt.Println(user)
-	switch err {
-	case nil:
-		return user, nil
-	case sql.ErrNoRows:
-		return nil, servErrors.NewError(servErrors.NO_SUCH_ENTITY_IN_DB, err.Error())
-	default:
-		return nil, servErrors.NewError(servErrors.DB_ERROR, err.Error())
-	}
 }
 
 func (r *UserRepo) GetUserById(id models.UserId) (*models.UserDataRepo, error) {
@@ -78,23 +62,5 @@ func (r *UserRepo) UpdateUser(updUser *models.UpdateUserStorage) (*models.UserDa
 		}
 		return nil, servErrors.NewError(servErrors.DB_UPDATE, err.Error())
 	}
-	//if count, _ := result.RowsAffected(); count != 1 {
-	//	return nil, servErrors.NewError(servErrors.DB_UPDATE, "")
-	//}
 	return user, nil
-}
-
-func (r *UserRepo) HasUserByPhone(phone string) (bool, error) {
-	user := &models.UserDataRepo{}
-	err := r.DB.Get(user, `SELECT id FROM users WHERE phone = $1`, phone)
-	fmt.Println(err)
-	fmt.Println(user)
-	switch err {
-	case nil:
-		return true, nil
-	case sql.ErrNoRows:
-		return false, nil
-	default:
-		return false, servErrors.NewError(servErrors.DB_ERROR, err.Error())
-	}
 }

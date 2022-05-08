@@ -79,7 +79,7 @@ func (r *OrderRepo) GetUserOrders(user *models.GetUserOrdersRepoReq) (*models.Ge
 	}
 	switch err {
 	case nil:
-		return &models.GetUserOrdersRepoResp{OrderStatuses: ordersResp}, nil
+		return &models.GetUserOrdersRepoResp{Orders: ordersResp}, nil
 	case sql.ErrNoRows:
 		return nil, servErrors.NewError(servErrors.NO_SUCH_ENTITY_IN_DB, err.Error())
 	default:

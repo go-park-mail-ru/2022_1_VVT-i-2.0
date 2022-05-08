@@ -9,10 +9,9 @@ import (
 )
 
 const (
-	phoneRegexp = `^7[94][0-9]{9}$`
-	// nameRegexp  = `^[a-zA-Zа-яА-Я \-]{,256}$`
-	nameRegexp = `^[A-ZА-Я]{1}[a-zа-я]{2,25}$`
-	// addressRegexp = `^[a-zA-Zа-яА-Я0-9 \-\/,.]{,256}$` // TODO: составить норм регулярки
+	phoneRegexp   = `^7[94][0-9]{9}$`
+	nameRegexp    = `^[A-ZА-Я]{1}[a-zа-я]{2,25}$`
+	addressRegexp = `^[a-zA-Zа-яА-Я0-9 \,\.\/\-]{0,256}$` // TODO: составить норм регулярки
 	// commentRegexp = `^[a-zA-Zа-яА-Я0-9 \-\/,.]{,512}$` // TODO: составить норм регулярки
 )
 
@@ -27,20 +26,18 @@ func init() {
 
 			isName, _ := regexp.MatchString(nameRegexp, name)
 			return isName
-			// return true
 		}),
 	)
 	govalidator.CustomTypeTagMap.Set(
 		"address",
 		govalidator.CustomTypeValidator(func(i interface{}, o interface{}) bool {
-			// 	addr, ok := i.(string)
-			// 	if !ok {
-			// 		return false
-			// 	}
+			addr, ok := i.(string)
+			if !ok {
+				return false
+			}
 
-			// 	isAddr, _ := regexp.MatchString(addressRegexp, addr)
-			// 	return isAddr
-			return true
+			isAddr, _ := regexp.MatchString(addressRegexp, addr)
+			return isAddr
 		}),
 	)
 	govalidator.CustomTypeTagMap.Set(

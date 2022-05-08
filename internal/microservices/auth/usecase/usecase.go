@@ -1,4 +1,4 @@
-package usecase
+package ucase
 
 import (
 	"crypto/rand"

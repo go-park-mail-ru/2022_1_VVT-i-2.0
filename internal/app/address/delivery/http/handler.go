@@ -1,7 +1,5 @@
 package suggestHandler
 
-// отклонять слишком длиннные запросы
-
 import (
 	"net/http"
 
@@ -15,34 +13,31 @@ import (
 )
 
 type SuggsHandler struct {
-	Usecase addr.Usecase
+	Ucase addr.Ucase
 }
 
-func NewSuggsHandler(usecase addr.Usecase) *SuggsHandler {
+func NewSuggsHandler(ucase addr.Ucase) *SuggsHandler {
 	return &SuggsHandler{
-		Usecase: usecase,
+		Ucase: ucase,
 	}
 }
 
 func (h SuggsHandler) Suggest(ctx echo.Context) error {
-	// TODO отключить auth-middleware
-	// TODO добавить валидацию адреса
 	logger := middleware.GetLoggerFromCtx(ctx)
 	requestId := middleware.GetRequestIdFromCtx(ctx)
 	var suggsReq models.SuggestReq
 	suggsReq.Address = ctx.QueryParam("q")
-	// fmt.Println(suggsReq)
-	// fmt.Println(ctx.Request().URL.Query())
 	if _, err := govalidator.ValidateStruct(suggsReq); err != nil {
 		return httpErrDescr.NewHTTPError(ctx, http.StatusBadRequest, httpErrDescr.INVALID_DATA)
 	}
 
-	suggsResp, err := h.Usecase.Suggest(&suggsReq)
+	suggsResp, err := h.Ucase.Suggest(&models.SuggestUcaseReq{Address: suggsReq.Address})
 
 	if err != nil {
 		logger.Error(requestId, err.Error())
+		return httpErrDescr.NewHTTPError(ctx, http.StatusInternalServerError, httpErrDescr.SERVER_ERROR)
 	}
 
-	return ctx.JSON(http.StatusOK, suggsResp)
+	return ctx.JSON(http.StatusOK, models.SuggestResp{AddressFull: suggsResp.AddressFull, Suggests: suggsResp.Suggests})
 
 }

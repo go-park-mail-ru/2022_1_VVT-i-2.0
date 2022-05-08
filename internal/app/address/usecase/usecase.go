@@ -1,7 +1,6 @@
-package usecase
+package ucase
 
 import (
-	"fmt"
 	"regexp"
 	"strings"
 	"unicode/utf8"
@@ -13,13 +12,13 @@ import (
 	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/tools/servErrors"
 )
 
-type AddrUsecase struct {
+type AddrUcase struct {
 	AddrRepo      addr.Repository
 	replaceRegexp regexp.Regexp
 }
 
-func NewAddrUsecase(repo addr.Repository) *AddrUsecase {
-	return &AddrUsecase{
+func NewAddrUcase(repo addr.Repository) *AddrUcase {
+	return &AddrUcase{
 		AddrRepo:      repo,
 		replaceRegexp: *regexp.MustCompile(toDeleteRegexp),
 	}
@@ -44,28 +43,29 @@ type addressT struct {
 	toComplite int
 }
 
-func (u *AddrUsecase) parseAddress(addrStr string) *addressT {
+func (u *AddrUcase) parseAddress(addrStr string) *addressT {
 	addrStr = string(u.replaceRegexp.ReplaceAll([]byte(addrStr), []byte(" ")))
 	addrParts := strings.Split(addrStr, separator)
 	for i := range addrParts {
 		addrParts[i] = strings.TrimSpace(addrParts[i])
 	}
-	switch len(addrParts) {
+	switch len(addrParts) - 1 {
 	case 0:
 		return &addressT{
 			toComplite: city,
 		}
 	case 1:
 		return &addressT{
-			street:     addrParts[0],
-			toComplite: street,
-		}
-	case 2:
-		return &addressT{
 			city:       addrParts[0],
 			street:     addrParts[1],
 			toComplite: street,
 		}
+	// case 2:
+	// 	return &addressT{
+	// 		city:       addrParts[0],
+	// 		street:     addrParts[1],
+	// 		toComplite: street,
+	// 	}
 
 	default:
 		return &addressT{
@@ -77,11 +77,11 @@ func (u *AddrUsecase) parseAddress(addrStr string) *addressT {
 	}
 }
 
-func (u *AddrUsecase) suggestCity() (*models.SuggestResp, error) {
-	return &models.SuggestResp{Suggests: defaultRes}, nil
+func (u *AddrUcase) suggestCity() (*models.SuggestUcaseResp, error) {
+	return &models.SuggestUcaseResp{Suggests: defaultRes}, nil
 }
 
-func (u *AddrUsecase) suggestStreet(address addressT) (*models.SuggestResp, error) {
+func (u *AddrUcase) suggestStreet(address addressT) (*models.SuggestUcaseResp, error) {
 	city, err := u.AddrRepo.GetCity(address.city)
 	if err != nil {
 		cause := servErrors.ErrorAs(err)
@@ -104,7 +104,6 @@ func (u *AddrUsecase) suggestStreet(address addressT) (*models.SuggestResp, erro
 	for i := 0; i < 3 && suggs == nil && pozToCut >= 0; i++ {
 
 		street := []rune(address.street[:(pozToCut)])
-		fmt.Println(string(street))
 		suggs, err = u.AddrRepo.SuggestStreet(&models.SuggestStreetRepoInput{Street: string(street)})
 		if len(address.street)-i*3 <= 0 {
 			break
@@ -121,14 +120,14 @@ func (u *AddrUsecase) suggestStreet(address addressT) (*models.SuggestResp, erro
 	if suggs == nil {
 		return nil, errors.Wrap(err, "error suggesting street")
 	}
-	var suggsResp models.SuggestResp
+	var suggsResp models.SuggestUcaseResp
 	for _, addr := range suggs.StreetSuggests {
 		suggsResp.Suggests = append(suggsResp.Suggests, city.Name+separator+" "+addr+", ")
 	}
 	return &suggsResp, err
 }
 
-func (u *AddrUsecase) suggestHouse(address addressT) (*models.SuggestResp, error) {
+func (u *AddrUcase) suggestHouse(address addressT) (*models.SuggestUcaseResp, error) {
 	city, err := u.AddrRepo.GetCity(address.city)
 	if err != nil {
 		cause := servErrors.ErrorAs(err)
@@ -164,7 +163,7 @@ func (u *AddrUsecase) suggestHouse(address addressT) (*models.SuggestResp, error
 
 	house, err := u.AddrRepo.GetHouse(&models.GetHouseRepoInput{StreetId: street.StreetId, House: address.house})
 	if err == nil && house != nil && house.House != "" {
-		return &models.SuggestResp{Suggests: []string{city.Name + separator + " " + street.Name + ", " + house.House}, AddressFull: true}, nil
+		return &models.SuggestUcaseResp{Suggests: []string{city.Name + separator + " " + street.Name + ", " + house.House}, AddressFull: true}, nil
 	}
 
 	var suggs *models.SuggestHouseRepoAnsw
@@ -184,7 +183,7 @@ func (u *AddrUsecase) suggestHouse(address addressT) (*models.SuggestResp, error
 	if suggs == nil {
 		return nil, errors.Wrap(err, "error suggesting house")
 	}
-	var suggsResp models.SuggestResp
+	var suggsResp models.SuggestUcaseResp
 	for _, house := range suggs.HouseSuggests {
 		suggsResp.Suggests = append(suggsResp.Suggests, city.Name+separator+" "+street.Name+", "+house)
 	}
@@ -192,7 +191,10 @@ func (u *AddrUsecase) suggestHouse(address addressT) (*models.SuggestResp, error
 	return &suggsResp, err
 }
 
-func (u *AddrUsecase) Suggest(address *models.SuggestReq) (*models.SuggestResp, error) {
+func (u *AddrUcase) Suggest(address *models.SuggestUcaseReq) (*models.SuggestUcaseResp, error) {
+	if address == nil {
+		return u.suggestCity()
+	}
 	addr := u.parseAddress(address.Address)
 	if addr == nil {
 		return u.suggestCity()

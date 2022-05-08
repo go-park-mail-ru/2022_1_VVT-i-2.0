@@ -16,13 +16,13 @@ import (
 )
 
 type RestaurantsHandler struct {
-	Usecase       restaurants.Usecase
+	Ucase         restaurants.Ucase
 	StaticManager staticManager.FileManager
 }
 
-func NewRestaurantsHandler(usecase restaurants.Usecase, staticManager staticManager.FileManager) *RestaurantsHandler {
+func NewRestaurantsHandler(ucase restaurants.Ucase, staticManager staticManager.FileManager) *RestaurantsHandler {
 	return &RestaurantsHandler{
-		Usecase:       usecase,
+		Ucase:         ucase,
 		StaticManager: staticManager,
 	}
 }
@@ -39,30 +39,29 @@ func (h RestaurantsHandler) GetAllRestaurants(ctx echo.Context) error {
 	logger := middleware.GetLoggerFromCtx(ctx)
 	requestId := middleware.GetRequestIdFromCtx(ctx)
 
-	restaurantsDataDelivery, err := h.Usecase.GetAllRestaurants()
+	ucaseRest, err := h.Ucase.GetAllRestaurants()
 
 	if err != nil {
 		cause := servErrors.ErrorAs(err)
 		if cause != nil && cause.Code == servErrors.NO_SUCH_ENTITY_IN_DB {
-			//return httpErrDescr.NewHTTPError(ctx, http.StatusForbidden, httpErrDescr.NO_SUCH_RESTAURANTS)
 			return httpErrDescr.NewHTTPError(ctx, http.StatusForbidden, httpErrDescr.NO_SUCH_RESTAURANTS)
 		}
 		logger.Error(requestId, err.Error())
 		return httpErrDescr.NewHTTPError(ctx, http.StatusInternalServerError, httpErrDescr.SERVER_ERROR)
 	}
 
-	if restaurantsDataDelivery == nil {
+	if ucaseRest == nil {
 		logger.Error(requestId, "from restaurants-handler-getall returned restaurantsDataDelivery==nil and err==nil, unknown error")
 		return httpErrDescr.NewHTTPError(ctx, http.StatusInternalServerError, httpErrDescr.SERVER_ERROR)
 	}
 
-	restaurantsD := &models.AllRestaurantsResp{}
-	for _, rest := range restaurantsDataDelivery.Restaurants {
+	restaurantsResp := &models.AllRestaurantsResp{Restaurants: make([]models.RestaurantResp, len(ucaseRest.Restaurants))}
+	for i, rest := range ucaseRest.Restaurants {
 		rating := 0.0
 		if rest.ReviewCount != 0 {
 			rating = math.Round(float64(rest.AggRating)*10/float64(rest.ReviewCount)) / 10
 		}
-		item := models.RestaurantResp{
+		restaurantsResp.Restaurants[i] = models.RestaurantResp{
 			Id:             rest.Id,
 			Name:           rest.Name,
 			ImagePath:      h.StaticManager.GetRestaurantUrl(rest.ImagePath),
@@ -71,10 +70,9 @@ func (h RestaurantsHandler) GetAllRestaurants(ctx echo.Context) error {
 			Rating:         rating,
 			TimeToDelivery: strconv.Itoa(rest.DownMinutsToDelivery) + "-" + strconv.Itoa(rest.UpMinutsToDelivery),
 		}
-		restaurantsD.Restaurants = append(restaurantsD.Restaurants, item)
 	}
 
-	result, _ := json.Marshal(restaurantsD.Restaurants)
+	result, _ := json.Marshal(restaurantsResp.Restaurants)
 	ctx.Response().Header().Add(echo.HeaderContentLength, strconv.Itoa(len(result)))
 	return ctx.JSONBlob(http.StatusOK, result)
 }
@@ -83,7 +81,7 @@ func (h RestaurantsHandler) GetRestaurantsByCategory(ctx echo.Context, category 
 	logger := middleware.GetLoggerFromCtx(ctx)
 	requestId := middleware.GetRequestIdFromCtx(ctx)
 
-	restaurantsDataDelivery, err := h.Usecase.GetRestaurantsByCategory(models.GetRestaurantByCategoryUcaseReq{Name: category})
+	ucaseResp, err := h.Ucase.GetRestaurantsByCategory(models.GetRestaurantByCategoryUcaseReq{Name: category})
 
 	if err != nil {
 		cause := servErrors.ErrorAs(err)
@@ -95,18 +93,18 @@ func (h RestaurantsHandler) GetRestaurantsByCategory(ctx echo.Context, category 
 		return httpErrDescr.NewHTTPError(ctx, http.StatusInternalServerError, httpErrDescr.SERVER_ERROR)
 	}
 
-	if restaurantsDataDelivery == nil {
+	if ucaseResp == nil {
 		logger.Error(requestId, "from restaurants-handler-getall returned restaurantsDataDelivery==nil and err==nil, unknown error")
 		return httpErrDescr.NewHTTPError(ctx, http.StatusInternalServerError, httpErrDescr.SERVER_ERROR)
 	}
 
-	restaurantsD := &models.AllRestaurantsResp{}
-	for _, rest := range restaurantsDataDelivery.Restaurants {
+	restaurantsResp := &models.AllRestaurantsResp{Restaurants: make([]models.RestaurantResp, len(ucaseResp.Restaurants))}
+	for i, rest := range ucaseResp.Restaurants {
 		rating := 0.0
 		if rest.ReviewCount != 0 {
 			rating = math.Round(float64(rest.AggRating)*10/float64(rest.ReviewCount)) / 10
 		}
-		item := models.RestaurantResp{
+		restaurantsResp.Restaurants[i] = models.RestaurantResp{
 			Id:             rest.Id,
 			Name:           rest.Name,
 			ImagePath:      h.StaticManager.GetRestaurantUrl(rest.ImagePath),
@@ -115,10 +113,9 @@ func (h RestaurantsHandler) GetRestaurantsByCategory(ctx echo.Context, category 
 			Rating:         rating,
 			TimeToDelivery: strconv.Itoa(rest.DownMinutsToDelivery) + "-" + strconv.Itoa(rest.UpMinutsToDelivery),
 		}
-		restaurantsD.Restaurants = append(restaurantsD.Restaurants, item)
 	}
 
-	result, _ := json.Marshal(restaurantsD.Restaurants)
+	result, _ := json.Marshal(restaurantsResp.Restaurants)
 	ctx.Response().Header().Add(echo.HeaderContentLength, strconv.Itoa(len(result)))
 	return ctx.JSONBlob(http.StatusOK, result)
 }
@@ -127,7 +124,7 @@ func (h RestaurantsHandler) GetRestaurantsBySeachQuery(ctx echo.Context, query s
 	logger := middleware.GetLoggerFromCtx(ctx)
 	requestId := middleware.GetRequestIdFromCtx(ctx)
 
-	restaurantsDataDelivery, err := h.Usecase.GetRestaurantBySearchQuery(models.GetRestaurantBySearchQueryUcaseReq{Query: query})
+	ucaseResp, err := h.Ucase.GetRestaurantBySearchQuery(models.GetRestaurantBySearchQueryUcaseReq{Query: query})
 
 	if err != nil {
 		cause := servErrors.ErrorAs(err)
@@ -138,18 +135,18 @@ func (h RestaurantsHandler) GetRestaurantsBySeachQuery(ctx echo.Context, query s
 		return httpErrDescr.NewHTTPError(ctx, http.StatusInternalServerError, httpErrDescr.SERVER_ERROR)
 	}
 
-	if restaurantsDataDelivery == nil {
+	if ucaseResp == nil {
 		logger.Error(requestId, "from restaurants-handler-getall returned restaurantsDataDelivery==nil and err==nil, unknown error")
 		return httpErrDescr.NewHTTPError(ctx, http.StatusInternalServerError, httpErrDescr.SERVER_ERROR)
 	}
 
-	restaurantsD := &models.AllRestaurantsResp{}
-	for _, rest := range restaurantsDataDelivery.Restaurants {
+	restaurantsResp := &models.AllRestaurantsResp{Restaurants: make([]models.RestaurantResp, len(ucaseResp.Restaurants))}
+	for i, rest := range ucaseResp.Restaurants {
 		rating := 0.0
 		if rest.ReviewCount != 0 {
 			rating = math.Round(float64(rest.AggRating)*10/float64(rest.ReviewCount)) / 10
 		}
-		item := models.RestaurantResp{
+		restaurantsResp.Restaurants[i] = models.RestaurantResp{
 			Id:             rest.Id,
 			Name:           rest.Name,
 			ImagePath:      h.StaticManager.GetRestaurantUrl(rest.ImagePath),
@@ -158,24 +155,12 @@ func (h RestaurantsHandler) GetRestaurantsBySeachQuery(ctx echo.Context, query s
 			Rating:         rating,
 			TimeToDelivery: strconv.Itoa(rest.DownMinutsToDelivery) + "-" + strconv.Itoa(rest.UpMinutsToDelivery),
 		}
-		restaurantsD.Restaurants = append(restaurantsD.Restaurants, item)
 	}
 
-	// fmt.Println(restaurantsD.Restaurants)
-	// if len(restaurantsD.Restaurants) {
-	// return ctx.JSON(http.StatusOK, re)
-	// }
-	// fmt.Println(len(restaurantsD.Restaurants))
-	result, _ := json.Marshal(restaurantsD.Restaurants)
-	// fmt.Println("=============")
-	// fmt.Println(result)
+	result, _ := json.Marshal(restaurantsResp.Restaurants)
 	ctx.Response().Header().Add(echo.HeaderContentLength, strconv.Itoa(len(result)))
 	return ctx.JSONBlob(http.StatusOK, result)
 }
-
-// если есть параметр категории -- вываливать категорию
-// если есть параметр поска делать поиск по категории или по ресторанам
-// иначе вываливать все
 
 func (h RestaurantsHandler) GetAllRestaurantsMain(ctx echo.Context) error {
 	searhQuery := ctx.QueryParam("q")
@@ -191,7 +176,3 @@ func (h RestaurantsHandler) GetAllRestaurantsMain(ctx echo.Context) error {
 
 	return h.GetAllRestaurants(ctx)
 }
-
-//func (h RestaurantsHandler) GetMetriks(ctx echo.Context) error {
-//	return promhttp.Handler()
-//}
