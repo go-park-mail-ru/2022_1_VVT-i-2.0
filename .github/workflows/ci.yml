@@ -14,12 +14,13 @@ jobs:
       - name: Login to DockerHub Registry
         run: echo ${{ secrets.DOCKERHUB_PASSWORD }} | docker login -u ${{ secrets.DOCKERHUB_USERNAME }} --password-stdin
       - name: Build Docker image
-        run: docker build -t yutfut/vvti_back:1 .
-      - name: Push the image
-        run: docker push yutfut/vvti_back:1
-#        run: docker build -t yutfut/vvti_back:${GITHUB_SHA::8} .
+#        run: docker build -t yutfut/vvti_back:1 .
 #      - name: Push the image
-#        run: docker push yutfut/vvti_back:${GITHUB_SHA::8}
+#        run: docker push yutfut/vvti_back:1
+        run: docker build -f=Dockerfile -t yutfut/vvti_back:${GITHUB_SHA::8} .
+      - name: Push the image
+        run: docker push yutfut/vvti_back:${GITHUB_SHA::8}
+
 
   deploy:
     runs-on: ubuntu-latest
@@ -34,6 +35,8 @@ jobs:
           key: ${{ secrets.PRIVATE_KEY }}
           script: |
             cd VVTI-Static/
+            touch .env
+            echo VERSION=${GITHUB_SHA::8} >> .env
             sudo docker-compose stop
             sudo docker rm -f $(sudo docker ps -aq)
             sudo docker-compose up -d
