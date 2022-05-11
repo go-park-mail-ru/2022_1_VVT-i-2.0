@@ -12,6 +12,23 @@ type RestaurantRepo struct {
 	DownMinutsToDelivery int `db:"down_time_to_delivery"`
 }
 
+type Categories struct {
+	Categories	[]string	`db:"categories"`
+}
+
+type RestaurantCategoriesRepo struct {
+	Id                  	int 		`db:"id"`
+	Name                	string
+	ImagePath           	string		`db:"image_path"`
+	Slug                 	string
+	MinPrice             	int 		`db:"min_price"`
+	AggRating            	int 		`db:"agg_rating"`
+	ReviewCount          	int 		`db:"review_count"`
+	UpMinutsToDelivery   	int 		`db:"up_time_to_delivery"`
+	DownMinutsToDelivery	int 		`db:"down_time_to_delivery"`
+	//Categories				[]string	`db:"categories"`
+}
+
 type RestaurantsRepo struct {
 	Restaurants []RestaurantRepo
 }
