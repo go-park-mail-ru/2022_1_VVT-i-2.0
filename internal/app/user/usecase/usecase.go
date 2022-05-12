@@ -18,9 +18,11 @@ import (
 // TODO: удалить
 var LOGIN_CODE string
 
-// avatarSide           = 300
-// avatarSide = 30
-// )
+const (
+	avatarSide        = 300
+	defaultAvatarName = ""
+	// avatarSide = 30
+)
 
 type UserUcase struct {
 	UserRepo      user.Repository
@@ -82,6 +84,8 @@ func (u *UserUcase) UpdateUser(updates *models.UpdateUserUcase) (*models.UserDat
 		if err != nil {
 			return nil, errors.Wrap(err, "error saving new avatar to server")
 		}
+	} else {
+		newAvatarName = defaultAvatarName
 	}
 	updUser, err := u.UserRepo.UpdateUser(&models.UpdateUserStorage{Id: updates.Id, Email: updates.Email, Name: updates.Name, Avatar: newAvatarName})
 	if err != nil {
@@ -125,6 +129,13 @@ func (u *UserUcase) saveNewAvatar(avatar io.Reader) (string, error) {
 	if avatarName == "" {
 		return "", servErrors.NewError(servErrors.CANT_CREATE_AVATAR_NAME, "")
 	}
+
+	if avatarImg.Bounds().Max.X < avatarImg.Bounds().Max.Y {
+		avatarImg = imaging.CropAnchor(avatarImg, avatarImg.Bounds().Max.X, avatarImg.Bounds().Max.X, imaging.Center)
+	} else {
+		avatarImg = imaging.CropAnchor(avatarImg, avatarImg.Bounds().Max.Y, avatarImg.Bounds().Max.Y, imaging.Center)
+	}
+	avatarImg = imaging.Resize(avatarImg, avatarSide, avatarSide, imaging.Lanczos)
 
 	err = u.StaticManager.SafeAvatar(avatarImg, avatarName)
 	if err != nil {

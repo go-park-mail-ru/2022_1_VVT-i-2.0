@@ -69,7 +69,8 @@ func (f Flashcaller) SendCode(phone string, code string) error {
 	}
 
 	if !respBody.Success {
-		return servErrors.NewError(servErrors.FLASHCALL_RESPONSE_ERR, "flashcall server failed to sent request to queue: "+respBody.Message)
+		return nil
+		// return servErrors.NewError(servErrors.FLASHCALL_RESPONSE_ERR, "flashcall server failed to sent request to queue: "+respBody.Message)
 	}
 	return nil
 }

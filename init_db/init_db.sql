@@ -1,11 +1,11 @@
 DROP TABLE IF EXISTS restaurants CASCADE;
+DROP TABLE IF EXISTS orders_internal CASCADE ;
 DROP TABLE IF EXISTS users CASCADE;
 DROP TABLE IF EXISTS dishes CASCADE;
 DROP TABLE IF EXISTS comments CASCADE;
 DROP TABLE IF EXISTS streets CASCADE;
 DROP TABLE IF EXISTS houses CASCADE;
 DROP TYPE  IF EXISTS order_dish CASCADE ;
-DROP TABLE IF EXISTS orders_internal CASCADE ;
 DROP TABLE IF EXISTS statuses CASCADE;
 DROP TABLE IF EXISTS orders CASCADE;
 DROP TABLE IF EXISTS orders_internal CASCADE;
@@ -6508,11 +6508,11 @@ CREATE TABLE users (
     avatar VARCHAR(256)
 );
 
-INSERT INTO users(name,email,phone,avatar) VALUES
-('Наташа',E'nat-s.skv@mail.ru',79015020456,E'14bebe05-c195-11ec-9965-b4a9fc21a966.png'),
-('Кирилл',E'katashinsky-k@yandex.ru',79040666020,E''),
-('Андрей',E'diakonovA@gmail.com',79877434370,E''),
-('Андрей',E'easyfake@gmail.com',79999999999,E'');
+INSERT INTO users(name,email,phone) VALUES
+('Наташа',E'nat-s.skv@mail.ru',79015020456),
+('Кирилл',E'katashinsky-k@yandex.ru',79040666020),
+('Андрей',E'diakonovA@gmail.com',79877434370),
+('Андрей',E'easyfake@gmail.com',79999999999);
 
 
 -- --------------------------STREETS AND HOUSES------------------------------------
