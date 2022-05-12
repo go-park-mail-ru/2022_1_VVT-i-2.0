@@ -19,7 +19,8 @@ import (
 var LOGIN_CODE string
 
 const (
-	avatarSide = 300
+	avatarSide        = 300
+	defaultAvatarName = ""
 	// avatarSide = 30
 )
 
@@ -83,6 +84,8 @@ func (u *UserUcase) UpdateUser(updates *models.UpdateUserUcase) (*models.UserDat
 		if err != nil {
 			return nil, errors.Wrap(err, "error saving new avatar to server")
 		}
+	} else {
+		newAvatarName = defaultAvatarName
 	}
 	updUser, err := u.UserRepo.UpdateUser(&models.UpdateUserStorage{Id: updates.Id, Email: updates.Email, Name: updates.Name, Avatar: newAvatarName})
 	if err != nil {
