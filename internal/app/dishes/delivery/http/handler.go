@@ -72,13 +72,13 @@ func (h DishesHandler) GetDishesByRestaurants(ctx echo.Context) error {
 		Rating:         rating,
 		ReviewCount:    restaurantDishes.ReviewCount,
 		TimeToDelivery: strconv.Itoa(restaurantDishes.DownMinutsToDelivery) + "-" + strconv.Itoa(restaurantDishes.UpMinutsToDelivery),
-		Dishes: 		make([]models.CategoriesDishes, len(restaurantDishes.Dishes)),
+		Dishes: 		make([]models.CategoriesDishesDelivery, len(restaurantDishes.Dishes)),
 	}
 
 	for i, item := range restaurantDishes.Dishes {
 		resp.Dishes[i].Categories = item.Categories
 		for _, item1 := range item.Dishes {
-			var diSH = models.DishCategoriRepo{
+			var dish = models.DishCategoriRepo{
 				Id:           item1.Id,
 				Categori:     item1.Categori,
 				RestaurantId: item1.RestaurantId,
@@ -89,7 +89,7 @@ func (h DishesHandler) GetDishesByRestaurants(ctx echo.Context) error {
 				Price:        item1.Price,
 				Weight:       item1.Weight,
 			}
-			resp.Dishes[i].Dishes = append(resp.Dishes[i].Dishes, diSH)
+			resp.Dishes[i].Dishes = append(resp.Dishes[i].Dishes, dish)
 		}
 
 	}

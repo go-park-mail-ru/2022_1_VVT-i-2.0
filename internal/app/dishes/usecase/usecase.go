@@ -42,13 +42,11 @@ func (u *DishesUcase) GetRestaurantDishes(req models.GetRestaurantDishesUcaseReq
 			ReviewCount:          restaurant.ReviewCount,
 			UpMinutsToDelivery:   restaurant.UpMinutsToDelivery,
 			DownMinutsToDelivery: restaurant.DownMinutsToDelivery,
+			Dishes: 		make([]models.CategoriesDishesUcaseResp, len(categories.Categories)),
 	}
 
-	for _, item := range categories.Categories {
-		catDis := models.CategoriesDishes{
-			Categories: item,
-		}
-		Resp.Dishes = append(Resp.Dishes, catDis)
+	for i, item := range categories.Categories {
+		Resp.Dishes[i].Categories = item
 	}
 
 	for _, item := range dishes.Dishes {

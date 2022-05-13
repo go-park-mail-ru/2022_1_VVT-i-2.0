@@ -50,7 +50,7 @@ type DishUcase struct {
 	Weight       int
 }
 
-type CategoriesDishes struct {
+type CategoriesDishesUcaseResp struct {
 	Categories string
 	Dishes     []DishCategoriRepo
 }
@@ -65,7 +65,7 @@ type GetRestaurantDishesCategoriesUcaseResp struct {
 	ReviewCount          int
 	UpMinutsToDelivery   int
 	DownMinutsToDelivery int
-	Dishes               []CategoriesDishes
+	Dishes               []CategoriesDishesUcaseResp
 }
 
 type GetRestaurantDishesUcaseResp struct {
@@ -104,6 +104,11 @@ type GetRestaurantDishesResp struct {
 	Dishes         []DishResp `json:"dishes"`
 }
 
+type CategoriesDishesDelivery struct {
+	Categories string
+	Dishes     []DishCategoriRepo
+}
+
 type GetRestaurantDishesCategoriesResp struct {
 	Id             int        `json:"id"`
 	Name           string     `json:"restName"`
@@ -113,5 +118,5 @@ type GetRestaurantDishesCategoriesResp struct {
 	Rating         float64    `json:"rating"`
 	TimeToDelivery string     `json:"timeToDeliver"`
 	ReviewCount    int        `json:"reviewCount"`
-	Dishes         []CategoriesDishes `json:"dishes"`
+	Dishes         []CategoriesDishesDelivery `json:"dishes"`
 }
