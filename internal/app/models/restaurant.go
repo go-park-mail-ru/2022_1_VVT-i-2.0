@@ -12,10 +12,6 @@ type RestaurantRepo struct {
 	DownMinutsToDelivery int `db:"down_time_to_delivery"`
 }
 
-type Categories struct {
-	Categories	[]string	`db:"categories"`
-}
-
 type RestaurantCategoriesRepo struct {
 	Id                  	int 		`db:"id"`
 	Name                	string
@@ -77,8 +73,4 @@ type GetRestaurantBySearchQueryUcaseReq struct {
 
 type GetRestaurantBySearchQueryRepoReq struct {
 	Query string
-}
-
-type GetRestaurantBySlugRepoReq struct {
-	Slug string
 }

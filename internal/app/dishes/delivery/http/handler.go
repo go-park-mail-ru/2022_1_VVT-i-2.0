@@ -78,7 +78,7 @@ func (h DishesHandler) GetDishesByRestaurants(ctx echo.Context) error {
 	for i, item := range restaurantDishes.Dishes {
 		resp.Dishes[i].Categories = item.Categories
 		for _, item1 := range item.Dishes {
-			var dish = models.DishCategoriRepo{
+			var dish = models.DishCategoriesResp{
 				Id:           item1.Id,
 				Categori:     item1.Categori,
 				RestaurantId: item1.RestaurantId,

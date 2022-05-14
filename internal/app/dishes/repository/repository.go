@@ -16,8 +16,8 @@ func NewDishesRepo(db *sqlx.DB) *DishesRepo {
 	return &DishesRepo{DB: db}
 }
 
-func (r *DishesRepo) GetRestaurantBySlug(req models.GetRestaurantBySlugRepoReq) (*models.RestaurantRepo, error) {
-	restaurant := &models.RestaurantRepo{}
+func (r *DishesRepo) GetRestaurantBySlug(req models.GetRestaurantBySlugRepoReq) (*models.DishesRestaurantRepo, error) {
+	restaurant := &models.DishesRestaurantRepo{}
 	err := r.DB.Get(restaurant, "SELECT id, name,  image_path, slug, min_price, agg_rating, review_count, up_time_to_delivery, down_time_to_delivery FROM restaurants WHERE slug = $1", req.Slug)
 	switch err {
 	case nil:
@@ -29,9 +29,9 @@ func (r *DishesRepo) GetRestaurantBySlug(req models.GetRestaurantBySlugRepoReq) 
 	}
 }
 
-func (r *DishesRepo) GetCategories(id int) (*models.Categories, error) {
+func (r *DishesRepo) GetCategories(req models.GetCategoriesByIdRepoReq) (*models.Categories, error) {
 	var tags []string
-	if err := r.DB.QueryRow(`SELECT categories FROM restaurants WHERE id = $1`, id).Scan(pq.Array(&tags)); err != nil {
+	if err := r.DB.QueryRow(`SELECT categories FROM restaurants WHERE id = $1`, req.Id).Scan(pq.Array(&tags)); err != nil {
 		return nil, servErrors.NewError(servErrors.NO_SUCH_ENTITY_IN_DB, err.Error())
 	}
 	categories := &models.Categories{}
@@ -40,11 +40,11 @@ func (r *DishesRepo) GetCategories(id int) (*models.Categories, error) {
 }
 
 func (r *DishesRepo) GetRestaurantDishes(req models.GetRestaurantDishesRepoReq) (*models.GetRestaurantDishesCategoriesRepoResp, error) {
-	dishes := make([]*models.DishCategoriRepo, 0)
+	dishes := make([]*models.DishCategoriesRepo, 0)
 	err := r.DB.Select(&dishes, "SELECT id, restaurant_id, categori, name, description, image_path, calories, price, weight FROM dishes WHERE restaurant_id = $1", req.Id)
 	switch err {
 	case nil:
-		resp := &models.GetRestaurantDishesCategoriesRepoResp{Dishes: make([]models.DishCategoriRepo, len(dishes))}
+		resp := &models.GetRestaurantDishesCategoriesRepoResp{Dishes: make([]models.DishCategoriesRepo, len(dishes))}
 		for i, dish := range dishes {
 			resp.Dishes[i] = *dish
 		}

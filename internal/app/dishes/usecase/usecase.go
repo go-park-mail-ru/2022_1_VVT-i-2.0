@@ -22,12 +22,12 @@ func (u *DishesUcase) GetRestaurantDishes(req models.GetRestaurantDishesUcaseReq
 		return nil, errors.Wrap(err, "error getting restaurant")
 	}
 
-	categories, err := u.Repo.GetCategories(restaurant.Id)
+	categories, err := u.Repo.GetCategories(models.GetCategoriesByIdRepoReq{Id: models.Id(restaurant.Id)})
 	if err != nil {
 		return nil, errors.Wrap(err, "error getting restaurant categories")
 	}
 
-	dishes, err := u.Repo.GetRestaurantDishes(models.GetRestaurantDishesRepoReq{Id: restaurant.Id})
+	dishes, err := u.Repo.GetRestaurantDishes(models.GetRestaurantDishesRepoReq{Id: models.Id(restaurant.Id)})
 	if err != nil {
 		return nil, errors.Wrap(err, "error getting restaurant dishes")
 	}
