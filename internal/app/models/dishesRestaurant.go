@@ -21,15 +21,15 @@ type GetRestaurantDishesRepoReq struct {
 // Repository models
 
 type DishesRestaurantRepo struct {
-	Id                   int `db:"id"`
-	Name                 string
-	ImagePath            string `db:"image_path"`
-	Slug                 string
-	MinPrice             int `db:"min_price"`
-	AggRating            int `db:"agg_rating"`
-	ReviewCount          int `db:"review_count"`
-	UpMinutsToDelivery   int `db:"up_time_to_delivery"`
-	DownMinutsToDelivery int `db:"down_time_to_delivery"`
+	Id                   	int 	`db:"id"`
+	Name                 	string
+	ImagePath            	string	`db:"image_path"`
+	Slug                 	string
+	MinPrice            	int 	`db:"min_price"`
+	AggRating           	int 	`db:"agg_rating"`
+	ReviewCount          	int 	`db:"review_count"`
+	UpMinutesToDelivery   	int 	`db:"up_time_to_delivery"`
+	DownMinutesToDelivery	int		`db:"down_time_to_delivery"`
 }
 
 type Categories struct {
@@ -37,9 +37,9 @@ type Categories struct {
 }
 
 type DishCategoriesRepo struct {
-	Id          	int
-	Categori		int		`db:"categori"`
-	RestaurantId	int		`db:"restaurant_id"`
+	Id           	int
+	Category     	int `db:"category"`
+	RestaurantId 	int `db:"restaurant_id"`
 	Name        	string
 	Description 	string
 	ImagePath   	string	`db:"image_path"`
@@ -68,16 +68,16 @@ type CategoriesDishesUcaseResp struct {
 }
 
 type GetRestaurantDishesCategoriesUcaseResp struct {
-	Id                   int
-	Name                 string
-	ImagePath            string
-	Slug                 string
-	MinPrice             int
-	AggRating            int
-	ReviewCount          int
-	UpMinutsToDelivery   int
-	DownMinutsToDelivery int
-	Dishes               []CategoriesDishesUcaseResp
+	Id                  	int
+	Name                	string
+	ImagePath            	string
+	Slug                 	string
+	MinPrice             	int
+	AggRating            	int
+	ReviewCount          	int
+	UpMinutesToDelivery   	int
+	DownMinutesToDelivery	int
+	Dishes               	[]CategoriesDishesUcaseResp
 }
 
 //// Handler
@@ -85,9 +85,9 @@ type GetRestaurantDishesCategoriesUcaseResp struct {
 // models
 
 type DishCategoriesResp struct {
-	Id          	int   	`json:"id"`
-	Categori		int		`json:"categori"`
-	RestaurantId	int   	`json:"restaurant"`
+	Id           	int `json:"id"`
+	Category     	int `json:"category"`
+	RestaurantId 	int `json:"restaurant"`
 	Name        	string	`json:"productName"`
 	Description 	string	`json:"description"`
 	ImagePath   	string	`json:"imgPath"`
@@ -97,8 +97,8 @@ type DishCategoriesResp struct {
 }
 
 type CategoriesDishesDelivery struct {
-	Categories string
-	Dishes     []DishCategoriesResp
+	Category	string
+	Dishes		[]DishCategoriesResp
 }
 
 type GetRestaurantDishesCategoriesResp struct {

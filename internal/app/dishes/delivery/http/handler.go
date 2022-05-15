@@ -71,23 +71,23 @@ func (h DishesHandler) GetDishesByRestaurants(ctx echo.Context) error {
 		MinPrice:       restaurantDishes.MinPrice,
 		Rating:         rating,
 		ReviewCount:    restaurantDishes.ReviewCount,
-		TimeToDelivery: strconv.Itoa(restaurantDishes.DownMinutsToDelivery) + "-" + strconv.Itoa(restaurantDishes.UpMinutsToDelivery),
+		TimeToDelivery: strconv.Itoa(restaurantDishes.DownMinutesToDelivery) + "-" + strconv.Itoa(restaurantDishes.UpMinutesToDelivery),
 		Dishes: 		make([]models.CategoriesDishesDelivery, len(restaurantDishes.Dishes)),
 	}
 
 	for i, item := range restaurantDishes.Dishes {
-		resp.Dishes[i].Categories = item.Categories
+		resp.Dishes[i].Category = item.Categories
 		for _, item1 := range item.Dishes {
 			var dish = models.DishCategoriesResp{
-				Id:           item1.Id,
-				Categori:     item1.Categori,
-				RestaurantId: item1.RestaurantId,
-				Name:         item1.Name,
-				Description:  item1.Description,
-				ImagePath:    h.StaticManager.GetDishesUrl(item1.ImagePath),
-				Calories:     item1.Calories,
-				Price:        item1.Price,
-				Weight:       item1.Weight,
+				Id:           	item1.Id,
+				Category:    	item1.Category,
+				RestaurantId:	item1.RestaurantId,
+				Name:         	item1.Name,
+				Description:  	item1.Description,
+				ImagePath:    	h.StaticManager.GetDishesUrl(item1.ImagePath),
+				Calories:     	item1.Calories,
+				Price:        	item1.Price,
+				Weight:       	item1.Weight,
 			}
 			resp.Dishes[i].Dishes = append(resp.Dishes[i].Dishes, dish)
 		}
@@ -144,7 +144,7 @@ func (h DishesHandler) GetDishesByRestaurants(ctx echo.Context) error {
 //		MinPrice:       restaurantDishes.MinPrice,
 //		Rating:         rating,
 //		ReviewCount:    restaurantDishes.ReviewCount,
-//		TimeToDelivery: strconv.Itoa(restaurantDishes.DownMinutsToDelivery) + "-" + strconv.Itoa(restaurantDishes.UpMinutsToDelivery),
+//		TimeToDelivery: strconv.Itoa(restaurantDishes.DownMinutesToDelivery) + "-" + strconv.Itoa(restaurantDishes.UpMinutesToDelivery),
 //		Dishes:         make([]models.DishResp, len(restaurantDishes.Dishes)),
 //	}
 //

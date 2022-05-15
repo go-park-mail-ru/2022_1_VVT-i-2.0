@@ -33,16 +33,16 @@ func (u *DishesUcase) GetRestaurantDishes(req models.GetRestaurantDishesUcaseReq
 	}
 
 	Resp := &models.GetRestaurantDishesCategoriesUcaseResp{
-			Id:                   restaurant.Id,
-			Name:                 restaurant.Name,
-			ImagePath:            restaurant.ImagePath,
-			Slug:                 restaurant.Slug,
-			MinPrice:             restaurant.MinPrice,
-			AggRating:            restaurant.AggRating,
-			ReviewCount:          restaurant.ReviewCount,
-			UpMinutsToDelivery:   restaurant.UpMinutsToDelivery,
-			DownMinutsToDelivery: restaurant.DownMinutsToDelivery,
-			Dishes: 		make([]models.CategoriesDishesUcaseResp, len(categories.Categories)),
+			Id:                    restaurant.Id,
+			Name:                  restaurant.Name,
+			ImagePath:             restaurant.ImagePath,
+			Slug:                  restaurant.Slug,
+			MinPrice:              restaurant.MinPrice,
+			AggRating:             restaurant.AggRating,
+			ReviewCount:           restaurant.ReviewCount,
+			UpMinutesToDelivery:   restaurant.UpMinutesToDelivery,
+			DownMinutesToDelivery: restaurant.DownMinutesToDelivery,
+			Dishes:                make([]models.CategoriesDishesUcaseResp, len(categories.Categories)),
 	}
 
 	for i, item := range categories.Categories {
@@ -50,7 +50,7 @@ func (u *DishesUcase) GetRestaurantDishes(req models.GetRestaurantDishesUcaseReq
 	}
 
 	for _, item := range dishes.Dishes {
-		var car = item.Categori
+		var car = item.Category
 		Resp.Dishes[car-1].Dishes = append(Resp.Dishes[car-1].Dishes, item)
 	}
 
@@ -75,8 +75,8 @@ func (u *DishesUcase) GetRestaurantDishes(req models.GetRestaurantDishesUcaseReq
 //		MinPrice:             restaurant.MinPrice,
 //		AggRating:            restaurant.AggRating,
 //		ReviewCount:          restaurant.ReviewCount,
-//		UpMinutsToDelivery:   restaurant.UpMinutsToDelivery,
-//		DownMinutsToDelivery: restaurant.DownMinutsToDelivery,
+//		UpMinutesToDelivery:   restaurant.UpMinutesToDelivery,
+//		DownMinutesToDelivery: restaurant.DownMinutesToDelivery,
 //		Dishes:               make([]models.DishUcase, len(dishes.Dishes)),
 //	}
 //

@@ -1085,10 +1085,10 @@ create table dishes
     calories integer,
     weight integer,
     price integer,
-    categori integer
+    category integer
 );
 
-INSERT INTO dishes(restaurant_id, categori, name, price, description, weight, calories, image_path) VALUES
+INSERT INTO dishes(restaurant_id, category, name, price, description, weight, calories, image_path) VALUES
 (1994,1,E'Картофель фри',195,E'Картофель фри + кетчуп heinz.',150,647,E'331866890.jpeg'),
 (1994,1,E'Coca-cola',99,E'БЕЗАЛКОГОЛЬНЫЙ газированный напиток, производимый компанией "The coca-cola Company".',220,388,E'341593841.jpeg'),
 (1994,1,E'Филадельфия с лососем 8 шт',535,E'Рис, лосось, сыр сливочный, огурец свежий, водоросли нори.',240,690,E'341593773.jpeg'),

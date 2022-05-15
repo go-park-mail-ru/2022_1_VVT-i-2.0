@@ -44,7 +44,7 @@ func (r *RestaurantsRepo) GetRestaurantsByCategory(category models.GetRestaurant
 	}
 }
 
-func (r *RestaurantsRepo) GetRestaurantsBySeachQuery(query models.GetRestaurantBySearchQueryRepoReq) (*models.RestaurantsRepo, error) {
+func (r *RestaurantsRepo) GetRestaurantsBySearchQuery(query models.GetRestaurantBySearchQueryRepoReq) (*models.RestaurantsRepo, error) {
 	restaurants := make([]*models.RestaurantRepo, 0)
 	err := r.DB.Select(&restaurants, `SELECT r.id id, r.name, r.image_path image_path, r.slug slug, r.min_price min_price, r.agg_rating agg_rating, r.review_count review_count, up_time_to_delivery, down_time_to_delivery FROM restaurants r JOIN categori_restaurant cr ON r.id=cr.restaurant_id JOIN categories c ON cr.categori_id=c.id WHERE c.name ILIKE $1`, query.Query+"%")
 	if len(restaurants) == 0 {

@@ -1,5 +1,19 @@
 package models
 
+//// Repository
+
+// Repository request
+
+type GetRestaurantByCategoryRepoReq struct {
+	Name string
+}
+
+type GetRestaurantBySearchQueryRepoReq struct {
+	Query string
+}
+
+// Repository models
+
 type RestaurantRepo struct {
 	Id                   int `db:"id"`
 	Name                 string
@@ -12,22 +26,23 @@ type RestaurantRepo struct {
 	DownMinutsToDelivery int `db:"down_time_to_delivery"`
 }
 
-type RestaurantCategoriesRepo struct {
-	Id                  	int 		`db:"id"`
-	Name                	string
-	ImagePath           	string		`db:"image_path"`
-	Slug                 	string
-	MinPrice             	int 		`db:"min_price"`
-	AggRating            	int 		`db:"agg_rating"`
-	ReviewCount          	int 		`db:"review_count"`
-	UpMinutsToDelivery   	int 		`db:"up_time_to_delivery"`
-	DownMinutsToDelivery	int 		`db:"down_time_to_delivery"`
-	//Categories				[]string	`db:"categories"`
-}
-
 type RestaurantsRepo struct {
 	Restaurants []RestaurantRepo
 }
+
+//// UseCase
+
+// UseCase request
+
+type GetRestaurantByCategoryUcaseReq struct {
+	Name string
+}
+
+type GetRestaurantBySearchQueryUcaseReq struct {
+	Query string
+}
+
+// UseCase models
 
 type RestaurantUcase struct {
 	Id                   int
@@ -45,6 +60,8 @@ type RestaurantsUcase struct {
 	Restaurants []RestaurantUcase
 }
 
+//// Handler
+
 type RestaurantResp struct {
 	Id             int     `json:"id"`
 	Name           string  `json:"restName"`
@@ -57,20 +74,4 @@ type RestaurantResp struct {
 
 type AllRestaurantsResp struct {
 	Restaurants []RestaurantResp `json:"restaurants"`
-}
-
-type GetRestaurantByCategoryRepoReq struct {
-	Name string
-}
-
-type GetRestaurantByCategoryUcaseReq struct {
-	Name string
-}
-
-type GetRestaurantBySearchQueryUcaseReq struct {
-	Query string
-}
-
-type GetRestaurantBySearchQueryRepoReq struct {
-	Query string
 }

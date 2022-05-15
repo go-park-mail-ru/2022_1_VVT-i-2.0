@@ -50,7 +50,7 @@ func (u *RestaurantsUcase) GetRestaurantsByCategory(category models.GetRestauran
 
 func (u *RestaurantsUcase) GetRestaurantBySearchQuery(query models.GetRestaurantBySearchQueryUcaseReq) (*models.RestaurantsUcase, error) {
 	query.Query = strings.Trim(query.Query, " \n\t")
-	restaurantsRepoResp, err := u.RestaurantsRepo.GetRestaurantsBySeachQuery(models.GetRestaurantBySearchQueryRepoReq(query))
+	restaurantsRepoResp, err := u.RestaurantsRepo.GetRestaurantsBySearchQuery(models.GetRestaurantBySearchQueryRepoReq(query))
 	if err != nil {
 		return nil, errors.Wrapf(err, "error getting restaurants")
 	}
