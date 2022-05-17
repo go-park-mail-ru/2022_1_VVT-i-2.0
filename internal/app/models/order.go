@@ -6,16 +6,24 @@ type OrderPosition struct {
 }
 
 type OrderReq struct {
-	Address string          `json:"address" valid:"address,required"`
-	Comment string          `json:"comment" valid:"comment"` //TODO валидатор сделать
-	Cart    []OrderPosition `json:"cart" valid:"required"`
+	Address  string          `json:"address" valid:"address,required"`
+	Entrance string          `json:"entrance" valid:"utfletternum"`
+	Intercom string          `json:"intercom" valid:"utfletternum"`
+	Floor    string          `json:"floor" valid:"utfletternum"`
+	Flat     string          `json:"flat" valid:"utfletternum"`
+	Comment  string          `json:"comment" valid:"comment"`
+	Cart     []OrderPosition `json:"cart" valid:"required"`
 }
 
 type OrderUcaseReq struct {
-	UserId  UserId
-	Address string
-	Comment string
-	Cart    []OrderPosition
+	UserId   UserId
+	Address  string
+	Entrance string
+	Intercom string
+	Floor    string
+	Flat     string
+	Comment  string
+	Cart     []OrderPosition
 }
 
 type OrderUcaseResp struct {

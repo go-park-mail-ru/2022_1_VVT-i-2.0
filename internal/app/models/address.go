@@ -19,8 +19,11 @@ type SuggestUcaseResp struct {
 }
 
 type SuggestStreetRepoInput struct {
-	CityId int64
-	Street string
+	CityId         int64
+	Street         string
+	StreetType     string
+	SuggsLimit     int
+	SearchInMiddle bool
 }
 
 type SuggestStreetRepoAnsw struct {
@@ -28,9 +31,10 @@ type SuggestStreetRepoAnsw struct {
 }
 
 type SuggestHouseRepoInput struct {
-	CityId   int64
-	StreetId int64
-	House    string
+	CityId     int64
+	StreetId   int64
+	House      string
+	SuggsLimit int
 }
 
 type SuggestHouseRepoAnsw struct {
@@ -38,12 +42,13 @@ type SuggestHouseRepoAnsw struct {
 }
 
 type GetStreetRepoInput struct {
-	CityId int64
-	Street string
+	CityId     int64
+	Street     string
+	StreetType string
 }
 
 type GetStreetRepoAnsw struct {
-	StreetId int64
+	StreetId int64 `db:"id"`
 	Name     string
 }
 
