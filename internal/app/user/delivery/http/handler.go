@@ -219,10 +219,6 @@ func (h UserHandler) GetUser(ctx echo.Context) error {
 		return httpErrDescr.NewHTTPError(ctx, http.StatusInternalServerError, httpErrDescr.SERVER_ERROR)
 	}
 
-	csrfToken := middleware.GetCSRFTokenromCtx(ctx)
-	if csrfToken != "" {
-		ctx.Response().Header().Add(echo.HeaderXCSRFToken, csrfToken)
-	}
 	return ctx.JSON(http.StatusOK, models.UserDataResp{Phone: userDataUcase.Phone, Email: userDataUcase.Email, Name: userDataUcase.Name, Avatar: h.StaticManager.GetAvatarUrl(userDataUcase.Avatar)})
 }
 
