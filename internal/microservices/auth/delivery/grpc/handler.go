@@ -24,7 +24,14 @@ func NewAuthHandler(userUcase auth.Ucase) *grpcAuthHandler {
 
 func (h *grpcAuthHandler) SendCode(ctx context.Context, req *proto.SendCodeReq) (*proto.IsRegistered, error) {
 	isRegistered, err := h.Ucase.SendCode(&models.SendCodeUcaseReq{Phone: req.GetPhone()})
-	return &proto.IsRegistered{IsRegistered: isRegistered.IsRegistered}, err
+	if err != nil {
+		cause := servErrors.ErrorAs(err)
+		if cause == nil {
+			return &proto.IsRegistered{}, status.Error(codes.Internal, err.Error())
+		}
+		return &proto.IsRegistered{}, status.Error(codes.Code(cause.Code), err.Error())
+	}
+	return &proto.IsRegistered{IsRegistered: isRegistered.IsRegistered}, nil
 }
 
 func (h *grpcAuthHandler) Login(ctx context.Context, req *proto.LoginReq) (*proto.UserData, error) {
@@ -41,8 +48,12 @@ func (h *grpcAuthHandler) Login(ctx context.Context, req *proto.LoginReq) (*prot
 
 func (h *grpcAuthHandler) Register(ctx context.Context, req *proto.RegisterReq) (*proto.UserData, error) {
 	userDataUcase, err := h.Ucase.Register(&models.RegisterUcaseReq{Phone: req.GetPhone(), Code: req.Code, Email: req.Email, Name: req.Name})
-	if userDataUcase == nil {
-		return &proto.UserData{}, err
+	if err != nil {
+		cause := servErrors.ErrorAs(err)
+		if cause == nil {
+			return &proto.UserData{}, status.Error(codes.Internal, err.Error())
+		}
+		return &proto.UserData{}, status.Error(codes.Code(cause.Code), err.Error())
 	}
-	return &proto.UserData{Id: uint64(userDataUcase.Id), Phone: userDataUcase.Phone, Email: userDataUcase.Email, Name: userDataUcase.Name, Avatar: userDataUcase.Avatar}, err
+	return &proto.UserData{Id: uint64(userDataUcase.Id), Phone: userDataUcase.Phone, Email: userDataUcase.Email, Name: userDataUcase.Name, Avatar: userDataUcase.Avatar}, nil
 }

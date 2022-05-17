@@ -12,7 +12,6 @@ func NewPostgresqlX(cfg *config.DatabaseConfig) (*sqlx.DB, error) {
 	dsn := fmt.Sprintf("user=%s dbname=%s password=%s host=%s port=%d", cfg.User, cfg.DbName, cfg.Password, cfg.Host, cfg.Port)
 	db, err := sqlx.Connect("pgx", dsn)
 	if err != nil {
-		fmt.Println(err.Error())
 		return nil, err
 	}
 
