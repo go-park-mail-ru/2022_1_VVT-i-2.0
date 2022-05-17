@@ -104,6 +104,13 @@ func (u *AddrUcase) suggestStreet(address addressT) (*models.SuggestUcaseResp, e
 			return nil, errors.Wrap(err, "error getting city from db")
 		}
 	}
+
+	var suggsResp models.SuggestUcaseResp
+	street, err := u.AddrRepo.GetStreet(&models.GetStreetRepoInput{Street: address.street.name, StreetType: address.street.streetType, CityId: city.CityId})
+	if err == nil && street != nil && street.Name != "" {
+		suggsResp.Suggests = append(suggsResp.Suggests, city.Name+separator+" "+street.Name+", ")
+	}
+
 	suggs := &models.SuggestStreetRepoAnsw{}
 	suggsFromMiddle := &models.SuggestStreetRepoAnsw{} // на запрос "Парковая" -> ответ "1-я Парковая"
 
@@ -116,7 +123,7 @@ func (u *AddrUcase) suggestStreet(address addressT) (*models.SuggestUcaseResp, e
 			suggs = &models.SuggestStreetRepoAnsw{}
 		}
 		if len(suggs.StreetSuggests) < suggsLimit {
-			suggsFromMiddle, _ = u.AddrRepo.SuggestStreet(&models.SuggestStreetRepoInput{Street: street, StreetType: address.street.streetType, SearchInMiddle: true, SuggsLimit: suggsLimit - len(suggs.StreetSuggests)})
+			suggsFromMiddle, err = u.AddrRepo.SuggestStreet(&models.SuggestStreetRepoInput{Street: street, StreetType: address.street.streetType, SearchInMiddle: true, SuggsLimit: suggsLimit - len(suggs.StreetSuggests)})
 			if suggsFromMiddle != nil {
 				suggs.StreetSuggests = append(suggs.StreetSuggests, suggsFromMiddle.StreetSuggests...)
 			}
@@ -130,12 +137,16 @@ func (u *AddrUcase) suggestStreet(address addressT) (*models.SuggestUcaseResp, e
 		}
 		pozToCut++
 	}
-	if suggs == nil {
-		return nil, errors.Wrap(err, "error suggesting street")
+
+	if (suggs == nil || len(suggsResp.Suggests) == 0) && len(suggsResp.Suggests) > 0 {
+		return nil, errors.Wrap(err, "error suggesting house")
 	}
-	var suggsResp models.SuggestUcaseResp
-	for _, addr := range suggs.StreetSuggests {
-		suggsResp.Suggests = append(suggsResp.Suggests, city.Name+separator+" "+addr+", ")
+
+	if suggs != nil {
+		for _, street := range suggs.StreetSuggests {
+			suggsResp.Suggests = append(suggsResp.Suggests, city.Name+separator+" "+street+", ")
+		}
 	}
-	return &suggsResp, err
+
+	return &suggsResp, nil
 }

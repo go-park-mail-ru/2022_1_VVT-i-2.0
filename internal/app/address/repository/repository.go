@@ -23,17 +23,11 @@ func (r *AddrRepo) SuggestStreet(address *models.SuggestStreetRepoInput) (*model
 	var err error
 	switch {
 	case address.StreetType == "" && address.SearchInMiddle:
-		{
-			err = r.DB.Select(&suggs, `SELECT name FROM streets WHERE main_name ILIKE $1 LIMIT $2`, "_%"+address.Street+"%", address.SuggsLimit)
-		}
+		err = r.DB.Select(&suggs, `SELECT name FROM streets WHERE main_name ILIKE $1 LIMIT $2`, "_%"+address.Street+"%", address.SuggsLimit)
 	case address.StreetType == "" && !address.SearchInMiddle:
-		{
-			err = r.DB.Select(&suggs, `SELECT name FROM streets WHERE main_name ILIKE $1 LIMIT $2`, address.Street+"%", address.SuggsLimit)
-		}
+		err = r.DB.Select(&suggs, `SELECT name FROM streets WHERE main_name ILIKE $1 LIMIT $2`, address.Street+"%", address.SuggsLimit)
 	case address.StreetType != "" && address.SearchInMiddle:
-		{
-			err = r.DB.Select(&suggs, `SELECT name FROM streets WHERE main_name ILIKE $1 AND type LIKE $2 LIMIT $3`, "_%"+address.Street+"%", address.StreetType, address.SuggsLimit)
-		}
+		err = r.DB.Select(&suggs, `SELECT name FROM streets WHERE main_name ILIKE $1 AND type LIKE $2 LIMIT $3`, "_%"+address.Street+"%", address.StreetType, address.SuggsLimit)
 	default:
 		err = r.DB.Select(&suggs, `SELECT name FROM streets WHERE main_name ILIKE $1 AND type LIKE $2 LIMIT $3`, address.Street+"%", address.StreetType, address.SuggsLimit)
 	}
@@ -63,13 +57,8 @@ func (r *AddrRepo) SuggestStreet(address *models.SuggestStreetRepoInput) (*model
 
 func (r *AddrRepo) SuggestHouse(address *models.SuggestHouseRepoInput) (*models.SuggestHouseRepoAnsw, error) {
 	suggs := make([]*string, 0, address.SuggsLimit)
-	err := r.DB.Select(&suggs, `SELECT house FROM houses WHERE street_id =$1 AND house ILIKE $2  LIMIT $3`, address.StreetId, address.House+"%", address.SuggsLimit)
+	err := r.DB.Select(&suggs, `SELECT house FROM houses WHERE street_id =$1 AND house ILIKE $2 LIMIT $3`, address.StreetId, address.House+"_%", address.SuggsLimit)
 
-	if len(suggs) < address.SuggsLimit {
-		suggs2 := make([]*string, 0, address.SuggsLimit)
-		err = r.DB.Select(&suggs2, `SELECT house FROM houses WHERE street_id =$1 AND house ILIKE $2  LIMIT $3`, address.StreetId, "%"+address.House+"%", address.SuggsLimit-len(suggs))
-		suggs = append(suggs, suggs2...)
-	}
 	switch err {
 	case nil:
 		if len(suggs) == 0 {
@@ -97,10 +86,7 @@ func (r *AddrRepo) GetCity(city string) (*models.GetCityRepoAnsw, error) {
 func (r *AddrRepo) GetStreet(street *models.GetStreetRepoInput) (*models.GetStreetRepoAnsw, error) {
 	streetAnsw := &models.GetStreetRepoAnsw{}
 
-	// err = r.DB.Select(&suggs, `SELECT name FROM streets WHERE main_name ILIKE $1 AND type LIKE $2 LIMIT $3`, address.Street+"%", address.StreetType, address.SuggsLimit)
-	// err := r.DB.Get(streetAnsw, `SELECT id as streetid, name FROM streets WHERE name ILIKE $1`, street.Street)
-	// TODO надо удалять заменить несколько пробелов на один
-	err := r.DB.Get(streetAnsw, `SELECT id, name FROM streets WHERE main_name ILIKE $1 AND type LIKE $2 LIMIT $3`, street.Street)
+	err := r.DB.Get(streetAnsw, `SELECT id, name FROM streets WHERE main_name ILIKE $1 AND type ILIKE $2`, street.Street, street.StreetType)
 	switch err {
 	case nil:
 		return streetAnsw, nil

@@ -72,7 +72,6 @@ func (u *AddrUcase) parseAddress(addrStr string) *addressT {
 }
 
 func (u *AddrUcase) suggestCity() (*models.SuggestUcaseResp, error) {
-	// вывести топ-5 адресов юзера, + "Москва, "
 	return &models.SuggestUcaseResp{Suggests: defaultRes}, nil
 }
 
@@ -98,16 +97,3 @@ func (u *AddrUcase) Suggest(address *models.SuggestUcaseReq) (*models.SuggestUca
 		return u.suggestCity()
 	}
 }
-
-// всегда в первую очередь отправлять адреса пользователя
-// поле с массивом адресов пользователя с приоритетами
-/*
-хранить массив адресов пользователя 100 штук
-частота использования
-дата последнего использования
-
-
-
-1. если дополняется улица -- выяснить тип 0 -- неизвестно
-
-*/

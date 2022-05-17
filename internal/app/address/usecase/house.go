@@ -38,7 +38,7 @@ func (u *AddrUcase) suggestHouse(address addressT) (*models.SuggestUcaseResp, er
 			return nil, errors.Wrap(err, "error getting city from db")
 		}
 	}
-	street, err := u.AddrRepo.GetStreet(&models.GetStreetRepoInput{Street: address.street.name + " " + address.street.streetType, CityId: city.CityId})
+	street, err := u.AddrRepo.GetStreet(&models.GetStreetRepoInput{Street: address.street.name, StreetType: address.street.streetType, CityId: city.CityId})
 	if err != nil {
 		cause := servErrors.ErrorAs(err)
 		switch {
@@ -56,17 +56,16 @@ func (u *AddrUcase) suggestHouse(address addressT) (*models.SuggestUcaseResp, er
 	}
 
 	house, err := u.AddrRepo.GetHouse(&models.GetHouseRepoInput{StreetId: street.StreetId, House: address.house})
+	var suggsResp models.SuggestUcaseResp
 	if err == nil && house != nil && house.House != "" {
-		return &models.SuggestUcaseResp{Suggests: []string{city.Name + separator + " " + street.Name + ", " + house.House}, AddressFull: true}, nil
+		suggsResp.Suggests = append(suggsResp.Suggests, city.Name+separator+" "+street.Name+", "+house.House)
 	}
 
 	var suggs *models.SuggestHouseRepoAnsw
 	pozToCut := len(address.house)
 	for i := 0; i < 3 && suggs == nil && pozToCut >= 0; i++ {
-
 		house := []rune(address.house[:pozToCut])
-		// fmt.Println(string(house))
-		suggs, err = u.AddrRepo.SuggestHouse(&models.SuggestHouseRepoInput{StreetId: street.StreetId, House: string(house)})
+		suggs, err = u.AddrRepo.SuggestHouse(&models.SuggestHouseRepoInput{StreetId: street.StreetId, House: string(house), SuggsLimit: suggsLimit})
 		if len(address.house)-i*1 <= 0 {
 			break
 		}
@@ -74,13 +73,13 @@ func (u *AddrUcase) suggestHouse(address addressT) (*models.SuggestUcaseResp, er
 		for pozToCut--; !utf8.ValidString(address.house[pozToCut:]) && pozToCut >= 0; pozToCut-- {
 		}
 	}
-	if suggs == nil {
+
+	if (suggs == nil || len(suggsResp.Suggests) == 0) && len(suggsResp.Suggests) > 0 {
 		return nil, errors.Wrap(err, "error suggesting house")
 	}
-	var suggsResp models.SuggestUcaseResp
 	for _, house := range suggs.HouseSuggests {
 		suggsResp.Suggests = append(suggsResp.Suggests, city.Name+separator+" "+street.Name+", "+house)
 	}
 	suggsResp.AddressFull = true
-	return &suggsResp, err
+	return &suggsResp, nil
 }
