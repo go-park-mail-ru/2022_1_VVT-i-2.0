@@ -18,7 +18,7 @@ type SuggestUcaseResp struct {
 	AddressFull bool
 }
 
-type SuggestStreetRepoInput struct {
+type SuggestStreetRepoReq struct {
 	CityId         int64
 	Street         string
 	StreetType     string
@@ -26,42 +26,46 @@ type SuggestStreetRepoInput struct {
 	SearchInMiddle bool
 }
 
-type SuggestStreetRepoAnsw struct {
+type SuggestStreetRepoResp struct {
 	StreetSuggests []string
 }
 
-type SuggestHouseRepoInput struct {
+type SuggestHouseRepoReq struct {
 	CityId     int64
 	StreetId   int64
 	House      string
 	SuggsLimit int
 }
 
-type SuggestHouseRepoAnsw struct {
+type SuggestHouseRepoResp struct {
 	HouseSuggests []string
 }
 
-type GetStreetRepoInput struct {
+type GetStreetRepoReq struct {
 	CityId     int64
 	Street     string
 	StreetType string
 }
 
-type GetStreetRepoAnsw struct {
+type GetStreetRepoResp struct {
 	StreetId int64 `db:"id"`
 	Name     string
 }
 
-type GetCityRepoAnsw struct {
-	CityId int64
-	Name   string
+type GetCityRepoReq struct {
+	City string
 }
 
-type GetHouseRepoInput struct {
+type GetCityRepoResp struct {
+	CityId int64  `db:"id"`
+	Name   string `db:"name"`
+}
+
+type GetHouseRepoReq struct {
 	StreetId int64
 	House    string
 }
 
-type GetHouseRepoAnsw struct {
+type GetHouseRepoResp struct {
 	House string
 }

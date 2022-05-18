@@ -132,6 +132,7 @@ type OrderPositionResp struct {
 	Weigth      int64  `json:"weight"`
 	ImagePath   string `json:"imgPath"`
 }
+
 type GetUserOrderResp struct {
 	OrderId        int64               `json:"orderNumber"`
 	Address        string              `json:"address"`

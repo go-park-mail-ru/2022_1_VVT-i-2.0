@@ -117,7 +117,7 @@ func main() {
 	if err != nil {
 		log.Fatal(errors.Wrap(err, "error connecting to grpc-auth-microserver"))
 	}
-	defer authGrpcConn.Close()
+	defer orderGrpcConn.Close()
 
 	orderCli := orderProto.NewOrderServiceClient(orderGrpcConn)
 

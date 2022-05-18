@@ -2,7 +2,6 @@ package repository
 
 import (
 	"database/sql"
-	"strings"
 
 	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/models"
 	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/tools/servErrors"
@@ -17,7 +16,7 @@ func NewAddrRepo(db *sqlx.DB) *AddrRepo {
 	return &AddrRepo{DB: db}
 }
 
-func (r *AddrRepo) SuggestStreet(address *models.SuggestStreetRepoInput) (*models.SuggestStreetRepoAnsw, error) {
+func (r *AddrRepo) SuggestStreet(address *models.SuggestStreetRepoReq) (*models.SuggestStreetRepoResp, error) {
 	suggs := make([]*string, 0, address.SuggsLimit)
 
 	var err error
@@ -42,7 +41,7 @@ func (r *AddrRepo) SuggestStreet(address *models.SuggestStreetRepoInput) (*model
 			for i := 0; i < address.SuggsLimit && i < len(suggs) && (suggs[i]) != nil; i++ {
 				suggsRepo[i] = *suggs[i]
 			}
-			return &models.SuggestStreetRepoAnsw{StreetSuggests: suggsRepo}, nil
+			return &models.SuggestStreetRepoResp{StreetSuggests: suggsRepo}, nil
 		}
 	case sql.ErrNoRows:
 		{
@@ -55,7 +54,7 @@ func (r *AddrRepo) SuggestStreet(address *models.SuggestStreetRepoInput) (*model
 	}
 }
 
-func (r *AddrRepo) SuggestHouse(address *models.SuggestHouseRepoInput) (*models.SuggestHouseRepoAnsw, error) {
+func (r *AddrRepo) SuggestHouse(address *models.SuggestHouseRepoReq) (*models.SuggestHouseRepoResp, error) {
 	suggs := make([]*string, 0, address.SuggsLimit)
 	err := r.DB.Select(&suggs, `SELECT house FROM houses WHERE street_id =$1 AND house ILIKE $2 LIMIT $3`, address.StreetId, address.House+"_%", address.SuggsLimit)
 
@@ -68,7 +67,7 @@ func (r *AddrRepo) SuggestHouse(address *models.SuggestHouseRepoInput) (*models.
 		for i := 0; i < address.SuggsLimit && i < len(suggs) && (suggs[i]) != nil; i++ {
 			suggsRepo[i] = *suggs[i]
 		}
-		return &models.SuggestHouseRepoAnsw{HouseSuggests: suggsRepo}, nil
+		return &models.SuggestHouseRepoResp{HouseSuggests: suggsRepo}, nil
 	case sql.ErrNoRows:
 		return nil, servErrors.NewError(servErrors.NO_SUCH_ENTITY_IN_DB, err.Error())
 	default:
@@ -76,17 +75,24 @@ func (r *AddrRepo) SuggestHouse(address *models.SuggestHouseRepoInput) (*models.
 	}
 }
 
-func (r *AddrRepo) GetCity(city string) (*models.GetCityRepoAnsw, error) {
-	if strings.ToLower(city) == "москва" {
-		return &models.GetCityRepoAnsw{CityId: 0, Name: "Москва"}, nil
+func (r *AddrRepo) GetCity(city *models.GetCityRepoReq) (*models.GetCityRepoResp, error) {
+	cityAnsw := &models.GetCityRepoResp{}
+	err := r.DB.Get(cityAnsw, `SELECT id, name FROM cities WHERE name ILIKE $1`, city.City)
+
+	switch err {
+	case nil:
+		return cityAnsw, nil
+	case sql.ErrNoRows:
+		return nil, servErrors.NewError(servErrors.NO_SUCH_ENTITY_IN_DB, err.Error())
+	default:
+		return nil, servErrors.NewError(servErrors.DB_ERROR, err.Error())
 	}
-	return nil, servErrors.NewError(servErrors.NO_SUCH_ENTITY_IN_DB, "")
 }
 
-func (r *AddrRepo) GetStreet(street *models.GetStreetRepoInput) (*models.GetStreetRepoAnsw, error) {
-	streetAnsw := &models.GetStreetRepoAnsw{}
+func (r *AddrRepo) GetStreet(street *models.GetStreetRepoReq) (*models.GetStreetRepoResp, error) {
+	streetAnsw := &models.GetStreetRepoResp{}
 
-	err := r.DB.Get(streetAnsw, `SELECT id, name FROM streets WHERE main_name ILIKE $1 AND type ILIKE $2`, street.Street, street.StreetType)
+	err := r.DB.Get(streetAnsw, `SELECT id, name FROM streets WHERE city_id = $1 AND main_name ILIKE $2 AND type ILIKE $3`, street.CityId, street.Street, street.StreetType)
 	switch err {
 	case nil:
 		return streetAnsw, nil
@@ -97,8 +103,8 @@ func (r *AddrRepo) GetStreet(street *models.GetStreetRepoInput) (*models.GetStre
 	}
 }
 
-func (r *AddrRepo) GetHouse(house *models.GetHouseRepoInput) (*models.GetHouseRepoAnsw, error) {
-	houseAnsw := &models.GetHouseRepoAnsw{}
+func (r *AddrRepo) GetHouse(house *models.GetHouseRepoReq) (*models.GetHouseRepoResp, error) {
+	houseAnsw := &models.GetHouseRepoResp{}
 	err := r.DB.Get(houseAnsw, `SELECT house FROM houses WHERE street_id =$1 AND house ILIKE $2`, house.StreetId, house.House)
 	switch err {
 	case nil:

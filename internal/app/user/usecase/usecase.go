@@ -12,6 +12,8 @@ import (
 	authProto "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/microservices/auth/proto"
 	"github.com/google/uuid"
 	"github.com/pkg/errors"
+
+	// "golang.org/x/image/webp"
 	"google.golang.org/grpc/status"
 )
 
@@ -136,7 +138,6 @@ func (u *UserUcase) saveNewAvatar(avatar io.Reader) (string, error) {
 		avatarImg = imaging.CropAnchor(avatarImg, avatarImg.Bounds().Max.Y, avatarImg.Bounds().Max.Y, imaging.Center)
 	}
 	avatarImg = imaging.Resize(avatarImg, avatarSide, avatarSide, imaging.Lanczos)
-
 	err = u.StaticManager.SafeAvatar(avatarImg, avatarName)
 	if err != nil {
 		return "", servErrors.NewError(servErrors.CANT_SAVE_AVATAR, err.Error())
