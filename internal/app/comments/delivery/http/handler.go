@@ -41,7 +41,9 @@ func (h CommentsHandler) GetRestaurantComments(ctx echo.Context) error {
 	//id, err := strconv.ParseInt(item, 16, 32)
 	slug := ctx.Param("slug")
 
-	commetsDataDelivery, err := h.Usecase.GetRestaurantComments(slug)
+	commetsDataDelivery, err := h.Usecase.GetRestaurantComments(models.GetRestaurantCommentsUcaseReq{
+		Slug: slug,
+	})
 
 	if err != nil {
 		cause := servErrors.ErrorAs(err)

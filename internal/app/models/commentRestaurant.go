@@ -1,5 +1,29 @@
 package models
 
+////Repository
+
+// Repository Request
+
+type GetRestaurantByIdRepoReq struct {
+	Id Id
+}
+
+//type GetRestaurantBySlugRepoReq struct {
+//	Slug string
+//}
+
+type GetRestaurantCommentsRepoReq struct {
+	Id Id
+}
+
+type UpdateRestaurantRatingRepoReq struct {
+	RestId        int
+	NewRestRating int
+	CountRating   int
+}
+
+// Repository models
+
 type CommentRestaurantDataStorage struct {
 	RestaurantId	int		`db:"restaurant_id"`
 	Author        	string	`db:"author"`
@@ -7,6 +31,20 @@ type CommentRestaurantDataStorage struct {
 	Stars         	int		`db:"stars"`
 	Date          	string	`db:"get_ru_date"`
 }
+
+type CommentsRestaurantDataStorage struct {
+	Comments []CommentRestaurantDataStorage
+}
+
+//// UseCase
+
+// UseCase Request
+
+type GetRestaurantCommentsUcaseReq struct {
+	Slug string
+}
+
+// UseCase models
 
 type AddCommentRestaurantDataStorage struct {
 	RestaurantId	int		`db:"restaurant_id"`
