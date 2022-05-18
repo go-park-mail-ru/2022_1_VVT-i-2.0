@@ -9,4 +9,5 @@ type Repository interface {
 	GetUserOrders(user *models.GetUserOrdersRepoReq) (*models.GetUserOrdersRepoResp, error)
 	GetUserOrder(user *models.GetUserOrderRepoReq) (*models.GetUserOrderRepoResp, error)
 	GetUserOrderStatuses(user *models.GetUserOrderStatusesRepoReq) (*models.GetUserOrderStatusesRepoResp, error)
+	GetAddress(req *models.GetAddressRepoReq) (*models.GetAddressRepoResp, error)
 }

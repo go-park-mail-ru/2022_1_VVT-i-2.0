@@ -22,6 +22,7 @@ const (
 	WRONG_AUTH_CODE
 	NO_SUCH_RESTAURANT
 	NO_SUCH_USER
+	NO_SUCH_ADDRESS
 	SENDING_AUTH_CODE
 	CREATE_TOKEN
 	PARSE_TOKEN
@@ -56,6 +57,7 @@ const (
 	DB_INSERT_DESCR                        = "неуспешная вставка в базу данных"
 	NO_SUCH_CITY_DESCR                     = "не существует такого города"
 	NO_SUCH_STREET_DESCR                   = "не существует такой улицы"
+	NO_SUCH_ADDRESS_DESCR                  = "не существует такого адреса"
 	CANT_CREATE_AVATAR_NAME_DESCR          = "не получается сгенерировать имя аватарки"
 	CANT_SAVE_AVATAR_DESCR                 = "не получается сохранить аватарку"
 	UNKNOWN_STATIC_TYPE_DESCR              = "неизвестный тип статики, невозможно определить расположение"
@@ -71,6 +73,7 @@ var codeDescr = map[int]string{
 	THIS_ORDER_DOESNOT_BELONG_USER:   THIS_ORDER_DOESNOT_BELONG_USER_DESCR,
 	FLASHCALL_PHONE_ALREADY_IN_QUEUE: FLASHCALL_PHONE_ALREADY_IN_QUEUE_DESCR,
 	FLASHCALL_RESPONSE_ERR:           FLASHCALL_RESPONSE_ERR_DESCR,
+	NO_SUCH_ADDRESS:                  NO_SUCH_ADDRESS_DESCR,
 }
 
 type Error struct {

@@ -172,3 +172,16 @@ type GetUserOrderResp struct {
 	Status         string              `json:"status"`
 	Cart           []OrderPositionResp `json:"cart"`
 }
+
+type GetAddressRepoReq struct {
+	City       string
+	Street     string
+	StreetType string
+	House      string
+}
+
+type GetAddressRepoResp struct {
+	City   string
+	Street string
+	House  string
+}

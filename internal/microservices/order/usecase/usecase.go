@@ -1,10 +1,23 @@
 package ucase
 
 import (
+	"regexp"
+	"strings"
+
+	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/tools/addrParser"
 	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/tools/servErrors"
 	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/microservices/order"
 	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/microservices/order/models"
 	"github.com/pkg/errors"
+)
+
+const (
+	separator          = ","
+	toCutCityRegexpStr = `(?i)^ *гор\.|^ *гор |^ *г |^ *г\.|^ *город `
+)
+
+var (
+	toCutCityRegexp = *regexp.MustCompile(toCutCityRegexpStr)
 )
 
 type OrderUcase struct {
@@ -18,11 +31,15 @@ func NewOrderUcase(orderRepo order.Repository) *OrderUcase {
 }
 
 func (u *OrderUcase) CreateOrder(order *models.CreateOrderUcaseReq) (*models.CreateOrderUcaseResp, error) {
-	// TODO: сделать проверку, есть ли такой адрес
+	// orderAddr, err := u.getAddress(order.Address)
+	// if err != nil {
+	// 	return nil, errors.Wrap(err, "error validating order address")
+	// }
 	cart := make([]models.OrderPositionRepo, len(order.Cart))
 	for i, position := range order.Cart {
 		cart[i] = models.OrderPositionRepo(position)
 	}
+	// orderId, err := u.OrderRepo.CreateOrder(&models.CreateOrderRepoReq{UserId: order.UserId, Address: orderAddr, Comment: order.Comment, Cart: cart})
 	orderId, err := u.OrderRepo.CreateOrder(&models.CreateOrderRepoReq{UserId: order.UserId, Address: order.Address, Comment: order.Comment, Cart: cart})
 
 	if err != nil || orderId.OrderId <= 0 {
@@ -77,4 +94,31 @@ func (u *OrderUcase) GetUserOrder(req *models.GetUserOrderUcaseReq) (*models.Get
 	}
 
 	return &models.GetUserOrderUcaseResp{OrderId: order.OrderId, Address: order.Address, Date: order.Date, RestaurantName: order.RestaurantName, RestaurantSlug: order.RestaurantSlug, TotalPrice: order.TotalPrice, Status: order.Status, Cart: cart}, nil
+}
+
+func (u *OrderUcase) getAddress(addrStr string) (string, error) {
+	addrParts := strings.Split(addrStr, separator)
+
+	if len(addrParts) != 3 { // city, street, house
+		return "", servErrors.NewError(servErrors.NO_SUCH_ADDRESS, "")
+	}
+
+	city := addrParser.GetCity(addrParts[0])
+	street := addrParser.GetStreet(addrParts[1])
+	house := addrParser.GetHouse(addrParts[2])
+
+	if city == "" || street.Name == "" || house == "" {
+		return "", servErrors.NewError(servErrors.NO_SUCH_ADDRESS, "")
+	}
+
+	if street.StreetType == "" {
+		street.StreetType = "Улица"
+	}
+
+	addrRepoResp, err := u.OrderRepo.GetAddress(&models.GetAddressRepoReq{City: city, Street: street.Name, StreetType: street.StreetType, House: house})
+	if err != nil {
+		return "", errors.Wrap(err, "error getting order address from storage")
+	}
+
+	return addrParser.ConcatAddr(addrRepoResp.City, addrRepoResp.Street, addrRepoResp.House), nil
 }

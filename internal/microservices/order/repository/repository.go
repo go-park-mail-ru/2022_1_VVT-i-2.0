@@ -22,7 +22,9 @@ func NewOrderRepo(db *sqlx.DB) *OrderRepo {
 }
 
 func makeAddOrderQuery(order *models.CreateOrderRepoReq) string {
-	// INSERT INTO orders (user_id , address, comment, cart) VALUES ($1,$2,$3, ARRAY[($4,$5)::order_position, ($6,$7)::order_position])`
+	if len(order.Cart) == 0 {
+		return `INSERT INTO orders_internal (user_id , address, comment, cart) VALUES ($1,$2,$3)`
+	}
 	query := `INSERT INTO orders_internal (user_id , address, comment, cart) VALUES ($1,$2,$3, ARRAY[`
 
 	nextPlaceholderNum := 4
@@ -123,6 +125,40 @@ func (r *OrderRepo) GetUserOrder(req *models.GetUserOrderRepoReq) (*models.GetUs
 		return order, nil
 	case sql.ErrNoRows:
 		return nil, servErrors.NewError(servErrors.NO_SUCH_ENTITY_IN_DB, err.Error())
+	default:
+		return nil, servErrors.NewError(servErrors.DB_ERROR, err.Error())
+	}
+}
+
+func (r *OrderRepo) GetAddress(req *models.GetAddressRepoReq) (*models.GetAddressRepoResp, error) {
+	city := &struct {
+		Id   int64
+		Name string
+	}{}
+	street := &struct {
+		Id   int64
+		Name string
+	}{}
+	house := &struct {
+		House string
+	}{}
+	err := r.DB.Get(city, `SELECT id, name FROM cities WHERE name ILIKE $1`, req.City)
+	if err == nil {
+		err = r.DB.Get(street, `SELECT id, name FROM streets WHERE city_id = $1 AND main_name ILIKE $2 AND type ILIKE $3`, city.Id, req.Street, req.StreetType)
+	}
+	if err == nil {
+		err = r.DB.Get(house, `SELECT house FROM houses WHERE street_id =$1 AND house ILIKE $2`, street.Id, req.House)
+	}
+
+	switch err {
+	case nil:
+		return &models.GetAddressRepoResp{
+			City:   city.Name,
+			Street: street.Name,
+			House:  house.House,
+		}, nil
+	case sql.ErrNoRows:
+		return nil, servErrors.NewError(servErrors.NO_SUCH_ADDRESS, err.Error())
 	default:
 		return nil, servErrors.NewError(servErrors.DB_ERROR, err.Error())
 	}
