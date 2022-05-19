@@ -7,6 +7,6 @@ type Repository interface {
 	GetRestaurantBySlug(req models.GetRestaurantBySlugRepoReq) (*models.RestaurantRepo, error)
 	GetRestaurantComments(req models.GetRestaurantCommentsRepoReq) (*models.CommentsRestaurantDataStorage, error)
 	GetUserById(id models.UserId) (*models.UserDataRepo, error)
-	AddRestaurantComment(newComment models.AddCommentRestaurantDataStorage) (*models.CommentRestaurantDataStorage, error)
+	AddRestaurantComment(req models.AddRestaurantCommentRepoReq) (*models.CommentRestaurantDataStorage, error)
 	UpdateRestaurantRating(req models.UpdateRestaurantRatingRepoReq) (*models.RestaurantRepo, error)
 }

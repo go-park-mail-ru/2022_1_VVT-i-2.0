@@ -46,24 +46,24 @@ func (u *CommentsUsecase) GetRestaurantComments(req models.GetRestaurantComments
 	return commentsUC, nil
 }
 
-func (u *CommentsUsecase) AddRestaurantComment(id models.UserId, item *models.AddCommentRestaurantUseCase) (*models.CommentRestaurantUseCase, error) {
-	userData, err := u.Repository.GetUserById(id)
+func (u *CommentsUsecase) AddRestaurantComment(req models.AddCommentRestaurantUcaseReq) (*models.CommentRestaurantUseCase, error) {
+	userData, err := u.Repository.GetUserById(req.UserId)
 	if err != nil {
-		return nil, errors.Wrapf(err, "error getting user by id %d", id)
+		return nil, errors.Wrapf(err, "error getting user by id %d", req.UserId)
 	}
 
 	RestaurantData, err := u.Repository.GetRestaurantBySlug(models.GetRestaurantBySlugRepoReq{
-		Slug: item.Slug,
+		Slug: req.Slug,
 	})
 	if err != nil {
-		return nil, errors.Wrapf(err, "error getting restaurants by slug %d", id)
+		return nil, errors.Wrapf(err, "error getting restaurants by slug %s", req.Slug)
 	}
 
-	comment, err := u.Repository.AddRestaurantComment(models.AddCommentRestaurantDataStorage{
+	comment, err := u.Repository.AddRestaurantComment(models.AddRestaurantCommentRepoReq{
 		RestaurantId:  RestaurantData.Id,
 		User:          userData.Name,
-		CommentText:   item.CommentText,
-		CommentRating: item.CommentRating,
+		CommentText:   req.CommentText,
+		CommentRating: req.CommentRating,
 	})
 	if err != nil {
 		return nil, errors.Wrap(err, "error adding user to storage")
@@ -93,33 +93,3 @@ func (u *CommentsUsecase) AddRestaurantComment(id models.UserId, item *models.Ad
 		Date:         comment.Date,
 	}, nil
 }
-
-//func (u *CommentsUsecase) AddRestaurantComment(item *models.AddCommentRestaurantUseCase) (*models.CommentRestaurantUseCase, error) {
-//	comment, err := u.Repository.AddRestaurantComment(&models.AddCommentRestaurantDataStorage{
-//		Restaurant:     item.Restaurant,
-//		User_id:        item.User_id,
-//		Comment_text:   item.Comment_text,
-//		Comment_rating: item.Comment_rating,
-//	})
-//	if err != nil {
-//		return nil, errors.Wrap(err, "error adding user to storage")
-//	}
-//
-//	restaurant, err := u.Repository.GetRestaurantByID(comment.Restaurant)
-//	if err != nil {
-//		return nil, errors.Wrap(err, "error adding user to storage")
-//	}
-//
-//	_, err = u.Repository.UpdateRestaurantRating(comment.Restaurant, comment.Comment_rating+restaurant.AggRating, restaurant.ReviewCount+1)
-//	if err != nil {
-//		return nil, errors.Wrap(err, "error adding user to storage")
-//	}
-//
-//	return &models.CommentRestaurantUseCase{
-//		Id:             comment.Id,
-//		Restaurant:     comment.Restaurant,
-//		User_id:        comment.User_id,
-//		Comment_text:   comment.Comment_text,
-//		Comment_rating: comment.Comment_rating,
-//	}, nil
-//}

@@ -22,6 +22,13 @@ type UpdateRestaurantRatingRepoReq struct {
 	CountRating   int
 }
 
+type AddRestaurantCommentRepoReq struct {
+	RestaurantId	int		`db:"restaurant_id"`
+	User           	string	`db:"author"`
+	CommentText   	string	`db:"text"`
+	CommentRating 	int		`db:"stars"`
+}
+
 // Repository models
 
 type CommentRestaurantDataStorage struct {
@@ -44,34 +51,14 @@ type GetRestaurantCommentsUcaseReq struct {
 	Slug string
 }
 
+type AddCommentRestaurantUcaseReq struct {
+	UserId			UserId
+	Slug			string
+	CommentText		string
+	CommentRating	int
+}
+
 // UseCase models
-
-type AddCommentRestaurantDataStorage struct {
-	RestaurantId	int		`db:"restaurant_id"`
-	User           	string	`db:"author"`
-	CommentText   	string	`db:"text"`
-	CommentRating 	int		`db:"stars"`
-}
-
-type AddCommentRestaurantUseCase struct {
-	Slug           string
-	CommentText   string
-	CommentRating int
-}
-
-type AddCommentsRestaurantDataStorage struct {
-	Comment []AddCommentRestaurantDataStorage
-}
-
-type CommentRestaurantId int64
-
-//type CommentRestaurantUseCase struct {
-//	Id 			int
-//	Restaurant	int
-//	User_id		int
-//	Comment_text string
-//	Comment_rating int
-//}
 
 type CommentRestaurantUseCase struct {
 	RestaurantId	int    `json:"restaurants_id"`
@@ -79,15 +66,23 @@ type CommentRestaurantUseCase struct {
 	Text          	string `json:"text"`
 	Stars         	int    `json:"starts"`
 	Date          	string `json:"date"`
-	//Restaurant	int `json:"restaurants"`
-	//User		string `json:"user"`
-	//Comment_text string `json:"commentText"`
-	//Comment_rating int `json:"commentRating"`
 }
 
 type CommentsRestaurantUseCase struct {
 	Comment []CommentRestaurantUseCase
 }
+
+//// Handler
+
+// handler request
+
+type AddCommentRestaurantReq struct {
+	Slug     		string	`json:"slug"`
+	CommentText  	string 	`json:"text"`
+	CommentRating	int    	`json:"stars"`
+}
+
+// handler models
 
 type GetCommentDataDelivery struct {
 	Author string `json:"author"`
@@ -108,29 +103,5 @@ type CommentDataDelivery struct {
 	Date         	 string `json:"date"`
 }
 
-type CommentsDataDelivery struct {
-	Comment []CommentDataDelivery `json:"comment"`
-}
 
-type AddCommentRestaurant struct {
-	Slug     		string	`json:"slug"`
-	CommentText  	string 	`json:"text"`
-	CommentRating	int    	`json:"stars"`
-}
 
-type Comment struct {
-	Id             int
-	Restaurant     int
-	UserId        int
-	CommentText   string
-	CommentRating int
-}
-
-//create table comments
-//(
-//author varchar(50) NOT NULL,
-//restaurant_id integer REFERENCES restaurants NOT NULL,
-//text varchar(1024) NOT NULL,
-//stars integer NOT NULL CHECK(1 <= stars and stars <= 5),
-//date TIMESTAMP DEFAULT now() NOT NULL
-//);

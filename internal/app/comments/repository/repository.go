@@ -53,7 +53,6 @@ func (r *CommentsRepo) GetRestaurantComments(req models.GetRestaurantCommentsRep
 			resp.Comments[i] = *dish
 		}
 		return resp, nil
-		//return comments, nil
 	case sql.ErrNoRows:
 		return nil, servErrors.NewError(servErrors.NO_SUCH_ENTITY_IN_DB, err.Error())
 	default:
@@ -75,9 +74,9 @@ func (r *CommentsRepo) GetUserById(id models.UserId) (*models.UserDataRepo, erro
 	}
 }
 
-func (r *CommentsRepo) AddRestaurantComment(newComment models.AddCommentRestaurantDataStorage) (*models.CommentRestaurantDataStorage, error) {
+func (r *CommentsRepo) AddRestaurantComment(req models.AddRestaurantCommentRepoReq) (*models.CommentRestaurantDataStorage, error) {
 	comment := &models.CommentRestaurantDataStorage{}
-	err := r.DB.Get(comment, `INSERT INTO comments (restaurant_id, author, text, stars) VALUES ($1,$2,$3,$4) RETURNING restaurant_id, author, text, stars, get_ru_date(date)`, newComment.RestaurantId, newComment.User, newComment.CommentText, newComment.CommentRating)
+	err := r.DB.Get(comment, `INSERT INTO comments (restaurant_id, author, text, stars) VALUES ($1,$2,$3,$4) RETURNING restaurant_id, author, text, stars, get_ru_date(date)`, req.RestaurantId, req.User, req.CommentText, req.CommentRating)
 	if err != nil {
 		if err == sql.ErrConnDone || err == sql.ErrTxDone {
 			return nil, servErrors.NewError(servErrors.DB_ERROR, err.Error())
