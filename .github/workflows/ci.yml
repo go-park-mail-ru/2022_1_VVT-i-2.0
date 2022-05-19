@@ -57,7 +57,6 @@ jobs:
         run: go run github.com/golangci/golangci-lint/cmd/golangci-lint run ./... --disable unused --disable deadcode
 
   test-coverage:
-    needs: build-go
     runs-on: ubuntu-latest
 
     steps:
