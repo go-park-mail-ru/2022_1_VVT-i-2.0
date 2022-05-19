@@ -10,7 +10,7 @@ import (
 	userHandler "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/user/delivery/http"
 	"github.com/labstack/echo/v4"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
-	// echoSwagger "github.com/swaggo/echo-swagger"
+	echoSwagger "github.com/swaggo/echo-swagger"
 )
 
 type ServerHandlers struct {
@@ -31,7 +31,7 @@ const (
 func (sh *ServerHandlers) ConfigureRouting(router *echo.Echo) {
 	router.GET("metrics", echo.WrapHandler(promhttp.Handler()))
 	router.Static("/static", "static")
-	//router.GET("/swagger/*", echoSwagger.WrapHandler)
+	router.GET("/swagger/*", echoSwagger.WrapHandler)
 	router.POST(v1Prefix+"login", sh.UserHandler.Login)
 	router.GET(v1Prefix+"logout", sh.UserHandler.Logout)
 	router.POST(v1Prefix+"register", sh.UserHandler.Register)

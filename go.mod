@@ -17,6 +17,7 @@ require (
 	github.com/pkg/errors v0.9.1
 	github.com/prometheus/client_golang v1.12.1
 	github.com/stretchr/testify v1.7.1
+	github.com/swaggo/echo-swagger v1.3.2
 	github.com/swaggo/swag v1.8.1
 	go.uber.org/zap v1.21.0
 	google.golang.org/grpc v1.46.0
@@ -48,6 +49,7 @@ require (
 	github.com/prometheus/procfs v0.7.3 // indirect
 	github.com/shopspring/decimal v1.3.1 // indirect
 	github.com/stretchr/objx v0.1.1 // indirect
+	github.com/swaggo/files v0.0.0-20210815190702-a29dd2bc99b2 // indirect
 	github.com/valyala/bytebufferpool v1.0.0 // indirect
 	github.com/valyala/fasttemplate v1.2.1 // indirect
 	go.uber.org/atomic v1.9.0 // indirect
