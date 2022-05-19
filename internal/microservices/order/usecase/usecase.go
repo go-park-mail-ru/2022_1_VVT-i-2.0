@@ -31,16 +31,16 @@ func NewOrderUcase(orderRepo order.Repository) *OrderUcase {
 }
 
 func (u *OrderUcase) CreateOrder(order *models.CreateOrderUcaseReq) (*models.CreateOrderUcaseResp, error) {
-	// orderAddr, err := u.getAddress(order.Address)
-	// if err != nil {
-	// 	return nil, errors.Wrap(err, "error validating order address")
-	// }
+	orderAddr, err := u.getAddress(order.Address)
+	if err != nil {
+		return nil, errors.Wrap(err, "error validating order address")
+	}
 	cart := make([]models.OrderPositionRepo, len(order.Cart))
 	for i, position := range order.Cart {
 		cart[i] = models.OrderPositionRepo(position)
 	}
-	// orderId, err := u.OrderRepo.CreateOrder(&models.CreateOrderRepoReq{UserId: order.UserId, Address: orderAddr, Comment: order.Comment, Cart: cart})
-	orderId, err := u.OrderRepo.CreateOrder(&models.CreateOrderRepoReq{UserId: order.UserId, Address: order.Address, Comment: order.Comment, Cart: cart})
+	orderId, err := u.OrderRepo.CreateOrder(&models.CreateOrderRepoReq{UserId: order.UserId, Address: orderAddr, Comment: order.Comment, Cart: cart})
+	// orderId, err := u.OrderRepo.CreateOrder(&models.CreateOrderRepoReq{UserId: order.UserId, Address: order.Address, Comment: order.Comment, Cart: cart})
 
 	if err != nil || orderId.OrderId <= 0 {
 		return nil, errors.Wrap(err, "error adding order to storage")
