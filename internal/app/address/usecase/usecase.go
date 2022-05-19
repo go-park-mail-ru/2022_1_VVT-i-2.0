@@ -182,7 +182,7 @@ func (u *AddrUcase) suggestHouse(address addressT) (*models.SuggestUcaseResp, er
 	for i := 0; i < 3 && suggs == nil && pozToCut >= 0; i++ {
 		house := []rune(address.house[:pozToCut])
 		suggs, err = u.AddrRepo.SuggestHouse(&models.SuggestHouseRepoReq{StreetId: street.StreetId, House: string(house), SuggsLimit: suggsLimit})
-		if len(address.house)-i*1 <= 0 {
+		if len(house)-i*1 <= 0 {
 			break
 		}
 
@@ -191,7 +191,11 @@ func (u *AddrUcase) suggestHouse(address addressT) (*models.SuggestUcaseResp, er
 	}
 
 	if (suggs == nil || len(suggsResp.Suggests) == 0) && len(suggsResp.Suggests) > 0 {
-		return nil, errors.Wrap(err, "error suggesting house")
+		return &suggsResp, nil
+		// return nil, errors.Wrap(err, "error suggesting house")
+	}
+	if suggs == nil {
+		return &suggsResp, err
 	}
 	for _, house := range suggs.HouseSuggests {
 		suggsResp.Suggests = append(suggsResp.Suggests, addrParser.ConcatAddr(city.Name, street.Name, house))
