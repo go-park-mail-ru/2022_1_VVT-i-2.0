@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/delivery/http/httpErrDescr"
+	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/delivery/http/middleware"
 	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/models"
 	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/recommendations"
 	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/tools/servErrors"
@@ -28,8 +29,8 @@ func NewRecommendationsHandler(ucase recommendations.Ucase, staticManager static
 func (h RecommendationsHandler) GetRecommendations(ctx echo.Context) error {
 	fmt.Println("начало работы хелндера рекоммендаций")
 
-	//logger := middleware.GetLoggerFromCtx(ctx)
-	//requestId := middleware.GetRequestIdFromCtx(ctx)
+	logger := middleware.GetLoggerFromCtx(ctx)
+	requestId := middleware.GetRequestIdFromCtx(ctx)
 
 	var ordersList models.RecommendationsOrderLists
 	if err := ctx.Bind(&ordersList); err != nil {
@@ -56,7 +57,7 @@ func (h RecommendationsHandler) GetRecommendations(ctx echo.Context) error {
 		if cause != nil && cause.Code == servErrors.NO_SUCH_ENTITY_IN_DB {
 			return httpErrDescr.NewHTTPError(ctx, http.StatusForbidden, httpErrDescr.NO_SUCH_RESTAURANTS)
 		}
-		//logger.Error(requestId, err.Error())
+		logger.Error(requestId, err.Error())
 		return httpErrDescr.NewHTTPError(ctx, http.StatusInternalServerError, httpErrDescr.SERVER_ERROR)
 	}
 
