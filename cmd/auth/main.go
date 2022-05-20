@@ -64,5 +64,9 @@ func main() {
 
 	authProto.RegisterAuthServiceServer(server, authHandler)
 
-	server.Serve(lis)
+	err = server.Serve(lis)
+
+	if err != nil {
+		log.Fatalln("cant serve auth-microservice", err)
+	}
 }

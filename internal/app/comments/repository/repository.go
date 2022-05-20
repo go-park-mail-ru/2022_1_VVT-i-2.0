@@ -79,9 +79,6 @@ func (r *CommentsRepo) AddRestaurantComment(newComment *models.AddCommentRestaur
 		}
 		return nil, servErrors.NewError(servErrors.DB_INSERT, err.Error())
 	}
-	if comment == nil {
-		return nil, servErrors.NewError(servErrors.DB_INSERT, "")
-	}
 	return comment, nil
 }
 
@@ -93,9 +90,6 @@ func (r *CommentsRepo) UpdateRestaurantRating(restId int, newRestRating int, cou
 			return nil, servErrors.NewError(servErrors.DB_ERROR, err.Error())
 		}
 		return nil, servErrors.NewError(servErrors.DB_INSERT, err.Error())
-	}
-	if restaurant == nil {
-		return nil, servErrors.NewError(servErrors.DB_INSERT, "")
 	}
 	return restaurant, nil
 }

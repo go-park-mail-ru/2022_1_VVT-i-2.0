@@ -1,7 +1,6 @@
 package ucase
 
 import (
-	"regexp"
 	"strings"
 
 	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/tools/addrParser"
@@ -9,15 +8,6 @@ import (
 	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/microservices/order"
 	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/microservices/order/models"
 	"github.com/pkg/errors"
-)
-
-const (
-	separator          = ","
-	toCutCityRegexpStr = `(?i)^ *гор\.|^ *гор |^ *г |^ *г\.|^ *город `
-)
-
-var (
-	toCutCityRegexp = *regexp.MustCompile(toCutCityRegexpStr)
 )
 
 type OrderUcase struct {
@@ -97,7 +87,7 @@ func (u *OrderUcase) GetUserOrder(req *models.GetUserOrderUcaseReq) (*models.Get
 }
 
 func (u *OrderUcase) getAddress(addrStr string) (string, error) {
-	addrParts := strings.Split(addrStr, separator)
+	addrParts := strings.Split(addrStr, addrParser.Separator)
 
 	if len(addrParts) != 3 { // city, street, house
 		return "", servErrors.NewError(servErrors.NO_SUCH_ADDRESS, "")

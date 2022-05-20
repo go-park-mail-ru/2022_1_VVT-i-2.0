@@ -30,7 +30,7 @@ func (r *AuthRepo) GetUserByPhone(phone models.UserByPhoneRepoReq) (*models.User
 }
 
 func (r *AuthRepo) AddUser(newUser *models.AddUserRepoReq) (*models.UserDataRepo, error) {
-	user := &models.UserDataRepo{}
+	var user *models.UserDataRepo
 	err := r.DB.Get(user, `INSERT INTO users (name,phone,email) VALUES ($1,$2,$3) RETURNING id, name, phone, email`, newUser.Name, newUser.Phone, newUser.Email)
 
 	if err != nil {
@@ -38,9 +38,6 @@ func (r *AuthRepo) AddUser(newUser *models.AddUserRepoReq) (*models.UserDataRepo
 			return nil, servErrors.NewError(servErrors.DB_ERROR, err.Error())
 		}
 		return nil, servErrors.NewError(servErrors.DB_INSERT, err.Error())
-	}
-	if user == nil {
-		return nil, servErrors.NewError(servErrors.DB_INSERT, "")
 	}
 	return user, nil
 }

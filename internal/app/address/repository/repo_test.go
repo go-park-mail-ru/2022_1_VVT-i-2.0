@@ -324,7 +324,7 @@ func TestSuggsRepo_GetCity(t *testing.T) {
 
 	repo := NewAddrRepo(sqlxDB)
 
-	city, err := repo.GetCity("Москва")
+	city, err := repo.GetCity(&models.GetCityRepoReq{City: "Москва"})
 
 	assert.Equal(t, &models.GetCityRepoResp{CityId: 0, Name: "Москва"}, city)
 	assert.NoError(t, err)
@@ -341,7 +341,7 @@ func TestSuggsRepo_GetCityErr(t *testing.T) {
 
 	repo := NewAddrRepo(sqlxDB)
 
-	city, err := repo.GetCity("Нетгорода")
+	city, err := repo.GetCity(&models.GetCityRepoReq{City: "Нетгорода"})
 
 	assert.Nil(t, city)
 	assert.Error(t, err)

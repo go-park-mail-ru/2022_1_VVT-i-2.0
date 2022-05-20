@@ -19,7 +19,6 @@ type Flashcaller struct {
 // TODO: отправлять по хттпС
 const (
 	flasgcallUrlFmt        = "http://%s:%s@gate.smsaero.ru/v2/flashcall/send?phone=%s&code=%s"
-	contentTypeJson        = "application/json"
 	phoneAlreadyInQueueMsg = "Validation error."
 )
 

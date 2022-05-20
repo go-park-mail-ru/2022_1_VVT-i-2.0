@@ -29,7 +29,6 @@ const (
 	city = iota
 	street
 	house
-	ready
 	letterCountToTrimStreetPerIter = 2
 )
 
@@ -98,7 +97,7 @@ func (u *AddrUcase) suggestStreet(address addressT) (*models.SuggestUcaseResp, e
 	}
 
 	suggs := &models.SuggestStreetRepoResp{}
-	suggsFromMiddle := &models.SuggestStreetRepoResp{} // на запрос "Парковая" -> ответ "1-я Парковая"
+	var suggsFromMiddle *models.SuggestStreetRepoResp // на запрос "Парковая" -> ответ "1-я Парковая"
 
 	pozToCut := len(address.street.Name)
 	for i := 0; i < 4 && len(suggs.StreetSuggests) == 0 && pozToCut >= 0; i++ {
