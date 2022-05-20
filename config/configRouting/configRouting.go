@@ -6,6 +6,7 @@ import (
 	commentHandler "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/comments/delivery/http"
 	dishesHandler "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/dishes/delivery/http"
 	orderHandler "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/order/delivery/http"
+	recommendationsHandler "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/recommendations/delivery/http"
 	restaurantsHandler "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/restaurants/delivery/http"
 	userHandler "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/user/delivery/http"
 	"github.com/labstack/echo/v4"
@@ -14,12 +15,13 @@ import (
 )
 
 type ServerHandlers struct {
-	UserHandler        *userHandler.UserHandler
-	RestaurantsHandler *restaurantsHandler.RestaurantsHandler
-	DishesHandler      *dishesHandler.DishesHandler
-	SuggsHandler       *suggestHandler.SuggsHandler
-	OrderHandler       *orderHandler.OrderHandler
-	CommentsHandler    *commentHandler.CommentsHandler
+	UserHandler				*userHandler.UserHandler
+	RestaurantsHandler		*restaurantsHandler.RestaurantsHandler
+	DishesHandler			*dishesHandler.DishesHandler
+	SuggsHandler			*suggestHandler.SuggsHandler
+	OrderHandler      		*orderHandler.OrderHandler
+	CommentsHandler    		*commentHandler.CommentsHandler
+	RecommendstionsHandler	*recommendationsHandler.RecommendationsHandler
 
 }
 
@@ -50,4 +52,5 @@ func (sh *ServerHandlers) ConfigureRouting(router *echo.Echo) {
 	router.GET(v1Prefix+"restaurants", sh.RestaurantsHandler.GetAllRestaurantsMain)
 	router.GET(v1Prefix+"", sh.RestaurantsHandler.GetAllRestaurants)
 	router.GET(v1Prefix+"restaurant/:slug", sh.DishesHandler.GetDishesByRestaurants)
+	router.GET(v1Prefix+"recommendations", sh.RecommendstionsHandler.GetRecommendations)
 }

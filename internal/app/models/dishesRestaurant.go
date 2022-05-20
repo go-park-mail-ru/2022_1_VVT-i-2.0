@@ -40,8 +40,8 @@ type Categories struct {
 
 type DishCategoriesRepo struct {
 	Id           	int
-	Category     	int `db:"category"`
-	RestaurantId 	int `db:"restaurant_id"`
+	Category     	int		`db:"category"`
+	RestaurantId 	int		`db:"restaurant_id"`
 	Name        	string
 	Description 	string
 	ImagePath   	string	`db:"image_path"`
@@ -63,10 +63,21 @@ type GetRestaurantDishesUcaseReq struct {
 }
 
 // UseCase models
+type DishCategoriesUsecase struct {
+	Id           	int
+	Category     	int
+	RestaurantId 	int
+	Name        	string
+	Description 	string
+	ImagePath   	string
+	Calories    	int
+	Price       	int
+	Weight      	int
+}
 
 type CategoriesDishesUcaseResp struct {
 	Categories string
-	Dishes     []DishCategoriesRepo
+	Dishes     []DishCategoriesUsecase
 }
 
 type GetRestaurantDishesCategoriesUcaseResp struct {
@@ -87,9 +98,9 @@ type GetRestaurantDishesCategoriesUcaseResp struct {
 // models
 
 type DishCategoriesResp struct {
-	Id           	int `json:"id"`
-	Category     	int `json:"category"`
-	RestaurantId 	int `json:"restaurant"`
+	Id           	int 	`json:"id"`
+	Category     	int 	`json:"category"`
+	RestaurantId 	int 	`json:"restaurant"`
 	Name        	string	`json:"productName"`
 	Description 	string	`json:"description"`
 	ImagePath   	string	`json:"imgPath"`

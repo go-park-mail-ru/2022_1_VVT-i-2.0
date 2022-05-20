@@ -51,7 +51,18 @@ func (u *DishesUcase) GetRestaurantDishes(req models.GetRestaurantDishesUcaseReq
 
 	for _, item := range dishes.Dishes {
 		var car = item.Category
-		Resp.Dishes[car-1].Dishes = append(Resp.Dishes[car-1].Dishes, item)
+		var new_item = models.DishCategoriesUsecase{
+			Id:          	item.Id,
+			Category:          	item.Category,
+			RestaurantId:          	item.RestaurantId,
+			Name:          	item.Name,
+			Description:          	item.Description,
+			ImagePath:          	item.ImagePath,
+			Calories:          	item.Calories,
+			Price:          	item.Price,
+			Weight:          	item.Weight,
+		}
+		Resp.Dishes[car-1].Dishes = append(Resp.Dishes[car-1].Dishes, new_item)
 	}
 
 	return Resp, nil

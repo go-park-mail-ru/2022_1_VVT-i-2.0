@@ -44,6 +44,10 @@ import (
 	userHandler "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/user/delivery/http"
 	userRepo "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/user/repository"
 	userUcase "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/user/usecase"
+
+	recommendationsHandler "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/recommendations/delivery/http"
+	recommendationsRepo "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/recommendations/repository"
+	recommendationsUcase "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/recommendations/usecase"
 )
 
 // @title           Swagger Example API
@@ -144,6 +148,10 @@ func main() {
 	commentsUcase := commentUcase.NewCommentsUsecase(commentsRepo)
 	commentsHandler := commentHandler.NewCommentsHandler(commentsUcase)
 
+	recommendationsRepo := recommendationsRepo.NewRecommendationsRepo(pgxManager)
+	recommendationsUcase := recommendationsUcase.NewRecommendationsUcase(recommendationsRepo)
+	recommendationsHandler := recommendationsHandler.NewRecommendationsHandler(recommendationsUcase, staticManager)
+
 	router := echo.New()
 
 	m, err := metrics.CreateNewMetric("main")
@@ -154,12 +162,13 @@ func main() {
 	router.Use(m.CollectMetrics)
 
 	serverRouting := configRouting.ServerHandlers{
-		UserHandler:        userHandler,
-		RestaurantsHandler: restaurantsHandler,
-		SuggsHandler:       suggsHandler,
-		OrderHandler:       orderHandler,
-		DishesHandler:      dishesHandler,
-		CommentsHandler:    commentsHandler,
+		UserHandler:			userHandler,
+		RestaurantsHandler:		restaurantsHandler,
+		SuggsHandler:			suggsHandler,
+		OrderHandler:			orderHandler,
+		DishesHandler:			dishesHandler,
+		CommentsHandler:		commentsHandler,
+		RecommendstionsHandler: recommendationsHandler,
 	}
 
 	serverRouting.ConfigureRouting(router)

@@ -37,8 +37,6 @@ func (h CommentsHandler) GetRestaurantComments(ctx echo.Context) error {
 	logger := middleware.GetLoggerFromCtx(ctx)
 	requestId := middleware.GetRequestIdFromCtx(ctx)
 
-	//item := ctx.Param("id")
-	//id, err := strconv.ParseInt(item, 16, 32)
 	slug := ctx.Param("slug")
 
 	commetsDataDelivery, err := h.Usecase.GetRestaurantComments(models.GetRestaurantCommentsUcaseReq{
