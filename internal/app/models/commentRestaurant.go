@@ -1,22 +1,22 @@
 package models
 
 type CommentRestaurantDataStorage struct {
-	RestaurantId	int		`db:"restaurant_id"`
-	Author        	string	`db:"author"`
-	Text          	string	`db:"text"`
-	Stars         	int		`db:"stars"`
-	Date          	string	`db:"get_ru_date"`
+	RestaurantId int    `db:"restaurant_id"`
+	Author       string `db:"author"`
+	Text         string `db:"text"`
+	Stars        int    `db:"stars"`
+	Date         string `db:"get_ru_date"`
 }
 
 type AddCommentRestaurantDataStorage struct {
-	RestaurantId	int		`db:"restaurant_id"`
-	User           	string	`db:"author"`
-	CommentText   	string	`db:"text"`
-	CommentRating 	int		`db:"stars"`
+	RestaurantId  int    `db:"restaurant_id"`
+	User          string `db:"author"`
+	CommentText   string `db:"text"`
+	CommentRating int    `db:"stars"`
 }
 
 type AddCommentRestaurantUseCase struct {
-	Slug           string
+	Slug          string
 	CommentText   string
 	CommentRating int
 }
@@ -36,11 +36,11 @@ type CommentRestaurantId int64
 //}
 
 type CommentRestaurantUseCase struct {
-	RestaurantId	int    `json:"restaurants_id"`
-	Author       	string `json:"author"`
-	Text          	string `json:"text"`
-	Stars         	int    `json:"starts"`
-	Date          	string `json:"date"`
+	RestaurantId int    `json:"restaurants_id"`
+	Author       string `json:"author"`
+	Text         string `json:"text"`
+	Stars        int    `json:"starts"`
+	Date         string `json:"date"`
 	//Restaurant	int `json:"restaurants"`
 	//User		string `json:"user"`
 	//Comment_text string `json:"commentText"`
@@ -53,7 +53,7 @@ type CommentsRestaurantUseCase struct {
 
 type GetCommentDataDelivery struct {
 	Author string `json:"author"`
-	Text   string `json:"text"`
+	Text   string `json:"text" valid:"comment"`
 	Stars  int    `json:"stars"`
 	Date   string `json:"date"`
 }
@@ -63,11 +63,11 @@ type GetCommentsDataDelivery struct {
 }
 
 type CommentDataDelivery struct {
-	RestaurantId	int    `json:"restaurants_id"`
-	Author       	 string `json:"author"`
-	Text         	 string `json:"text"`
-	Stars        	 int    `json:"stars"`
-	Date         	 string `json:"date"`
+	RestaurantId int    `json:"restaurants_id"`
+	Author       string `json:"author"`
+	Text         string `json:"text"`
+	Stars        int    `json:"stars"`
+	Date         string `json:"date"`
 }
 
 type CommentsDataDelivery struct {
@@ -75,14 +75,14 @@ type CommentsDataDelivery struct {
 }
 
 type AddCommentRestaurant struct {
-	Slug     		string	`json:"slug"`
-	CommentText  	string 	`json:"text"`
-	CommentRating	int    	`json:"stars"`
+	Slug          string `json:"slug"`
+	CommentText   string `json:"text"`
+	CommentRating int    `json:"stars"`
 }
 
 type Comment struct {
-	Id             int
-	Restaurant     int
+	Id            int
+	Restaurant    int
 	UserId        int
 	CommentText   string
 	CommentRating int

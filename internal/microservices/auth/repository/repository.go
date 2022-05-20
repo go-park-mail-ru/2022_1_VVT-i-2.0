@@ -30,7 +30,7 @@ func (r *AuthRepo) GetUserByPhone(phone models.UserByPhoneRepoReq) (*models.User
 }
 
 func (r *AuthRepo) AddUser(newUser *models.AddUserRepoReq) (*models.UserDataRepo, error) {
-	var user *models.UserDataRepo
+	user := &models.UserDataRepo{}
 	err := r.DB.Get(user, `INSERT INTO users (name,phone,email) VALUES ($1,$2,$3) RETURNING id, name, phone, email`, newUser.Name, newUser.Phone, newUser.Email)
 
 	if err != nil {

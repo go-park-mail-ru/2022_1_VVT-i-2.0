@@ -182,9 +182,9 @@ func (u *AddrUcase) suggestHouse(address addressT) (*models.SuggestUcaseResp, er
 
 	}
 
-	var suggs *models.SuggestHouseRepoResp
+	suggs := &models.SuggestHouseRepoResp{}
 	pozToCut := len(address.house)
-	for i := 0; i < 3 && suggs == nil && pozToCut >= 0; i++ {
+	for i := 0; i < 3 && (suggs == nil || len(suggs.HouseSuggests) == 0) && pozToCut >= 0; i++ {
 		house := []rune(address.house[:pozToCut])
 		suggs, err = u.AddrRepo.SuggestHouse(&models.SuggestHouseRepoReq{StreetId: street.StreetId, House: string(house), SuggsLimit: NoComrleteMachSuggsLimit})
 		if len(house)-i*1 <= 0 {
@@ -234,3 +234,4 @@ func (u *AddrUcase) Suggest(address *models.SuggestUcaseReq) (*models.SuggestUca
 
 // если доболнять город -- 1 саджест на город + 5 саджестов
 // все остальное : 3 саджеста на мои адреса + 3 саджеста на другое
+// var .*
