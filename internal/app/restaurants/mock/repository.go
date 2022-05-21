@@ -35,7 +35,7 @@ func (r *RestaurantsRepo) GetRestaurantsByCategory(category models.GetRestaurant
 		DownMinutsToDelivery: 2}}}, nil
 }
 
-func (r *RestaurantsRepo) GetRestaurantsBySeachQuery(category models.GetRestaurantBySearchQueryRepoReq) (*models.RestaurantsRepo, error) {
+func (r *RestaurantsRepo) GetRestaurantsBySearchQuery(category models.GetRestaurantBySearchQueryRepoReq) (*models.RestaurantsRepo, error) {
 	return &models.RestaurantsRepo{Restaurants: []models.RestaurantRepo{{
 		Id:                   1,
 		Name:                 "Name",

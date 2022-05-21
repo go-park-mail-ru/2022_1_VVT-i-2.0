@@ -137,7 +137,7 @@ func TestRestaurantsRepo_GetRestaurantsByQuery(t *testing.T) {
 		ExpectQuery(`SELECT r.id id, r.name, r.image_path image_path, r.slug slug, r.min_price min_price, r.agg_rating agg_rating, r.review_count review_count, up_time_to_delivery, down_time_to_delivery FROM restaurants r JOIN categori_restaurant cr ON r.id=cr.restaurant_id JOIN categories c ON cr.categori_id=c.id WHERE c.name ILIKE `).
 		WithArgs("category%").
 		WillReturnRows(rows)
-	restaurantsResp, err := repo.GetRestaurantsBySeachQuery(models.GetRestaurantBySearchQueryRepoReq{Query: "category"})
+	restaurantsResp, err := repo.GetRestaurantsBySearchQuery(models.GetRestaurantBySearchQueryRepoReq{Query: "category"})
 	if err != nil {
 		t.Errorf("unexpected err: %s", err)
 		return

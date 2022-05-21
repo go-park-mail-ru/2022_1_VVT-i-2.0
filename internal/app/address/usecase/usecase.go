@@ -1,7 +1,6 @@
 package ucase
 
 import (
-	"fmt"
 	"strings"
 	"unicode/utf8"
 
@@ -30,9 +29,7 @@ const (
 	city = iota
 	street
 	house
-	ready
 	letterCountToTrimStreetPerIter = 2
-	// separator                      = ","
 )
 
 type addressT struct {
@@ -92,24 +89,27 @@ func (u *AddrUcase) suggestStreet(address addressT) (*models.SuggestUcaseResp, e
 	}
 
 	var suggsResp models.SuggestUcaseResp
-	street, err := u.AddrRepo.GetStreet(&models.GetStreetRepoReq{Street: address.street.Name, StreetType: address.street.StreetType, CityId: city.CityId})
-	if err == nil && street != nil && street.Name != "" {
-		suggsResp.Suggests = append(suggsResp.Suggests, addrParser.ConcatAddr(city.Name, street.Name, ""))
+	completeMachStreet, err := u.AddrRepo.GetStreet(&models.GetStreetRepoReq{Street: address.street.Name, StreetType: address.street.StreetType, CityId: city.CityId})
+	NoComrleteMachSuggsLimit := suggsLimit
+	if err == nil && completeMachStreet != nil && completeMachStreet.Name != "" {
+		suggsResp.Suggests = append(suggsResp.Suggests, addrParser.ConcatAddr(city.Name, completeMachStreet.Name, ""))
+		NoComrleteMachSuggsLimit--
 	}
 
 	suggs := &models.SuggestStreetRepoResp{}
-	suggsFromMiddle := &models.SuggestStreetRepoResp{} // на запрос "Парковая" -> ответ "1-я Парковая"
+	var suggsFromMiddle *models.SuggestStreetRepoResp // на запрос "Парковая" -> ответ "1-я Парковая"
 
 	pozToCut := len(address.street.Name)
 	for i := 0; i < 4 && len(suggs.StreetSuggests) == 0 && pozToCut >= 0; i++ {
 		street := strings.TrimRight(string(address.street.Name[:(pozToCut)]), " ")
 
-		suggs, err = u.AddrRepo.SuggestStreet(&models.SuggestStreetRepoReq{Street: street, StreetType: address.street.StreetType, SearchInMiddle: false, SuggsLimit: suggsLimit})
+		suggs, err = u.AddrRepo.SuggestStreet(&models.SuggestStreetRepoReq{Street: street, StreetType: address.street.StreetType, SearchInMiddle: false, SuggsLimit: NoComrleteMachSuggsLimit})
 		if suggs == nil {
 			suggs = &models.SuggestStreetRepoResp{}
 		}
+
 		if len(suggs.StreetSuggests) < suggsLimit {
-			suggsFromMiddle, err = u.AddrRepo.SuggestStreet(&models.SuggestStreetRepoReq{Street: street, StreetType: address.street.StreetType, SearchInMiddle: true, SuggsLimit: suggsLimit - len(suggs.StreetSuggests)})
+			suggsFromMiddle, err = u.AddrRepo.SuggestStreet(&models.SuggestStreetRepoReq{Street: street, StreetType: address.street.StreetType, SearchInMiddle: true, SuggsLimit: NoComrleteMachSuggsLimit - len(suggs.StreetSuggests)})
 			if suggsFromMiddle != nil {
 				suggs.StreetSuggests = append(suggs.StreetSuggests, suggsFromMiddle.StreetSuggests...)
 			}
@@ -130,7 +130,9 @@ func (u *AddrUcase) suggestStreet(address addressT) (*models.SuggestUcaseResp, e
 
 	if suggs != nil {
 		for _, street := range suggs.StreetSuggests {
-			suggsResp.Suggests = append(suggsResp.Suggests, addrParser.ConcatAddr(city.Name, street, ""))
+			if completeMachStreet == nil || street != completeMachStreet.Name {
+				suggsResp.Suggests = append(suggsResp.Suggests, addrParser.ConcatAddr(city.Name, street, ""))
+			}
 		}
 	}
 
@@ -171,17 +173,20 @@ func (u *AddrUcase) suggestHouse(address addressT) (*models.SuggestUcaseResp, er
 		}
 	}
 
-	house, err := u.AddrRepo.GetHouse(&models.GetHouseRepoReq{StreetId: street.StreetId, House: address.house})
+	completeMachHouse, err := u.AddrRepo.GetHouse(&models.GetHouseRepoReq{StreetId: street.StreetId, House: address.house})
 	var suggsResp models.SuggestUcaseResp
-	if err == nil && house != nil && house.House != "" {
-		suggsResp.Suggests = append(suggsResp.Suggests, addrParser.ConcatAddr(city.Name, street.Name, house.House))
+	NoComrleteMachSuggsLimit := suggsLimit
+	if err == nil && completeMachHouse != nil && completeMachHouse.House != "" {
+		suggsResp.Suggests = append(suggsResp.Suggests, addrParser.ConcatAddr(city.Name, street.Name, completeMachHouse.House))
+		NoComrleteMachSuggsLimit--
+
 	}
 
-	var suggs *models.SuggestHouseRepoResp
+	suggs := &models.SuggestHouseRepoResp{}
 	pozToCut := len(address.house)
-	for i := 0; i < 3 && suggs == nil && pozToCut >= 0; i++ {
+	for i := 0; i < 3 && (suggs == nil || len(suggs.HouseSuggests) == 0) && pozToCut >= 0; i++ {
 		house := []rune(address.house[:pozToCut])
-		suggs, err = u.AddrRepo.SuggestHouse(&models.SuggestHouseRepoReq{StreetId: street.StreetId, House: string(house), SuggsLimit: suggsLimit})
+		suggs, err = u.AddrRepo.SuggestHouse(&models.SuggestHouseRepoReq{StreetId: street.StreetId, House: string(house), SuggsLimit: NoComrleteMachSuggsLimit})
 		if len(house)-i*1 <= 0 {
 			break
 		}
@@ -192,13 +197,14 @@ func (u *AddrUcase) suggestHouse(address addressT) (*models.SuggestUcaseResp, er
 
 	if (suggs == nil || len(suggsResp.Suggests) == 0) && len(suggsResp.Suggests) > 0 {
 		return &suggsResp, nil
-		// return nil, errors.Wrap(err, "error suggesting house")
 	}
 	if suggs == nil {
 		return &suggsResp, err
 	}
 	for _, house := range suggs.HouseSuggests {
-		suggsResp.Suggests = append(suggsResp.Suggests, addrParser.ConcatAddr(city.Name, street.Name, house))
+		if completeMachHouse == nil || house != completeMachHouse.House {
+			suggsResp.Suggests = append(suggsResp.Suggests, addrParser.ConcatAddr(city.Name, street.Name, house))
+		}
 	}
 	suggsResp.AddressFull = true
 	return &suggsResp, nil
@@ -222,7 +228,10 @@ func (u *AddrUcase) Suggest(address *models.SuggestUcaseReq) (*models.SuggestUca
 			return u.suggestHouse(*addr)
 		}
 	default:
-		fmt.Println(addr.city)
 		return u.suggestCity()
 	}
 }
+
+// если доболнять город -- 1 саджест на город + 5 саджестов
+// все остальное : 3 саджеста на мои адреса + 3 саджеста на другое
+// var .*

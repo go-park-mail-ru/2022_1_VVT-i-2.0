@@ -8,7 +8,7 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-func (mw *CommonMiddlewareChain) PanicMiddleware(next echo.HandlerFunc) echo.HandlerFunc {
+func (mw *CommonMiddleware) PanicMiddleware(next echo.HandlerFunc) echo.HandlerFunc {
 	return func(ctx echo.Context) error {
 		defer func() {
 			if err := recover(); err != nil {

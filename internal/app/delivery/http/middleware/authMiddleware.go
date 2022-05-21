@@ -14,7 +14,7 @@ type UserCtx struct {
 	Id models.UserId
 }
 
-func (mw *CommonMiddlewareChain) AuthMiddleware(next echo.HandlerFunc) echo.HandlerFunc {
+func (mw *CommonMiddleware) AuthMiddleware(next echo.HandlerFunc) echo.HandlerFunc {
 	return func(ctx echo.Context) error {
 		tokenCookie, err := ctx.Request().Cookie(TokenKeyCookie)
 
