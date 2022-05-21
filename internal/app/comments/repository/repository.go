@@ -75,31 +75,25 @@ func (r *CommentsRepo) GetUserById(id models.UserId) (*models.UserDataRepo, erro
 }
 
 func (r *CommentsRepo) AddRestaurantComment(req models.AddRestaurantCommentRepoReq) (*models.CommentRestaurantDataStorage, error) {
-	comment := &models.CommentRestaurantDataStorage{}
-	err := r.DB.Get(comment, `INSERT INTO comments (restaurant_id, author, text, stars) VALUES ($1,$2,$3,$4) RETURNING restaurant_id, author, text, stars, get_ru_date(date)`, req.RestaurantId, req.User, req.CommentText, req.CommentRating)
+	comment := models.CommentRestaurantDataStorage{}
+	err := r.DB.Get(&comment, `INSERT INTO comments (restaurant_id, author, text, stars) VALUES ($1,$2,$3,$4) RETURNING restaurant_id, author, text, stars, get_ru_date(date)`, req.RestaurantId, req.User, req.CommentText, req.CommentRating)
 	if err != nil {
 		if err == sql.ErrConnDone || err == sql.ErrTxDone {
 			return nil, servErrors.NewError(servErrors.DB_ERROR, err.Error())
 		}
 		return nil, servErrors.NewError(servErrors.DB_INSERT, err.Error())
 	}
-	if comment == nil {
-		return nil, servErrors.NewError(servErrors.DB_INSERT, "")
-	}
-	return comment, nil
+	return &comment, nil
 }
 
 func (r *CommentsRepo) UpdateRestaurantRating(req models.UpdateRestaurantRatingRepoReq) (*models.RestaurantRepo, error) {
-	restaurant := &models.RestaurantRepo{}
-	err := r.DB.Get(restaurant, `UPDATE restaurants SET agg_rating=$1, review_count=$2 WHERE id=$3 RETURNING id, name, image_path, slug, image_path, slug, min_price, up_time_to_delivery, down_time_to_delivery, review_count, agg_rating`, req.NewRestRating, req.CountRating, req.RestId)
+	restaurant := models.RestaurantRepo{}
+	err := r.DB.Get(&restaurant, `UPDATE restaurants SET agg_rating=$1, review_count=$2 WHERE id=$3 RETURNING id, name, image_path, slug, image_path, slug, min_price, up_time_to_delivery, down_time_to_delivery, review_count, agg_rating`, req.NewRestRating, req.CountRating, req.RestId)
 	if err != nil {
 		if err == sql.ErrConnDone || err == sql.ErrTxDone {
 			return nil, servErrors.NewError(servErrors.DB_ERROR, err.Error())
 		}
 		return nil, servErrors.NewError(servErrors.DB_INSERT, err.Error())
 	}
-	if restaurant == nil {
-		return nil, servErrors.NewError(servErrors.DB_INSERT, "")
-	}
-	return restaurant, nil
+	return &restaurant, nil
 }

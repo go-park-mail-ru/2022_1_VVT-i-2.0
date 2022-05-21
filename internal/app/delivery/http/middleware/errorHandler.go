@@ -8,7 +8,7 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-func (mw *CommonMiddlewareChain) ErrorHandler(err error, ctx echo.Context) {
+func (mw *CommonMiddleware) ErrorHandler(err error, ctx echo.Context) {
 	requestId := GetRequestIdFromCtx(ctx)
 
 	if mw.Logger != nil && requestId > 0 {

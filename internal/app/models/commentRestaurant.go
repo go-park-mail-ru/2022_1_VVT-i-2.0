@@ -77,16 +77,16 @@ type CommentsRestaurantUseCase struct {
 // handler request
 
 type AddCommentRestaurantReq struct {
-	Slug          string `json:"slug"`
-	CommentText   string `json:"text"`
-	CommentRating int    `json:"stars"`
+	Slug          string `json:"slug" valid:"slug,required"`
+	CommentText   string `json:"text" valid:"comment,required"`
+	CommentRating int    `json:"stars" valid:"stars,required"`
 }
 
 // handler models
 
 type GetCommentDataDelivery struct {
 	Author string `json:"author"`
-	Text   string `json:"text" valid:"comment"`
+	Text   string `json:"text"`
 	Stars  int    `json:"stars"`
 	Date   string `json:"date"`
 }

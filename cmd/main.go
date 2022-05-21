@@ -171,10 +171,8 @@ func main() {
 		RecommendstionsHandler: recommendationsHandler,
 	}
 
-	serverRouting.ConfigureRouting(router)
-
-	comonMwChain := middleware.NewCommonMiddlewareChain(servLogger, jwtManager)
-	configRouting.ConfigureCommonMiddleware(router, &comonMwChain, &config.CorsConfig, &config.CsrfConfig)
+	comonMw := middleware.NewCommonMiddleware(servLogger, jwtManager)
+	serverRouting.ConfigureRouting(router, &comonMw, &config.CorsConfig, &config.CsrfConfig)
 
 	httpServ := http.Server{
 		Addr:         config.ServConfig.BindAddr,
