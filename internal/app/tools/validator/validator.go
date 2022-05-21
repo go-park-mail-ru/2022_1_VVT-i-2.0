@@ -10,6 +10,7 @@ import (
 
 const (
 	phoneRegexp   = `^7[94][0-9]{9}$`
+	codeRegexp    = `[0-9]{4}$`
 	nameRegexp    = `^[A-ZА-Я]{1}[a-zа-я]{2,25}$`
 	slugRegexp    = `^[a-zA-Zа-яА-Я0-9\-]{1,128}$`
 	addressRegexp = `^[a-zA-Zа-яА-Я0-9 \,\.\/\-]{0,256}$`
@@ -27,8 +28,13 @@ func init() {
 	govalidator.CustomTypeTagMap.Set(
 		"code",
 		govalidator.CustomTypeValidator(func(i interface{}, o interface{}) bool {
-			code, ok := i.(int)
-			return ok && ((code <= 9999) && (code >= 0))
+			code, ok := i.(string)
+			if !ok {
+				return false
+			}
+
+			isCode, _ := regexp.MatchString(codeRegexp, code)
+			return isCode
 		}),
 	)
 	govalidator.CustomTypeTagMap.Set(
