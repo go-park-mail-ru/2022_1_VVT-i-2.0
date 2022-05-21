@@ -57,6 +57,8 @@ func (h OrderHandler) CreateOrder(ctx echo.Context) error {
 		switch cause.Code {
 		case servErrors.DB_INSERT:
 			return httpErrDescr.NewHTTPError(ctx, http.StatusConflict, httpErrDescr.CREATING_ORDER)
+		case servErrors.NO_SUCH_ADDRESS:
+			return httpErrDescr.NewHTTPError(ctx, http.StatusConflict, httpErrDescr.NO_SUCH_ADDRESS)
 		default:
 			logger.Error(requestId, err.Error())
 			return httpErrDescr.NewHTTPError(ctx, http.StatusInternalServerError, httpErrDescr.SERVER_ERROR)

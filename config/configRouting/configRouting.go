@@ -15,14 +15,13 @@ import (
 )
 
 type ServerHandlers struct {
-	UserHandler				*userHandler.UserHandler
-	RestaurantsHandler		*restaurantsHandler.RestaurantsHandler
-	DishesHandler			*dishesHandler.DishesHandler
-	SuggsHandler			*suggestHandler.SuggsHandler
-	OrderHandler      		*orderHandler.OrderHandler
-	CommentsHandler    		*commentHandler.CommentsHandler
-	RecommendstionsHandler	*recommendationsHandler.RecommendationsHandler
-
+	UserHandler            *userHandler.UserHandler
+	RestaurantsHandler     *restaurantsHandler.RestaurantsHandler
+	DishesHandler          *dishesHandler.DishesHandler
+	SuggsHandler           *suggestHandler.SuggsHandler
+	OrderHandler           *orderHandler.OrderHandler
+	CommentsHandler        *commentHandler.CommentsHandler
+	RecommendstionsHandler *recommendationsHandler.RecommendationsHandler
 }
 
 const (

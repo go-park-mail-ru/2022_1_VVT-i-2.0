@@ -28,7 +28,7 @@ func TestSuggsRepo_SuggestStreet(t *testing.T) {
 
 	rows := sqlmock.
 		NewRows([]string{"name"})
-	expect := []*models.GetStreetRepoAnsw{
+	expect := []*models.GetStreetRepoResp{
 		{Name: "Измайловский проспект"},
 	}
 	for _, item := range expect {
@@ -36,7 +36,7 @@ func TestSuggsRepo_SuggestStreet(t *testing.T) {
 	}
 
 	// good query
-	qArgs := &models.SuggestStreetRepoInput{Street: "Измайл", CityId: 1}
+	qArgs := &models.SuggestStreetRepoReq{Street: "Измайл", CityId: 1}
 	mock.
 		ExpectQuery(`SELECT name FROM streets ...`).
 		WithArgs(qArgs.Street+"%", 5).
@@ -51,7 +51,7 @@ func TestSuggsRepo_SuggestStreet(t *testing.T) {
 		t.Errorf("there were unfulfilled expectations: %s", err)
 		return
 	}
-	expectResp := &models.SuggestStreetRepoAnsw{StreetSuggests: []string{"Измайловский проспект"}}
+	expectResp := &models.SuggestStreetRepoResp{StreetSuggests: []string{"Измайловский проспект"}}
 
 	if !reflect.DeepEqual(suggs, expectResp) {
 		t.Errorf("results not match, want %v, have %v", expect[0], suggs)
@@ -63,7 +63,7 @@ func TestSuggsRepo_SuggestStreet(t *testing.T) {
 		ExpectQuery(`SELECT name FROM streets ...`).
 		WithArgs(qArgs.Street+"%", 5).
 		WillReturnError(sql.ErrConnDone)
-	suggs, err = repo.SuggestStreet(&models.SuggestStreetRepoInput{Street: "Измайл", CityId: 1})
+	suggs, err = repo.SuggestStreet(&models.SuggestStreetRepoReq{Street: "Измайл", CityId: 1})
 	if err := mock.ExpectationsWereMet(); err != nil {
 		t.Errorf("there were unfulfilled expectations: %s", err)
 		return
@@ -80,7 +80,7 @@ func TestSuggsRepo_SuggestStreet(t *testing.T) {
 		WithArgs(qArgs.Street+"%", 5).
 		WillReturnError(sql.ErrNoRows)
 
-	_, err = repo.SuggestStreet(&models.SuggestStreetRepoInput{Street: "Измайл", CityId: 1})
+	_, err = repo.SuggestStreet(&models.SuggestStreetRepoReq{Street: "Измайл", CityId: 1})
 	if err := mock.ExpectationsWereMet(); err != nil {
 		t.Errorf("there were unfulfilled expectations: %s", err)
 		return
@@ -103,7 +103,7 @@ func TestSuggsRepo_SuggestHouse(t *testing.T) {
 
 	rows := sqlmock.
 		NewRows([]string{"name"})
-	expect := []*models.GetHouseRepoAnsw{
+	expect := []*models.GetHouseRepoResp{
 		{House: "73A"},
 	}
 	for _, item := range expect {
@@ -111,7 +111,7 @@ func TestSuggsRepo_SuggestHouse(t *testing.T) {
 	}
 
 	// good query
-	qArgs := &models.SuggestHouseRepoInput{House: "7", StreetId: 1}
+	qArgs := &models.SuggestHouseRepoReq{House: "7", StreetId: 1}
 	mock.
 		ExpectQuery(`SELECT house FROM houses WHERE street_id ...`).
 		WithArgs(qArgs.StreetId, qArgs.House+"%", 5).
@@ -126,7 +126,7 @@ func TestSuggsRepo_SuggestHouse(t *testing.T) {
 		t.Errorf("there were unfulfilled expectations: %s", err)
 		return
 	}
-	expectResp := &models.SuggestHouseRepoAnsw{HouseSuggests: []string{"73A"}}
+	expectResp := &models.SuggestHouseRepoResp{HouseSuggests: []string{"73A"}}
 
 	if !reflect.DeepEqual(suggs, expectResp) {
 		t.Errorf("results not match, want %v, have %v", expect[0], suggs)
@@ -178,7 +178,7 @@ func TestSuggsRepo_GetHouse(t *testing.T) {
 
 	rows := sqlmock.
 		NewRows([]string{"house"})
-	expect := []*models.GetHouseRepoAnsw{
+	expect := []*models.GetHouseRepoResp{
 		{House: "73A"},
 	}
 	for _, item := range expect {
@@ -186,7 +186,7 @@ func TestSuggsRepo_GetHouse(t *testing.T) {
 	}
 
 	// good query
-	qArgs := &models.GetHouseRepoInput{House: "7", StreetId: 1}
+	qArgs := &models.GetHouseRepoReq{House: "7", StreetId: 1}
 	mock.
 		ExpectQuery(`SELECT house FROM houses WHERE street_id...`).
 		WithArgs(qArgs.StreetId, qArgs.House).
@@ -201,7 +201,7 @@ func TestSuggsRepo_GetHouse(t *testing.T) {
 		t.Errorf("there were unfulfilled expectations: %s", err)
 		return
 	}
-	expectResp := &models.GetHouseRepoAnsw{House: "73A"}
+	expectResp := &models.GetHouseRepoResp{House: "73A"}
 
 	if !reflect.DeepEqual(suggs, expectResp) {
 		t.Errorf("results not match, want %v, have %v", expect[0], suggs)
@@ -253,7 +253,7 @@ func TestSuggsRepo_GetStreet(t *testing.T) {
 
 	rows := sqlmock.
 		NewRows([]string{"name"})
-	expect := []*models.GetStreetRepoAnsw{
+	expect := []*models.GetStreetRepoResp{
 		{Name: "Измайловский проспект"},
 	}
 	for _, item := range expect {
@@ -261,7 +261,7 @@ func TestSuggsRepo_GetStreet(t *testing.T) {
 	}
 
 	// good query
-	qArgs := &models.GetStreetRepoInput{Street: "Измайловский прос", CityId: 0}
+	qArgs := &models.GetStreetRepoReq{Street: "Измайловский прос", CityId: 0}
 	mock.
 		ExpectQuery(`SELECT id as streetid, name FROM streets WHERE name ILIKE...`).
 		WithArgs(qArgs.Street).
@@ -276,7 +276,7 @@ func TestSuggsRepo_GetStreet(t *testing.T) {
 		t.Errorf("there were unfulfilled expectations: %s", err)
 		return
 	}
-	expectResp := &models.GetStreetRepoAnsw{Name: "Измайловский проспект"}
+	expectResp := &models.GetStreetRepoResp{Name: "Измайловский проспект"}
 
 	if !reflect.DeepEqual(suggs, expectResp) {
 		t.Errorf("results not match, want %v, have %v", expect[0], suggs)
@@ -324,9 +324,9 @@ func TestSuggsRepo_GetCity(t *testing.T) {
 
 	repo := NewAddrRepo(sqlxDB)
 
-	city, err := repo.GetCity("Москва")
+	city, err := repo.GetCity(&models.GetCityRepoReq{City: "Москва"})
 
-	assert.Equal(t, &models.GetCityRepoAnsw{CityId: 0, Name: "Москва"}, city)
+	assert.Equal(t, &models.GetCityRepoResp{CityId: 0, Name: "Москва"}, city)
 	assert.NoError(t, err)
 }
 
@@ -341,7 +341,7 @@ func TestSuggsRepo_GetCityErr(t *testing.T) {
 
 	repo := NewAddrRepo(sqlxDB)
 
-	city, err := repo.GetCity("Нетгорода")
+	city, err := repo.GetCity(&models.GetCityRepoReq{City: "Нетгорода"})
 
 	assert.Nil(t, city)
 	assert.Error(t, err)

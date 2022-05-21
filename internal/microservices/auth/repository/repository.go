@@ -39,9 +39,6 @@ func (r *AuthRepo) AddUser(newUser *models.AddUserRepoReq) (*models.UserDataRepo
 		}
 		return nil, servErrors.NewError(servErrors.DB_INSERT, err.Error())
 	}
-	if user == nil {
-		return nil, servErrors.NewError(servErrors.DB_INSERT, "")
-	}
 	return user, nil
 }
 

@@ -44,20 +44,26 @@ func generateLoginCode() string {
 func (u *AuthUcase) SendCode(req *models.SendCodeUcaseReq) (models.SendCodeUcaseResp, error) {
 	loginCode := generateLoginCode()
 	LOGIN_CODE = loginCode //TODO: удалить
-	fmt.Printf("grpc~~~~~~~code: %s ~~~~~~~~\n", loginCode)
-	err := u.Cacher.Set(cacher.NewItem(req.Phone, []byte(loginCode), codeExpiration))
-	if err != nil {
-		return models.SendCodeUcaseResp{IsRegistered: false}, errors.Wrap(err, "error saving [auth code destination]-code item to cach")
-	}
 
-	err = u.Notificator.SendCode(req.Phone, loginCode)
+	err := u.Notificator.SendCode(req.Phone, loginCode)
+
 	if err != nil {
-		return models.SendCodeUcaseResp{IsRegistered: false}, errors.Wrap(err, "error sending message e with code to auth code destination")
+		cause := servErrors.ErrorAs(err)
+		if cause == nil || cause.Code != servErrors.FLASHCALL_PHONE_ALREADY_IN_QUEUE {
+			return models.SendCodeUcaseResp{}, errors.Wrap(err, "error sending message e with code to auth code destination")
+		}
+		fmt.Printf("grpc~~~~~~~ put your old code ~~~~~~~~\n")
+	} else {
+		err = u.Cacher.Set(cacher.NewItem(req.Phone, []byte(loginCode), codeExpiration))
+		if err != nil {
+			return models.SendCodeUcaseResp{}, errors.Wrap(err, "error saving [auth code destination]-code item to cach")
+		}
+		fmt.Printf("grpc~~~~~~~ code: %s ~~~~~~~~\n", loginCode)
 	}
 
 	hasSuchUser, err := u.AuthRepo.HasUserByPhone(models.UserByPhoneRepoReq{Phone: req.Phone})
 	if err != nil {
-		return models.SendCodeUcaseResp{IsRegistered: false}, errors.Wrap(err, "error finding out if there is such user in database")
+		return models.SendCodeUcaseResp{}, errors.Wrap(err, "error finding out if there is such user in database")
 	}
 	return models.SendCodeUcaseResp(hasSuchUser), nil
 }
@@ -105,6 +111,7 @@ func (u *AuthUcase) Register(req *models.RegisterUcaseReq) (*models.UserDataUcas
 	if err != nil {
 		return nil, errors.Wrap(err, "error adding user to storage")
 	}
+
 	return &models.UserDataUcase{
 		Id:    userDataStorage.Id,
 		Phone: userDataStorage.Phone,

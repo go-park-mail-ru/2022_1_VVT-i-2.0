@@ -2,6 +2,10 @@ package restaurantsHandler
 
 import (
 	"encoding/json"
+	"math"
+	"net/http"
+	"strconv"
+
 	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/delivery/http/httpErrDescr"
 	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/delivery/http/middleware"
 	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/dishes"
@@ -9,9 +13,6 @@ import (
 	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/tools/servErrors"
 	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/tools/staticManager"
 	"github.com/labstack/echo/v4"
-	"math"
-	"net/http"
-	"strconv"
 )
 
 type DishesHandler struct {
@@ -48,7 +49,7 @@ func (h DishesHandler) GetDishesByRestaurants(ctx echo.Context) error {
 	if err != nil {
 		cause := servErrors.ErrorAs(err)
 		if cause != nil && cause.Code == servErrors.NO_SUCH_ENTITY_IN_DB {
-			return httpErrDescr.NewHTTPError(ctx, http.StatusForbidden, httpErrDescr.NO_SUCH_RESTAURANT)
+			return httpErrDescr.NewHTTPError(ctx, http.StatusNotFound, httpErrDescr.NO_SUCH_RESTAURANT)
 		}
 		logger.Error(requestId, err.Error())
 		return httpErrDescr.NewHTTPError(ctx, http.StatusInternalServerError, httpErrDescr.SERVER_ERROR)
@@ -72,22 +73,22 @@ func (h DishesHandler) GetDishesByRestaurants(ctx echo.Context) error {
 		Rating:         rating,
 		ReviewCount:    restaurantDishes.ReviewCount,
 		TimeToDelivery: strconv.Itoa(restaurantDishes.DownMinutesToDelivery) + "-" + strconv.Itoa(restaurantDishes.UpMinutesToDelivery),
-		Dishes: 		make([]models.CategoriesDishesDelivery, len(restaurantDishes.Dishes)),
+		Dishes:         make([]models.CategoriesDishesDelivery, len(restaurantDishes.Dishes)),
 	}
 
 	for i, item := range restaurantDishes.Dishes {
 		resp.Dishes[i].Category = item.Categories
 		for _, item1 := range item.Dishes {
 			var dish = models.DishCategoriesResp{
-				Id:           	item1.Id,
-				Category:    	item1.Category,
-				RestaurantId:	item1.RestaurantId,
-				Name:         	item1.Name,
-				Description:  	item1.Description,
-				ImagePath:    	h.StaticManager.GetDishesUrl(item1.ImagePath),
-				Calories:     	item1.Calories,
-				Price:        	item1.Price,
-				Weight:       	item1.Weight,
+				Id:           item1.Id,
+				Category:     item1.Category,
+				RestaurantId: item1.RestaurantId,
+				Name:         item1.Name,
+				Description:  item1.Description,
+				ImagePath:    h.StaticManager.GetDishesUrl(item1.ImagePath),
+				Calories:     item1.Calories,
+				Price:        item1.Price,
+				Weight:       item1.Weight,
 			}
 			resp.Dishes[i].Dishes = append(resp.Dishes[i].Dishes, dish)
 		}

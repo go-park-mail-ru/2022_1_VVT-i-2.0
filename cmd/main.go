@@ -121,7 +121,7 @@ func main() {
 	if err != nil {
 		log.Fatal(errors.Wrap(err, "error connecting to grpc-auth-microserver"))
 	}
-	defer authGrpcConn.Close()
+	defer orderGrpcConn.Close()
 
 	orderCli := orderProto.NewOrderServiceClient(orderGrpcConn)
 
@@ -162,12 +162,12 @@ func main() {
 	router.Use(m.CollectMetrics)
 
 	serverRouting := configRouting.ServerHandlers{
-		UserHandler:			userHandler,
-		RestaurantsHandler:		restaurantsHandler,
-		SuggsHandler:			suggsHandler,
-		OrderHandler:			orderHandler,
-		DishesHandler:			dishesHandler,
-		CommentsHandler:		commentsHandler,
+		UserHandler:            userHandler,
+		RestaurantsHandler:     restaurantsHandler,
+		SuggsHandler:           suggsHandler,
+		OrderHandler:           orderHandler,
+		DishesHandler:          dishesHandler,
+		CommentsHandler:        commentsHandler,
 		RecommendstionsHandler: recommendationsHandler,
 	}
 
@@ -184,8 +184,6 @@ func main() {
 	}
 
 	if err := router.StartServer(&httpServ); err != http.ErrServerClosed {
-		// if err := httpServ.ListenAndServeTLS("../localhost.crt", "../localhost.key"); err != http.ErrServerClosed {
-		// if err := router.StartAutoTLS(":8080"); err != http.ErrServerClosed {
 		log.Fatal(err)
 	}
 }
