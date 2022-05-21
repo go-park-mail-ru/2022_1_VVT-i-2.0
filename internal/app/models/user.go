@@ -44,7 +44,7 @@ type UserDataResp struct {
 
 type LoginReq struct {
 	Phone string `json:"phone" valid:"phone, required"`
-	Code  string `json:"code" valid:"required"`
+	Code  string `json:"code" valid:"code,required"`
 }
 
 type LoginUcaseReq struct {
@@ -54,7 +54,7 @@ type LoginUcaseReq struct {
 
 type RegisterReq struct {
 	Phone string `json:"phone" valid:"phone, required"`
-	Code  string `json:"code" valid:"required"`
+	Code  string `json:"code" valid:"code,required"`
 	Name  string `json:"name" valid:"name,required"`
 	Email string `json:"email" valid:"email,required"`
 }

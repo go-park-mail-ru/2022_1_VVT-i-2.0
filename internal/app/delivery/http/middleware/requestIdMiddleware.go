@@ -13,7 +13,7 @@ func nextRecId() uint64 {
 	return requestId
 }
 
-func (mw *CommonMiddlewareChain) RequestIdMiddleware(next echo.HandlerFunc) echo.HandlerFunc {
+func (mw *CommonMiddleware) RequestIdMiddleware(next echo.HandlerFunc) echo.HandlerFunc {
 	return func(ctx echo.Context) error {
 		currReqId := nextRecId()
 		ctx.Set(RequestIdCtxKey, currReqId)
