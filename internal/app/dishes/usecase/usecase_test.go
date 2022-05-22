@@ -16,7 +16,7 @@ func TestDishesUcase_RestaurantDishes(t *testing.T) {
 	dishData, err := ucase.GetRestaurantDishes(models.GetRestaurantDishesUcaseReq{Slug: "slug"})
 	assert.NoError(t, err)
 
-	expectResp := &models.GetRestaurantDishesUcaseResp{
+	expectResp := &models.GetRestaurantDishesCategoriesUcaseResp{
 		Id:                   1,
 		Name:                 "Name",
 		ImagePath:            "ImagePath",
@@ -24,13 +24,14 @@ func TestDishesUcase_RestaurantDishes(t *testing.T) {
 		MinPrice:             1,
 		AggRating:            9,
 		ReviewCount:          2,
-		UpMinutsToDelivery:   3,
-		DownMinutsToDelivery: 2,
-		Dishes:               []models.DishUcase{{Id: 1, Name: "Name", Description: "Description", Price: 10, Weight: 100, Calories: 200, RestaurantId: 1, ImagePath: "DishImagePath"}},
+		UpMinutesToDelivery:   3,
+		DownMinutesToDelivery: 2,
+		Dishes:               []models.DishCategoriesUsecase{{Id: 1, Category: 1, Name: "Name", Description: "Description", Price: 10, Weight: 100, Calories: 200, RestaurantId: 1, ImagePath: "DishImagePath"}},
+		Categories:				[]models.CategoriesDishesUcaseResp{{Categories: "1", Dishes: []int{1}}},
 	}
 
 	if !reflect.DeepEqual(dishData, expectResp) {
-		t.Errorf("results not match, want %v, have %v", dishData.Dishes[0], expectResp)
+		t.Errorf("results not match,\n want %v,\n have %v", dishData.Dishes[0], expectResp)
 		return
 	}
 }

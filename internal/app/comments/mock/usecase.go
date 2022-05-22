@@ -10,8 +10,8 @@ type CommentsUsecase struct {
 	mock.Mock
 }
 
-func (a *CommentsUsecase) GetRestaurantComments(slug string) (*models.CommentsRestaurantUseCase, error) {
-	if slug != "" {
+func (a *CommentsUsecase) GetRestaurantComments(req models.GetRestaurantCommentsUcaseReq) (*models.CommentsRestaurantUseCase, error) {
+	if req.Slug != "" {
 		return nil, nil
 	}
 	return &models.CommentsRestaurantUseCase{Comment: []models.CommentRestaurantUseCase{{
@@ -22,8 +22,8 @@ func (a *CommentsUsecase) GetRestaurantComments(slug string) (*models.CommentsRe
 		Date:         "date"}}}, nil
 }
 
-func (a *CommentsUsecase) AddRestaurantComment(id models.UserId, item *models.AddCommentRestaurantUseCase) (*models.CommentRestaurantUseCase, error) {
-	if item == nil {
+func (a *CommentsUsecase) AddRestaurantComment(req models.AddCommentRestaurantUcaseReq) (*models.CommentRestaurantUseCase, error) {
+	if &req == nil {
 		return nil, nil
 	}
 	return &models.CommentRestaurantUseCase{
@@ -38,10 +38,10 @@ type CommentsUsecaseErr struct {
 	mock.Mock
 }
 
-func (a *CommentsUsecaseErr) GetRestaurantComments(slug string) (*models.CommentsRestaurantUseCase, error) {
+func (a *CommentsUsecaseErr) GetRestaurantComments(req models.GetRestaurantCommentsUcaseReq) (*models.CommentsRestaurantUseCase, error) {
 	return nil, servErrors.NewError(servErrors.DB_ERROR, "")
 }
 
-func (a *CommentsUsecaseErr) AddRestaurantComment(id models.UserId, item *models.AddCommentRestaurantUseCase) (*models.CommentRestaurantUseCase, error) {
+func (a *CommentsUsecaseErr) AddRestaurantComment(req models.AddCommentRestaurantUcaseReq) (*models.CommentRestaurantUseCase, error) {
 	return nil, servErrors.NewError(servErrors.DB_ERROR, "")
 }

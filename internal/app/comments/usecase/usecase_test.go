@@ -13,7 +13,7 @@ func TestCommentsUsecase_GetRestaurantComment(t *testing.T) {
 	mockCommentsRepo := new(mock.CommentsRepository)
 	useCase := NewCommentsUsecase(mockCommentsRepo)
 
-	commentRestaurantData, err := useCase.GetRestaurantComments("slug")
+	commentRestaurantData, err := useCase.GetRestaurantComments(models.GetRestaurantCommentsUcaseReq{Slug: "slug"})
 	assert.NoError(t, err)
 
 	mockComment := &models.CommentsRestaurantUseCase{Comment: []models.CommentRestaurantUseCase{{
@@ -35,14 +35,12 @@ func TestCommentsUsecase_AddRestaurantComment(t *testing.T) {
 		Repository: mockRestaurantsRepo,
 	}
 
-	id := 1
-
-	item := &models.AddCommentRestaurantUseCase{
+	commentRestaurantData, err := useCase.AddRestaurantComment(models.AddCommentRestaurantUcaseReq{
+		UserId: 1,
 		Slug:          "slug",
 		CommentText:   "text",
 		CommentRating: 5,
-	}
-	commentRestaurantData, err := useCase.AddRestaurantComment(models.UserId(id), item)
+	})
 	assert.NoError(t, err)
 
 	mockComment := &models.CommentRestaurantUseCase{

@@ -66,32 +66,3 @@ func (u *DishesUcase) GetRestaurantDishes(req models.GetRestaurantDishesUcaseReq
 	return Resp, nil
 }
 
-//func (u *DishesUcase) GetRestaurantDishes(req models.GetRestaurantDishesUcaseReq) (*models.GetRestaurantDishesUcaseResp, error) {
-//	restaurant, err := u.Repo.GetRestaurantBySlug(models.GetRestaurantBySlugRepoReq(req))
-//	if err != nil {
-//		return nil, errors.Wrap(err, "error getting restaurant")
-//	}
-//	dishes, err := u.Repo.GetRestaurantDishes(models.GetRestaurantDishesRepoReq{Id: restaurant.Id})
-//	if err != nil {
-//		return nil, errors.Wrap(err, "error getting restaurant dishes")
-//	}
-//
-//	Resp := &models.GetRestaurantDishesUcaseResp{
-//		Id:                   restaurant.Id,
-//		Name:                 restaurant.Name,
-//		ImagePath:            restaurant.ImagePath,
-//		Slug:                 restaurant.Slug,
-//		MinPrice:             restaurant.MinPrice,
-//		AggRating:            restaurant.AggRating,
-//		ReviewCount:          restaurant.ReviewCount,
-//		UpMinutesToDelivery:   restaurant.UpMinutesToDelivery,
-//		DownMinutesToDelivery: restaurant.DownMinutesToDelivery,
-//		Dishes:               make([]models.DishUcase, len(dishes.Dishes)),
-//	}
-//
-//	for i, dish := range dishes.Dishes {
-//		Resp.Dishes[i] = models.DishUcase(dish)
-//	}
-//
-//	return Resp, nil
-//}

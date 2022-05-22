@@ -43,7 +43,7 @@ func TestCommentsHandler_GetRestaurantComments(t *testing.T) {
 
 func TestRestaurantsHandler_AddCommentsRestaurantByRestaurants(t *testing.T) {
 
-	commentRequest := models.AddCommentRestaurant{
+	commentRequest := models.AddCommentRestaurantReq{
 		Slug:          "slug",
 		CommentText:   "text",
 		CommentRating: 5,
@@ -95,7 +95,7 @@ func TestCommentsHandler_GetRestaurantComments_Err(t *testing.T) {
 
 func TestRestaurantsHandler_AddCommentsRestaurant_Err(t *testing.T) {
 
-	commentRequest := models.AddCommentRestaurant{
+	commentRequest := models.AddCommentRestaurantReq{
 		Slug:          "slug",
 		CommentText:   "text",
 		CommentRating: 5,

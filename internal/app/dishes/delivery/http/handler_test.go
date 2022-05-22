@@ -30,7 +30,7 @@ func TestDishesHandler_GetRestaurantDishes(t *testing.T) {
 	c.SetParamValues(slug)
 	handler := NewDishesHandler(mockUCase, staticManager)
 
-	json := `{"id":1,"restName":"Name","imgPath":"http://localhost/static/restaurants/ImagePath","slug":"Slug","minPrice":1,"rating":4.5,"timeToDeliver":"2-3","reviewCount":2,"dishes":[{"id":1,"restaurant":1,"productName":"Name","description":"Description","imgPath":"http://localhost/static/dishes/DishImagePath","info":200,"price":10,"weight":100}]}`
+	json := `{"id":1,"restName":"Name","imgPath":"http://localhost/static/restaurants/ImagePath","slug":"Slug","minPrice":1,"rating":4.5,"timeToDeliver":"2-3","reviewCount":2,"dishes":[{"id":1,"category":0,"restaurant":1,"productName":"Name","description":"Description","imgPath":"http://localhost/static/dishes/DishImagePath","info":200,"price":10,"weight":100}],"categories":[{"category":"1","dishes":[1]}]}`
 
 	err = handler.GetDishesByRestaurants(c)
 	assert.NoError(t, err)

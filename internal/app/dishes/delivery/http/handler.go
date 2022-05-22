@@ -2,7 +2,6 @@ package restaurantsHandler
 
 import (
 	"encoding/json"
-	"fmt"
 	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/delivery/http/httpErrDescr"
 	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/delivery/http/middleware"
 	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/dishes"
@@ -47,7 +46,6 @@ func (h DishesHandler) GetDishesByRestaurants(ctx echo.Context) error {
 	restaurantDishes, err := h.Ucase.GetRestaurantDishes(models.GetRestaurantDishesUcaseReq{Slug: slug})
 
 	if err != nil {
-		fmt.Println("1")
 		cause := servErrors.ErrorAs(err)
 		if cause != nil && cause.Code == servErrors.NO_SUCH_ENTITY_IN_DB {
 			return httpErrDescr.NewHTTPError(ctx, http.StatusForbidden, httpErrDescr.NO_SUCH_RESTAURANT)
@@ -57,7 +55,6 @@ func (h DishesHandler) GetDishesByRestaurants(ctx echo.Context) error {
 	}
 
 	if restaurantDishes == nil {
-		fmt.Println("2")
 		logger.Error(requestId, "from user-ucase-get-user returned userData==nil and err==nil, unknown error")
 		return httpErrDescr.NewHTTPError(ctx, http.StatusInternalServerError, httpErrDescr.SERVER_ERROR)
 	}

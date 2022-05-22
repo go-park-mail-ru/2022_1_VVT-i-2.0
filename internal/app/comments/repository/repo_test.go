@@ -38,7 +38,7 @@ func TestCommentsRepo_GetRestaurantByID(t *testing.T) {
 		ExpectQuery(`SELECT`).
 		WithArgs(1).
 		WillReturnRows(rows)
-	item, err := repo.GetRestaurantByID(1)
+	item, err := repo.GetRestaurantByID(models.GetRestaurantByIdRepoReq{Id: 1})
 	if err != nil {
 		t.Errorf("unexpected err: %s", err)
 		return
@@ -57,7 +57,7 @@ func TestCommentsRepo_GetRestaurantByID(t *testing.T) {
 		ExpectQuery(`SELECT`).
 		WithArgs(1).
 		WillReturnError(fmt.Errorf("db_error"))
-	_, err = repo.GetRestaurantByID(1)
+	_, err = repo.GetRestaurantByID(models.GetRestaurantByIdRepoReq{Id: 1})
 	if err := mock.ExpectationsWereMet(); err != nil {
 		t.Errorf("there were unfulfilled expectations: %s", err)
 		return
@@ -75,7 +75,7 @@ func TestCommentsRepo_GetRestaurantByID(t *testing.T) {
 		WithArgs(1).
 		WillReturnError(sql.ErrNoRows)
 
-	_, err = repo.GetRestaurantByID(1)
+	_, err = repo.GetRestaurantByID(models.GetRestaurantByIdRepoReq{Id: 1})
 	if err := mock.ExpectationsWereMet(); err != nil {
 		t.Errorf("there were unfulfilled expectations: %s", err)
 		return
@@ -113,7 +113,7 @@ func TestCommentsRepo_GetRestaurantBySlug(t *testing.T) {
 		ExpectQuery(`SELECT`).
 		WithArgs("slug").
 		WillReturnRows(rows)
-	item, err := repo.GetRestaurantBySlug("slug")
+	item, err := repo.GetRestaurantBySlug(models.GetRestaurantBySlugRepoReq{Slug: "slug"})
 	if err != nil {
 		t.Errorf("unexpected err: %s", err)
 		return
@@ -132,7 +132,7 @@ func TestCommentsRepo_GetRestaurantBySlug(t *testing.T) {
 		ExpectQuery(`SELECT`).
 		WithArgs("slug").
 		WillReturnError(fmt.Errorf("db_error"))
-	_, err = repo.GetRestaurantBySlug("slug")
+	_, err = repo.GetRestaurantBySlug(models.GetRestaurantBySlugRepoReq{Slug: "slug"})
 	if err := mock.ExpectationsWereMet(); err != nil {
 		t.Errorf("there were unfulfilled expectations: %s", err)
 		return
@@ -150,7 +150,7 @@ func TestCommentsRepo_GetRestaurantBySlug(t *testing.T) {
 		WithArgs("slug").
 		WillReturnError(sql.ErrNoRows)
 
-	_, err = repo.GetRestaurantBySlug("slug")
+	_, err = repo.GetRestaurantBySlug(models.GetRestaurantBySlugRepoReq{Slug: "slug"})
 	if err := mock.ExpectationsWereMet(); err != nil {
 		t.Errorf("there were unfulfilled expectations: %s", err)
 		return
@@ -190,7 +190,7 @@ func TestCommentsRepo_GetRestaurantComments(t *testing.T) {
 		ExpectQuery(`SELECT`).
 		WithArgs(1).
 		WillReturnRows(rows)
-	item, err := repo.GetRestaurantComments(1)
+	item, err := repo.GetRestaurantComments(models.GetRestaurantCommentsRepoReq{Id: 1})
 	if err != nil {
 		t.Errorf("unexpected err: %s", err)
 		return
@@ -199,8 +199,17 @@ func TestCommentsRepo_GetRestaurantComments(t *testing.T) {
 		t.Errorf("there were unfulfilled expectations: %s", err)
 		return
 	}
-	if !reflect.DeepEqual(item, expect) {
-		t.Errorf("results not match, want %v, have %v", expect, item)
+
+
+
+	expectResp := []models.CommentRestaurantDataStorage{
+		{1, "author1", "hello", 1, "today"},
+		{2, "author2", "hello", 2, "today"},
+		{3, "author3", "hello", 3, "today"},
+	}
+
+	if !reflect.DeepEqual(item.Comments, expectResp) {
+		t.Errorf("results not match,\n want %v,\n have %v", item, expectResp)
 		return
 	}
 
@@ -209,7 +218,7 @@ func TestCommentsRepo_GetRestaurantComments(t *testing.T) {
 		ExpectQuery(`SELECT`).
 		WithArgs(1).
 		WillReturnError(fmt.Errorf("db_error"))
-	_, err = repo.GetRestaurantComments(1)
+	_, err = repo.GetRestaurantComments(models.GetRestaurantCommentsRepoReq{Id: 1})
 	if err := mock.ExpectationsWereMet(); err != nil {
 		t.Errorf("there were unfulfilled expectations: %s", err)
 		return
@@ -226,7 +235,7 @@ func TestCommentsRepo_GetRestaurantComments(t *testing.T) {
 		ExpectQuery(`SELECT`).
 		WithArgs(1).
 		WillReturnError(sql.ErrNoRows)
-	_, err = repo.GetRestaurantComments(1)
+	_, err = repo.GetRestaurantComments(models.GetRestaurantCommentsRepoReq{Id: 1})
 	if err := mock.ExpectationsWereMet(); err != nil {
 		t.Errorf("there were unfulfilled expectations: %s", err)
 		return
@@ -323,7 +332,7 @@ func TestCommentsRepo_AddRestaurantComment(t *testing.T) {
 		DB: sqlxDB,
 	}
 
-	testComment := &models.AddCommentRestaurantDataStorage{
+	testComment := &models.AddRestaurantCommentRepoReq{
 		RestaurantId:  1,
 		User:          "author",
 		CommentText:   "address",
@@ -344,7 +353,12 @@ func TestCommentsRepo_AddRestaurantComment(t *testing.T) {
 		ExpectQuery(`INSERT`).
 		WithArgs(testComment.RestaurantId, testComment.User, testComment.CommentText, testComment.CommentRating).
 		WillReturnRows(rows)
-	item, err := repo.AddRestaurantComment(testComment)
+	item, err := repo.AddRestaurantComment(models.AddRestaurantCommentRepoReq{
+		RestaurantId: testComment.RestaurantId,
+		User: testComment.User,
+		CommentText: testComment.CommentText,
+		CommentRating: testComment.CommentRating,
+	})
 	if err != nil {
 		t.Errorf("unexpected err: %s", err)
 		return
@@ -366,7 +380,12 @@ func TestCommentsRepo_AddRestaurantComment(t *testing.T) {
 		ExpectQuery(`INSERT`).
 		WithArgs(testComment.RestaurantId, testComment.User, testComment.CommentText, testComment.CommentRating).
 		WillReturnError(fmt.Errorf("db_error"))
-	_, err = repo.AddRestaurantComment(testComment)
+	_, err = repo.AddRestaurantComment(models.AddRestaurantCommentRepoReq{
+		RestaurantId: testComment.RestaurantId,
+		User: testComment.User,
+		CommentText: testComment.CommentText,
+		CommentRating: testComment.CommentRating,
+	})
 	if err := mock.ExpectationsWereMet(); err != nil {
 		t.Errorf("there were unfulfilled expectations: %s", err)
 		return
@@ -382,7 +401,12 @@ func TestCommentsRepo_AddRestaurantComment(t *testing.T) {
 		WithArgs(testComment.RestaurantId, testComment.User, testComment.CommentText, testComment.CommentRating).
 		WillReturnError(sql.ErrNoRows)
 		//WillReturnError(fmt.Errorf("db_error"))
-	_, err = repo.AddRestaurantComment(testComment)
+	_, err = repo.AddRestaurantComment(models.AddRestaurantCommentRepoReq{
+		RestaurantId: testComment.RestaurantId,
+		User: testComment.User,
+		CommentText: testComment.CommentText,
+		CommentRating: testComment.CommentRating,
+	})
 	if err := mock.ExpectationsWereMet(); err != nil {
 		t.Errorf("there were unfulfilled expectations: %s", err)
 		return
@@ -420,7 +444,11 @@ func TestCommentRepo_UpdateRestaurantRating(t *testing.T) {
 		ExpectQuery(`UPDATE`).
 		WithArgs(10, 2, 1).
 		WillReturnRows(rows)
-	item, err := repo.UpdateRestaurantRating(1, 10, 2)
+	item, err := repo.UpdateRestaurantRating(models.UpdateRestaurantRatingRepoReq{
+		RestId: 1,
+		NewRestRating: 10,
+		CountRating: 2,
+	})
 	if err != nil {
 		t.Errorf("unexpected err: %s", err)
 		return
@@ -439,7 +467,11 @@ func TestCommentRepo_UpdateRestaurantRating(t *testing.T) {
 		ExpectQuery(`UPDATE`).
 		WithArgs(10, 2, 1).
 		WillReturnError(fmt.Errorf("db_error"))
-	_, err = repo.UpdateRestaurantRating(1, 10, 2)
+	_, err = repo.UpdateRestaurantRating(models.UpdateRestaurantRatingRepoReq{
+		RestId: 1,
+		NewRestRating: 10,
+		CountRating: 2,
+	})
 	if err := mock.ExpectationsWereMet(); err != nil {
 		t.Errorf("there were unfulfilled expectations: %s", err)
 		return
@@ -456,7 +488,11 @@ func TestCommentRepo_UpdateRestaurantRating(t *testing.T) {
 		ExpectQuery(`UPDATE`).
 		WithArgs(10, 2, 1).
 		WillReturnError(sql.ErrNoRows)
-	_, err = repo.UpdateRestaurantRating(1, 10, 2)
+	_, err = repo.UpdateRestaurantRating(models.UpdateRestaurantRatingRepoReq{
+		RestId: 1,
+		NewRestRating: 10,
+		CountRating: 2,
+	})
 	if err := mock.ExpectationsWereMet(); err != nil {
 		t.Errorf("there were unfulfilled expectations: %s", err)
 		return
