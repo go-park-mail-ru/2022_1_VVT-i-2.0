@@ -38,16 +38,18 @@ import (
 	dishesUcase "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/dishes/usecase"
 	orderHandler "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/order/delivery/http"
 	orderUcase "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/order/usecase"
+	promocodeHandler "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/promocode/delivery/http"
+	promocodeRepo "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/promocode/repository"
+	promocodeUcase "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/promocode/usecase"
+	recommendationsHandler "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/recommendations/delivery/http"
+	recommendationsRepo "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/recommendations/repository"
+	recommendationsUcase "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/recommendations/usecase"
 	restaurantsHandler "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/restaurants/delivery/http"
 	restaurantsRepo "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/restaurants/repository"
 	restaurantsUcase "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/restaurants/usecase"
 	userHandler "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/user/delivery/http"
 	userRepo "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/user/repository"
 	userUcase "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/user/usecase"
-
-	recommendationsHandler "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/recommendations/delivery/http"
-	recommendationsRepo "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/recommendations/repository"
-	recommendationsUcase "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/recommendations/usecase"
 )
 
 // @title           Swagger Example API
@@ -140,6 +142,10 @@ func main() {
 	restaurantsUcase := restaurantsUcase.NewRestaurantsUcase(restaurantsRepo)
 	restaurantsHandler := restaurantsHandler.NewRestaurantsHandler(restaurantsUcase, staticManager)
 
+	promocodeRepo := promocodeRepo.NewPromocodeRepo(pgxManager)
+	promocodeUcase := promocodeUcase.NewPromocodeUcase(promocodeRepo)
+	promocodeHandler := promocodeHandler.NewPromocodesHandler(promocodeUcase, staticManager)
+
 	dishesRepo := dishesRepo.NewDishesRepo(pgxManager)
 	dishesUcase := dishesUcase.NewDishesUcase(dishesRepo)
 	dishesHandler := dishesHandler.NewDishesHandler(dishesUcase, staticManager)
@@ -169,6 +175,7 @@ func main() {
 		DishesHandler:          dishesHandler,
 		CommentsHandler:        commentsHandler,
 		RecommendstionsHandler: recommendationsHandler,
+		PromocodeHandler:       promocodeHandler,
 	}
 
 	comonMw := middleware.NewCommonMiddleware(servLogger, jwtManager)

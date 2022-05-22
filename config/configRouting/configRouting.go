@@ -8,6 +8,7 @@ import (
 	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/delivery/http/middleware"
 	dishesHandler "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/dishes/delivery/http"
 	orderHandler "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/order/delivery/http"
+	promocodeHandler "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/promocode/delivery/http"
 	recommendationsHandler "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/recommendations/delivery/http"
 	restaurantsHandler "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/restaurants/delivery/http"
 	userHandler "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/user/delivery/http"
@@ -25,6 +26,7 @@ type ServerHandlers struct {
 	OrderHandler           *orderHandler.OrderHandler
 	CommentsHandler        *commentHandler.CommentsHandler
 	RecommendstionsHandler *recommendationsHandler.RecommendationsHandler
+	PromocodeHandler       *promocodeHandler.PromocodesHandler
 }
 
 const (
@@ -61,6 +63,7 @@ func (sh *ServerHandlers) ConfigureRouting(router *echo.Echo, mw *middleware.Com
 	router.GET(v1Prefix+"comments/:slug", sh.CommentsHandler.GetRestaurantComments, mwChain...)
 	router.POST(v1Prefix+"comment", sh.CommentsHandler.AddRestaurantComment, mwChain...)
 	router.GET(v1Prefix+"restaurants", sh.RestaurantsHandler.GetAllRestaurantsMain, mwChain...)
+	router.GET(v1Prefix+"promo", sh.PromocodeHandler.GetAllPromocodes, mwChain...)
 	router.GET(v1Prefix+"", sh.RestaurantsHandler.GetAllRestaurants, mwChain...)
 	router.GET(v1Prefix+"restaurant/:slug", sh.DishesHandler.GetDishesByRestaurants, mwChain...)
 	router.GET(v1Prefix+"recommendations", sh.RecommendstionsHandler.GetRecommendations, mwChain...)
