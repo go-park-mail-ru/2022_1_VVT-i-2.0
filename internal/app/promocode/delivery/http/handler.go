@@ -1,7 +1,9 @@
 package restaurantsHandler
 
 import (
+	"encoding/json"
 	"net/http"
+	"strconv"
 
 	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/delivery/http/httpErrDescr"
 	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/delivery/http/middleware"
@@ -40,5 +42,7 @@ func (h *PromocodesHandler) GetAllPromocodes(ctx echo.Context) error {
 		promosResp.Promos[i].Image = h.StaticManager.GetRestaurantUrl(promo.Image)
 	}
 
-	return ctx.JSON(http.StatusOK, promosResp)
+	respBody, _ := json.Marshal(promosResp)
+	ctx.Response().Header().Add(echo.HeaderContentLength, strconv.Itoa(len(respBody)))
+	return ctx.JSONBlob(http.StatusOK, respBody)
 }
