@@ -40,7 +40,7 @@ type Categories struct {
 
 type DishCategoriesRepo struct {
 	Id           	int
-	Category     	int		`db:"category"`
+	Category     	int		`db:"categori"`
 	RestaurantId 	int		`db:"restaurant_id"`
 	Name        	string
 	Description 	string
