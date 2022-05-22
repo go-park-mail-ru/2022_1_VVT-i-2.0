@@ -33,36 +33,30 @@ func (u *DishesUcase) GetRestaurantDishes(req models.GetRestaurantDishesUcaseReq
 	}
 
 	Resp := &models.GetRestaurantDishesCategoriesUcaseResp{
-			Id:                    restaurant.Id,
-			Name:                  restaurant.Name,
-			ImagePath:             restaurant.ImagePath,
-			Slug:                  restaurant.Slug,
-			MinPrice:              restaurant.MinPrice,
-			AggRating:             restaurant.AggRating,
-			ReviewCount:           restaurant.ReviewCount,
-			UpMinutesToDelivery:   restaurant.UpMinutesToDelivery,
-			DownMinutesToDelivery: restaurant.DownMinutesToDelivery,
-			Dishes:                make([]models.CategoriesDishesUcaseResp, len(categories.Categories)),
+			Id:                    	restaurant.Id,
+			Name:                 	restaurant.Name,
+			ImagePath:            	restaurant.ImagePath,
+			Slug:                 	restaurant.Slug,
+			MinPrice:             	restaurant.MinPrice,
+			AggRating:            	restaurant.AggRating,
+			ReviewCount:          	restaurant.ReviewCount,
+			UpMinutesToDelivery:  	restaurant.UpMinutesToDelivery,
+			DownMinutesToDelivery:	restaurant.DownMinutesToDelivery,
+			Dishes:					make([]models.DishCategoriesUsecase, len(dishes.Dishes)),
+			Categories:				make([]models.CategoriesDishesUcaseResp, len(categories.Categories)),
+	}
+
+	for i, dish := range dishes.Dishes {
+		Resp.Dishes[i] = models.DishCategoriesUsecase(dish)
 	}
 
 	for i, item := range categories.Categories {
-		Resp.Dishes[i].Categories = item
+		Resp.Categories[i].Categories = item
 	}
 
 	for _, item := range dishes.Dishes {
 		var car = item.Category
-		var new_item = models.DishCategoriesUsecase{
-			Id:          	item.Id,
-			Category:          	item.Category,
-			RestaurantId:          	item.RestaurantId,
-			Name:          	item.Name,
-			Description:          	item.Description,
-			ImagePath:          	item.ImagePath,
-			Calories:          	item.Calories,
-			Price:          	item.Price,
-			Weight:          	item.Weight,
-		}
-		Resp.Dishes[car-1].Dishes = append(Resp.Dishes[car-1].Dishes, new_item)
+		Resp.Categories[car-1].Dishes = append(Resp.Categories[car-1].Dishes, item.Id)
 	}
 
 	return Resp, nil

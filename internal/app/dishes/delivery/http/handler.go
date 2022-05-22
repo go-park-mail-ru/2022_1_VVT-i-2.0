@@ -2,6 +2,7 @@ package restaurantsHandler
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/delivery/http/httpErrDescr"
 	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/delivery/http/middleware"
 	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/dishes"
@@ -46,6 +47,7 @@ func (h DishesHandler) GetDishesByRestaurants(ctx echo.Context) error {
 	restaurantDishes, err := h.Ucase.GetRestaurantDishes(models.GetRestaurantDishesUcaseReq{Slug: slug})
 
 	if err != nil {
+		fmt.Println("1")
 		cause := servErrors.ErrorAs(err)
 		if cause != nil && cause.Code == servErrors.NO_SUCH_ENTITY_IN_DB {
 			return httpErrDescr.NewHTTPError(ctx, http.StatusForbidden, httpErrDescr.NO_SUCH_RESTAURANT)
@@ -55,6 +57,7 @@ func (h DishesHandler) GetDishesByRestaurants(ctx echo.Context) error {
 	}
 
 	if restaurantDishes == nil {
+		fmt.Println("2")
 		logger.Error(requestId, "from user-ucase-get-user returned userData==nil and err==nil, unknown error")
 		return httpErrDescr.NewHTTPError(ctx, http.StatusInternalServerError, httpErrDescr.SERVER_ERROR)
 	}
@@ -63,6 +66,7 @@ func (h DishesHandler) GetDishesByRestaurants(ctx echo.Context) error {
 	if restaurantDishes.ReviewCount != 0 {
 		rating = math.Round(float64(restaurantDishes.AggRating)*10/float64(restaurantDishes.ReviewCount)) / 10
 	}
+
 	resp := &models.GetRestaurantDishesCategoriesResp{
 		Id:             restaurantDishes.Id,
 		Name:           restaurantDishes.Name,
@@ -72,24 +76,28 @@ func (h DishesHandler) GetDishesByRestaurants(ctx echo.Context) error {
 		Rating:         rating,
 		ReviewCount:    restaurantDishes.ReviewCount,
 		TimeToDelivery: strconv.Itoa(restaurantDishes.DownMinutesToDelivery) + "-" + strconv.Itoa(restaurantDishes.UpMinutesToDelivery),
-		Dishes: 		make([]models.CategoriesDishesDelivery, len(restaurantDishes.Dishes)),
+		Dishes: 		make([]models.DishCategoriesResp, len(restaurantDishes.Dishes)),
+		Categories: 	make([]models.CategoriesDishesDelivery, len(restaurantDishes.Categories)),
 	}
 
-	for i, item := range restaurantDishes.Dishes {
-		resp.Dishes[i].Category = item.Categories
+	for i, dish := range restaurantDishes.Dishes {
+		resp.Dishes[i] = models.DishCategoriesResp{
+			Id:           dish.Id,
+			RestaurantId: dish.RestaurantId,
+			Name:         dish.Name,
+			Description:  dish.Description,
+			ImagePath:    h.StaticManager.GetDishesUrl(dish.ImagePath),
+			Calories:     dish.Calories,
+			Price:        dish.Price,
+			Weight:       dish.Weight,
+		}
+	}
+
+	for i, item := range restaurantDishes.Categories {
+		resp.Categories[i].Category = item.Categories
+		//resp.Categories[i].Dishes = item.Dishes
 		for _, item1 := range item.Dishes {
-			var dish = models.DishCategoriesResp{
-				Id:           	item1.Id,
-				Category:    	item1.Category,
-				RestaurantId:	item1.RestaurantId,
-				Name:         	item1.Name,
-				Description:  	item1.Description,
-				ImagePath:    	h.StaticManager.GetDishesUrl(item1.ImagePath),
-				Calories:     	item1.Calories,
-				Price:        	item1.Price,
-				Weight:       	item1.Weight,
-			}
-			resp.Dishes[i].Dishes = append(resp.Dishes[i].Dishes, dish)
+			resp.Categories[i].Dishes = append(resp.Categories[i].Dishes, item1)
 		}
 
 	}
