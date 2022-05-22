@@ -112,7 +112,7 @@ type DishCategoriesResp struct {
 
 type CategoriesDishesDelivery struct {
 	Category	string	`json:"category"`
-	Dishes		[]int	`json:"dishes1"`
+	Dishes		[]int	`json:"dishes"`
 }
 
 type GetRestaurantDishesCategoriesResp struct {
