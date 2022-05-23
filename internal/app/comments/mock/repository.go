@@ -2,7 +2,6 @@ package mock
 
 import (
 	"database/sql"
-
 	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/models"
 	"github.com/stretchr/testify/mock"
 )
@@ -27,19 +26,19 @@ func (r *CommentsRepository) GetRestaurantBySlug(req models.GetRestaurantBySlugR
 		DownMinutsToDelivery: 1}, nil
 }
 
-// func (r *CommentsRepository) GetUserById(id models.UserId) (*models.UserDataRepo, error) {
-// 	if id == 0 {
-// 		return nil, nil
-// 	}
-// 	user := &models.UserDataRepo{
-// 		Id:     1,
-// 		Name:   "name",
-// 		Phone:  "89166152595",
-// 		Email:  "seregey.golubev@mail.ru",
-// 		Avatar: sql.NullString{String: "avatar", Valid: true},
-// 	}
-// 	return user, nil
-// }
+func (r *CommentsRepository) GetUserById(id models.UserId) (*models.UserDataRepo, error) {
+	if id == 0 {
+		return nil, nil
+	}
+	user := &models.UserDataRepo{
+		Id:     1,
+		Name:   "name",
+		Phone:  "89166152595",
+		Email:  "seregey.golubev@mail.ru",
+		Avatar: sql.NullString{String: "avatar", Valid: true},
+	}
+	return user, nil
+}
 
 func (r *CommentsRepository) GetRestaurantByID(req models.GetRestaurantByIdRepoReq) (*models.RestaurantRepo, error) {
 	if req.Id == 0 {
