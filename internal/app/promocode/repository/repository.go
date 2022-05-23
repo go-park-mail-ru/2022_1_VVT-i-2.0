@@ -16,7 +16,7 @@ func NewPromocodeRepo(db *sqlx.DB) *PromocodeRepo {
 
 func (r *PromocodeRepo) GetAllPromocodes() (*models.GetPromocodesRepoResp, error) {
 	promocodes := make([]*models.PromocodeRepoResp, 0)
-	err := r.DB.Select(&promocodes, `SELECT r.name, r.slug, p.text, p.discount, p.price_reduction, p.min_price, p.promocode, r.image_path FROM promocodes p JOIN restaurants r ON p.restaurant_id=r.id`)
+	err := r.DB.Select(&promocodes, `SELECT r.name, r.slug, p.text, p.discount, p.price_reduction, p.min_price, p.promocode, p.image_path, p.logo_path FROM promocodes p JOIN restaurants r ON p.restaurant_id=r.id`)
 	switch err {
 	case nil:
 		resp := models.GetPromocodesRepoResp{Promos: make([]models.PromocodeRepoResp, len(promocodes))}

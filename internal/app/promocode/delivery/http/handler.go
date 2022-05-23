@@ -39,7 +39,8 @@ func (h *PromocodesHandler) GetAllPromocodes(ctx echo.Context) error {
 	promosResp := &models.GetPromocodesResp{Promos: make([]models.PromocodeResp, len(promosUcaseResp.Promos))}
 	for i, promo := range promosUcaseResp.Promos {
 		promosResp.Promos[i] = models.PromocodeResp(promo)
-		promosResp.Promos[i].Image = h.StaticManager.GetRestaurantUrl(promo.Image)
+		promosResp.Promos[i].Image = h.StaticManager.GetPromocodeUrl(promo.Image)
+		promosResp.Promos[i].LogoImage = h.StaticManager.GetPromocodeLogoUrl(promo.LogoImage)
 	}
 
 	respBody, _ := json.Marshal(promosResp)

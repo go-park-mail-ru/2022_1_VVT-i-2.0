@@ -2,6 +2,7 @@ package models
 
 type PromocodeResp struct {
 	Image          string `json:"img"`
+	LogoImage      string `json:"logo"`
 	Text           string `json:"text"`
 	Promocode      string `json:"promocode"`
 	RestaurantName string `json:"restName"`
@@ -16,6 +17,7 @@ type GetPromocodesResp struct {
 
 type PromocodeUcaseResp struct {
 	Image          string
+	LogoImage      string
 	Text           string
 	Promocode      string
 	RestaurantName string
@@ -31,6 +33,7 @@ type GetPromocodesUcaseResp struct {
 
 type PromocodeRepoResp struct {
 	Image          string `db:"image_path"`
+	LogoImage      string `db:"logo_path"`
 	Text           string `db:"text"`
 	Promocode      string `db:"promocode"`
 	RestaurantName string `db:"name"`
