@@ -1,7 +1,6 @@
 package usecase
 
 import (
-	"fmt"
 	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/models"
 	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/recommendations"
 	"github.com/pkg/errors"
@@ -19,15 +18,10 @@ func NewRecommendationsUcase(recommendationsRepo recommendations.Repository) *Re
 }
 
 func (u *RecommendationsUcase) GetRecommendations(req models.RecommendationsOrderListsUsecaseReq) (*models.DishRecommendationListsUsecase, error) {
-	fmt.Println("start UseCase Recommendations")
-	fmt.Println(req)
-
 	dishes, err := u.Repo.GetRestaurantDishes(models.GetRestaurantDishesRepoReq{Id: models.Id(req.RestId)})
 	if err != nil {
 		return nil, errors.Wrap(err, "error getting restaurant dishes")
 	}
-
-	fmt.Println(dishes)
 
 	var categories []int
 	for _, item := range dishes.Dishes {
@@ -46,9 +40,6 @@ func (u *RecommendationsUcase) GetRecommendations(req models.RecommendationsOrde
 		}
 	}
 
-	fmt.Println("Категории")
-	fmt.Println(categories)
-
 	recommendations := make([]models.DishCategoriesRepo, 0)
 
 	for _, item := range dishes.Dishes {
@@ -62,8 +53,6 @@ func (u *RecommendationsUcase) GetRecommendations(req models.RecommendationsOrde
 			recommendations = append(recommendations, item)
 		}
 	}
-
-	fmt.Println(recommendations)
 
 	finalRecommendations := &models.DishRecommendationListsUsecase{
 		Dishes: make([]models.DishRecommendationUsecase, 3),
@@ -84,8 +73,6 @@ func (u *RecommendationsUcase) GetRecommendations(req models.RecommendationsOrde
 		}
 		finalRecommendations.Dishes[i] = itme
 	}
-
-	fmt.Println(finalRecommendations)
 
 	return finalRecommendations, nil
 }

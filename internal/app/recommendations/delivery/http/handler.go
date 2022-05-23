@@ -2,7 +2,6 @@ package recommendationsHandler
 
 import (
 	"encoding/json"
-	"fmt"
 	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/delivery/http/httpErrDescr"
 	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/delivery/http/middleware"
 	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/models"
@@ -27,22 +26,14 @@ func NewRecommendationsHandler(ucase recommendations.Ucase, staticManager static
 }
 
 func (h RecommendationsHandler) GetRecommendations(ctx echo.Context) error {
-	fmt.Println("начало работы хелндера рекоммендаций")
-
-	user := middleware.GetUserFromCtx(ctx)
-	if user == nil {
-		return ctx.JSON(http.StatusUnauthorized, httpErrDescr.AUTH_REQUIRED)
-	}
 
 	logger := middleware.GetLoggerFromCtx(ctx)
 	requestId := middleware.GetRequestIdFromCtx(ctx)
 
 	var ordersList models.RecommendationsOrderLists
 	if err := ctx.Bind(&ordersList); err != nil {
-		fmt.Println("не верные входные данные")
 		return httpErrDescr.NewHTTPError(ctx, http.StatusBadRequest, httpErrDescr.BAD_REQUEST_BODY)
 	}
-	fmt.Println(ordersList)
 
 	var OrederListsReq = models.RecommendationsOrderListsUsecaseReq{
 		RestId: ordersList.RestId,
@@ -52,8 +43,6 @@ func (h RecommendationsHandler) GetRecommendations(ctx echo.Context) error {
 	for i, item := range ordersList.OrderList {
 		OrederListsReq.DishesId[i] = item.Id
 	}
-
-	fmt.Println(OrederListsReq)
 
 	recommendations, err := h.Ucase.GetRecommendations(OrederListsReq)
 
@@ -77,15 +66,13 @@ func (h RecommendationsHandler) GetRecommendations(ctx echo.Context) error {
 			RestaurantId:	recommendations.Dishes[i].RestaurantId,
 			Name:			recommendations.Dishes[i].Name,
 			Description:	recommendations.Dishes[i].Description,
-			ImagePath:		recommendations.Dishes[i].ImagePath,
+			ImagePath:    h.StaticManager.GetDishesUrl(recommendations.Dishes[i].ImagePath),
 			Calories:		recommendations.Dishes[i].Calories,
 			Price:			recommendations.Dishes[i].Price,
 			Weight:			recommendations.Dishes[i].Weight,
 		}
 		rec.Dishes[i] = newRec
 	}
-
-	fmt.Println("выход из функции рекоммендаций")
 	result, _ := json.Marshal(rec)
 	ctx.Response().Header().Add(echo.HeaderContentLength, strconv.Itoa(len(result)))
 	return ctx.JSONBlob(http.StatusOK, result)

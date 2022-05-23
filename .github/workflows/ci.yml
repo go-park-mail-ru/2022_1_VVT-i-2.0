@@ -54,8 +54,7 @@ jobs:
         run: go get github.com/golangci/golangci-lint/cmd/golangci-lint@v1.42.1
 
       - name: Run GolangCI-Lint
-#        run: go run github.com/golangci/golangci-lint/cmd/golangci-lint run ./... --disable unused --disable deadcode
-        run: go run github.com/golangci/golangci-lint/cmd/golangci-lint run ./...  --disable errcheck
+        run: go run github.com/golangci/golangci-lint/cmd/golangci-lint run ./...
 
   test-coverage:
     runs-on: ubuntu-latest
@@ -79,17 +78,10 @@ jobs:
       - name: Test
         run: go test ./...
 
-      # - name: Build
-      #   run: cd cmd/dripapp && go build
-
-#      - name: Test
-#        run: make test
-#
-#      - name: Go cov dependencies
-#        run: go get github.com/AlekSi/gocov-xml
-#
-#      - name: Run tests w/ coverage
-#        run: make test-coverage
+      - name: Coverage tests
+        run: go test ./... --cover  --coverpkg ./... --coverprofile cover.out
+             cat cover.out | grep -v ".pb.go" > cover_without_gen.out
+             go tool cover -func cover_without_gen.out
 
   deploy:
     runs-on: ubuntu-latest
