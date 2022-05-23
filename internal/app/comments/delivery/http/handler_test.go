@@ -18,16 +18,17 @@ import (
 )
 
 func TestCommentsHandler_GetRestaurantComments(t *testing.T) {
-	id := "1"
+	slug := "1"
 
 	mockUCase := new(mock.CommentsUsecase)
 	e := echo.New()
-	req, err := http.NewRequest(echo.GET, "/comments/1"+id, strings.NewReader("1"))
+	req, err := http.NewRequest(echo.GET, "/comments/1", strings.NewReader("1"))
 	assert.NoError(t, err)
 
 	rec := httptest.NewRecorder()
 	c := e.NewContext(req, rec)
-	c.Set("id", id)
+	c.SetParamNames("slug")
+	c.SetParamValues(slug)
 	handler := CommentsHandler{
 		Usecase: mockUCase,
 	}
@@ -90,7 +91,7 @@ func TestCommentsHandler_GetRestaurantComments_Err(t *testing.T) {
 	err = handler.GetRestaurantComments(c)
 
 	assert.Error(t, err)
-	assert.Equal(t, http.StatusInternalServerError, c.Response().Status)
+	assert.Equal(t, http.StatusBadRequest, c.Response().Status)
 }
 
 func TestRestaurantsHandler_AddCommentsRestaurant_Err(t *testing.T) {
@@ -106,3 +107,18 @@ func TestRestaurantsHandler_AddCommentsRestaurant_Err(t *testing.T) {
 	mockUCase := new(mock.CommentsUsecaseErr)
 	mockLogger := new(mockLogger.Logger)
 	handler := NewCommentsHandler(mockUCase)
+
+	e := echo.New()
+	req, err := http.NewRequest(echo.POST, "/comment", strings.NewReader(string(j)))
+	assert.NoError(t, err)
+	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
+
+	rec := httptest.NewRecorder()
+	c := e.NewContext(req, rec)
+	c.Set(middleware.LoggerCtxKey, &logger.ServLogger{Logger: mockLogger})
+	c.Set(middleware.UserCtxKey, middleware.UserCtx{Id: 1})
+
+	err = handler.AddRestaurantComment(c)
+
+	assert.Equal(t, http.StatusInternalServerError, c.Response().Status)
+}

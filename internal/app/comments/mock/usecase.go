@@ -11,7 +11,7 @@ type CommentsUsecase struct {
 }
 
 func (a *CommentsUsecase) GetRestaurantComments(req models.GetRestaurantCommentsUcaseReq) (*models.CommentsRestaurantUseCase, error) {
-	if req.Slug != "" {
+	if req.Slug == "" {
 		return nil, nil
 	}
 	return &models.CommentsRestaurantUseCase{Comment: []models.CommentRestaurantUseCase{{
