@@ -1,7 +1,6 @@
 package ucase
 
 import (
-	"fmt"
 	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/dishes"
 	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/models"
 	"github.com/pkg/errors"
@@ -20,19 +19,16 @@ func NewDishesUcase(restaurantsRepo dishes.Repository) *DishesUcase {
 func (u *DishesUcase) GetRestaurantDishes(req models.GetRestaurantDishesUcaseReq) (*models.GetRestaurantDishesCategoriesUcaseResp, error) {
 	restaurant, err := u.Repo.GetRestaurantBySlug(models.GetRestaurantBySlugRepoReq(req))
 	if err != nil {
-		fmt.Println("Сломалось тут 1")
 		return nil, errors.Wrap(err, "error getting restaurant")
 	}
 
 	categories, err := u.Repo.GetCategories(models.GetCategoriesByIdRepoReq{Id: models.Id(restaurant.Id)})
 	if err != nil {
-		fmt.Println("Сломалось тут 2")
 		return nil, errors.Wrap(err, "error getting restaurant categories")
 	}
 
 	dishes, err := u.Repo.GetRestaurantDishes(models.GetRestaurantDishesRepoReq{Id: models.Id(restaurant.Id)})
 	if err != nil {
-		fmt.Println("Сломалось тут 3")
 		return nil, errors.Wrap(err, "error getting restaurant dishes")
 	}
 
