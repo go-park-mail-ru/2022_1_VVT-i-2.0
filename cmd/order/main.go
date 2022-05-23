@@ -50,5 +50,9 @@ func main() {
 
 	orderProto.RegisterOrderServiceServer(server, orderHandler)
 
-	server.Serve(lis)
+	err = server.Serve(lis)
+
+	if err != nil {
+		log.Fatalln("cant serve auth-microservice", err)
+	}
 }

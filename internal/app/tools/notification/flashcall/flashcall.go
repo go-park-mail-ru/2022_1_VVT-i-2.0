@@ -18,8 +18,8 @@ type Flashcaller struct {
 
 // TODO: отправлять по хттпС
 const (
-	flasgcallUrlFmt = "http://%s:%s@gate.smsaero.ru/v2/flashcall/send?phone=%s&code=%s"
-	contentTypeJson = "application/json"
+	flasgcallUrlFmt        = "http://%s:%s@gate.smsaero.ru/v2/flashcall/send?phone=%s&code=%s"
+	phoneAlreadyInQueueMsg = "Validation error."
 )
 
 // {
@@ -36,9 +36,14 @@ const (
 // 	"message": null
 // }
 
+type respStatus struct {
+	Status int `json:"status"`
+}
+
 type flashcallResponse struct {
-	Success bool   `json:"success"`
-	Message string `json:"message"`
+	Success bool        `json:"success"`
+	Message string      `json:"message"`
+	Data    *respStatus `json:"data"`
 }
 
 func NewFlashcaller(cfg *conf.NotificatorConfig) *Flashcaller {
@@ -50,7 +55,7 @@ func NewFlashcaller(cfg *conf.NotificatorConfig) *Flashcaller {
 
 func (f Flashcaller) SendCode(phone string, code string) error {
 
-	client := http.Client{Timeout: 3 * time.Second}
+	client := http.Client{Timeout: 7 * time.Second}
 
 	response, err := client.Get(fmt.Sprintf(flasgcallUrlFmt, f.email, f.apiKey, phone, code))
 	if err != nil {
@@ -68,8 +73,20 @@ func (f Flashcaller) SendCode(phone string, code string) error {
 		return servErrors.NewError(servErrors.FLASHCALL_RESPONSE_ERR, "error unmarshaling response from flashcall server: "+err.Error())
 	}
 
-	if !respBody.Success {
+	if !respBody.Success && respBody.Message == phoneAlreadyInQueueMsg {
+		return servErrors.NewError(servErrors.FLASHCALL_PHONE_ALREADY_IN_QUEUE, "")
+	}
+
+	if respBody.Data == nil {
 		return servErrors.NewError(servErrors.FLASHCALL_RESPONSE_ERR, "flashcall server failed to sent request to queue: "+respBody.Message)
 	}
+
 	return nil
 }
+
+/*
+grpc~~~~~~~code: 2643 ~~~~~~~~
+{"success":false,"data":null,"message":"Not enough money."}
+{false Not enough money. {}}
+
+*/

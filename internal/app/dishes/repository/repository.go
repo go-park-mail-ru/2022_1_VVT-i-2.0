@@ -5,7 +5,6 @@ import (
 	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/models"
 	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/tools/servErrors"
 	"github.com/jmoiron/sqlx"
-	"github.com/lib/pq"
 )
 
 type DishesRepo struct {
@@ -16,8 +15,8 @@ func NewDishesRepo(db *sqlx.DB) *DishesRepo {
 	return &DishesRepo{DB: db}
 }
 
-func (r *DishesRepo) GetRestaurantBySlug(req models.GetRestaurantBySlugRepoReq) (*models.DishesRestaurantRepo, error) {
-	restaurant := &models.DishesRestaurantRepo{}
+func (r *DishesRepo) GetRestaurantBySlug(req models.GetRestaurantBySlugRepoReq) (*models.RestaurantRepo, error) {
+	restaurant := &models.RestaurantRepo{}
 	err := r.DB.Get(restaurant, "SELECT id, name,  image_path, slug, min_price, agg_rating, review_count, up_time_to_delivery, down_time_to_delivery FROM restaurants WHERE slug = $1", req.Slug)
 	switch err {
 	case nil:
@@ -44,7 +43,7 @@ func (r *DishesRepo) GetRestaurantDishes(req models.GetRestaurantDishesRepoReq) 
 	err := r.DB.Select(&dishes, "SELECT id, restaurant_id, categori, name, description, image_path, calories, price, weight FROM dishes WHERE restaurant_id = $1", req.Id)
 	switch err {
 	case nil:
-		resp := &models.GetRestaurantDishesCategoriesRepoResp{Dishes: make([]models.DishCategoriesRepo, len(dishes))}
+		resp := &models.GetRestaurantDishesRepoResp{Dishes: make([]models.DishRepo, len(dishes))}
 		for i, dish := range dishes {
 			resp.Dishes[i] = *dish
 		}

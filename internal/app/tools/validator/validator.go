@@ -8,14 +8,44 @@ import (
 	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/models"
 )
 
-const (
-	phoneRegexp   = `^7[94][0-9]{9}$`
-	nameRegexp    = `^[A-ZА-Я]{1}[a-zа-я]{2,25}$`
-	addressRegexp = `^[a-zA-Zа-яА-Я0-9 \,\.\/\-]{0,256}$` // TODO: составить норм регулярки
-	// commentRegexp = `^[a-zA-Zа-яА-Я0-9 \-\/,.]{,512}$` // TODO: составить норм регулярки
+var (
+	phoneRegexp   = regexp.MustCompile(`^7[94][0-9]{9}$`)
+	codeRegexp    = regexp.MustCompile(`[0-9]{4}$`)
+	nameRegexp    = regexp.MustCompile(`^[A-ZА-Я]{1}[a-zа-я]{2,25}$`)
+	promoRegexp   = regexp.MustCompile(`^[A-ZА-Яa-zа-я0-9]{2,25}$`)
+	slugRegexp    = regexp.MustCompile(`^[a-zA-Zа-яА-Я0-9\-]{1,128}$`)
+	addressRegexp = regexp.MustCompile(`^[a-zA-Zа-яА-Я0-9 \,\.\/\-]{0,256}$`)
+	commentMaxLen = 1024
 )
 
 func init() {
+	govalidator.CustomTypeTagMap.Set(
+		"stars",
+		govalidator.CustomTypeValidator(func(i interface{}, o interface{}) bool {
+			stars, ok := i.(int)
+			return ok && (stars <= 5) && (stars >= 1)
+		}),
+	)
+	govalidator.CustomTypeTagMap.Set(
+		"code",
+		govalidator.CustomTypeValidator(func(i interface{}, o interface{}) bool {
+			code, ok := i.(string)
+			if !ok {
+				return false
+			}
+			return codeRegexp.MatchString(code)
+		}),
+	)
+	govalidator.CustomTypeTagMap.Set(
+		"slug",
+		govalidator.CustomTypeValidator(func(i interface{}, o interface{}) bool {
+			slug, ok := i.(string)
+			if !ok {
+				return false
+			}
+			return slugRegexp.MatchString(slug)
+		}),
+	)
 	govalidator.CustomTypeTagMap.Set(
 		"name",
 		govalidator.CustomTypeValidator(func(i interface{}, o interface{}) bool {
@@ -23,9 +53,17 @@ func init() {
 			if !ok {
 				return false
 			}
-
-			isName, _ := regexp.MatchString(nameRegexp, name)
-			return isName
+			return nameRegexp.MatchString(name)
+		}),
+	)
+	govalidator.CustomTypeTagMap.Set(
+		"promocode",
+		govalidator.CustomTypeValidator(func(i interface{}, o interface{}) bool {
+			promocode, ok := i.(string)
+			if !ok {
+				return false
+			}
+			return promoRegexp.MatchString(promocode)
 		}),
 	)
 	govalidator.CustomTypeTagMap.Set(
@@ -35,23 +73,14 @@ func init() {
 			if !ok {
 				return false
 			}
-
-			isAddr, _ := regexp.MatchString(addressRegexp, addr)
-			return isAddr
+			return addressRegexp.MatchString(addr)
 		}),
 	)
 	govalidator.CustomTypeTagMap.Set(
 		"comment",
 		govalidator.CustomTypeValidator(func(i interface{}, o interface{}) bool {
-			// comment, ok := i.(string)
-			// if !ok {
-			// 	return false
-			// }
-
-			// isComment, _ := regexp.MatchString(addressRegexp, comment)
-			// return isComment
-
-			return true
+			comment, ok := i.(string)
+			return ok && len(comment) <= commentMaxLen && len(comment) > 0
 		}),
 	)
 	govalidator.CustomTypeTagMap.Set(
@@ -61,9 +90,7 @@ func init() {
 			if !ok {
 				return false
 			}
-
-			isPhone, _ := regexp.MatchString(phoneRegexp, phone)
-			return isPhone
+			return phoneRegexp.MatchString(phone)
 		}),
 	)
 
@@ -71,27 +98,22 @@ func init() {
 		"userId",
 		govalidator.CustomTypeValidator(func(i interface{}, o interface{}) bool {
 			id, ok := i.(models.UserId)
-			if !ok {
-				return false
-			}
-			if id <= 0 {
-				return false
-			}
-			return true
+			return ok && id > 0
 		}),
 	)
 	govalidator.CustomTypeTagMap.Set(
 		"expired",
 		govalidator.CustomTypeValidator(func(i interface{}, o interface{}) bool {
 			exp, ok := i.(time.Time)
-			if !ok {
-				return false
-			}
-
-			if exp.Before(time.Now()) {
-				return false
-			}
-			return true
+			return ok && !exp.Before(time.Now())
 		}),
 	)
+}
+
+func IsSlug(str string) bool {
+	return slugRegexp.MatchString(str)
+}
+
+func IsUserId(num int64) bool {
+	return num > 0
 }

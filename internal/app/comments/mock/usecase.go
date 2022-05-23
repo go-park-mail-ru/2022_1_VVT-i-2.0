@@ -1,14 +1,14 @@
 package mock
 
-import (
-	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/models"
-	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/tools/servErrors"
-	"github.com/stretchr/testify/mock"
-)
+// import (
+// 	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/models"
+// 	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/tools/servErrors"
+// 	"github.com/stretchr/testify/mock"
+// )
 
-type CommentsUsecase struct {
-	mock.Mock
-}
+// type CommentsUsecase struct {
+// 	mock.Mock
+// }
 
 func (a *CommentsUsecase) GetRestaurantComments(req models.GetRestaurantCommentsUcaseReq) (*models.CommentsRestaurantUseCase, error) {
 	if req.Slug != "" {
@@ -34,9 +34,9 @@ func (a *CommentsUsecase) AddRestaurantComment(req models.AddCommentRestaurantUc
 		Date:         "date"}, nil
 }
 
-type CommentsUsecaseErr struct {
-	mock.Mock
-}
+// type CommentsUsecaseErr struct {
+// 	mock.Mock
+// }
 
 func (a *CommentsUsecaseErr) GetRestaurantComments(req models.GetRestaurantCommentsUcaseReq) (*models.CommentsRestaurantUseCase, error) {
 	return nil, servErrors.NewError(servErrors.DB_ERROR, "")

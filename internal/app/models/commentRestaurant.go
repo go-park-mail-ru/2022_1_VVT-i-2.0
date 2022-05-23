@@ -23,20 +23,20 @@ type UpdateRestaurantRatingRepoReq struct {
 }
 
 type AddRestaurantCommentRepoReq struct {
-	RestaurantId	int		`db:"restaurant_id"`
-	User           	string	`db:"author"`
-	CommentText   	string	`db:"text"`
-	CommentRating 	int		`db:"stars"`
+	RestaurantId  int    `db:"restaurant_id"`
+	User          string `db:"author"`
+	CommentText   string `db:"text"`
+	CommentRating int    `db:"stars"`
 }
 
 // Repository models
 
 type CommentRestaurantDataStorage struct {
-	RestaurantId	int		`db:"restaurant_id"`
-	Author        	string	`db:"author"`
-	Text          	string	`db:"text"`
-	Stars         	int		`db:"stars"`
-	Date          	string	`db:"get_ru_date"`
+	RestaurantId int    `db:"restaurant_id"`
+	Author       string `db:"author"`
+	Text         string `db:"text"`
+	Stars        int    `db:"stars"`
+	Date         string `db:"get_ru_date"`
 }
 
 type CommentsRestaurantDataStorage struct {
@@ -52,20 +52,20 @@ type GetRestaurantCommentsUcaseReq struct {
 }
 
 type AddCommentRestaurantUcaseReq struct {
-	UserId			UserId
-	Slug			string
-	CommentText		string
-	CommentRating	int
+	UserId        UserId
+	Slug          string
+	CommentText   string
+	CommentRating int
 }
 
 // UseCase models
 
 type CommentRestaurantUseCase struct {
-	RestaurantId	int    `json:"restaurants_id"`
-	Author       	string `json:"author"`
-	Text          	string `json:"text"`
-	Stars         	int    `json:"starts"`
-	Date          	string `json:"date"`
+	RestaurantId int    `json:"restaurants_id"`
+	Author       string `json:"author"`
+	Text         string `json:"text"`
+	Stars        int    `json:"starts"`
+	Date         string `json:"date"`
 }
 
 type CommentsRestaurantUseCase struct {
@@ -77,9 +77,9 @@ type CommentsRestaurantUseCase struct {
 // handler request
 
 type AddCommentRestaurantReq struct {
-	Slug     		string	`json:"slug"`
-	CommentText  	string 	`json:"text"`
-	CommentRating	int    	`json:"stars"`
+	Slug          string `json:"slug" valid:"slug,required"`
+	CommentText   string `json:"text" valid:"comment,required"`
+	CommentRating int    `json:"stars" valid:"stars,required"`
 }
 
 // handler models
@@ -96,12 +96,9 @@ type GetCommentsDataDelivery struct {
 }
 
 type CommentDataDelivery struct {
-	RestaurantId	int    `json:"restaurants_id"`
-	Author       	 string `json:"author"`
-	Text         	 string `json:"text"`
-	Stars        	 int    `json:"stars"`
-	Date         	 string `json:"date"`
+	RestaurantId int    `json:"restaurants_id"`
+	Author       string `json:"author"`
+	Text         string `json:"text"`
+	Stars        int    `json:"stars"`
+	Date         string `json:"date"`
 }
-
-
-

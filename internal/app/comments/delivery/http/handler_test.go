@@ -106,18 +106,3 @@ func TestRestaurantsHandler_AddCommentsRestaurant_Err(t *testing.T) {
 	mockUCase := new(mock.CommentsUsecaseErr)
 	mockLogger := new(mockLogger.Logger)
 	handler := NewCommentsHandler(mockUCase)
-
-	e := echo.New()
-	req, err := http.NewRequest(echo.POST, "/comment", strings.NewReader(string(j)))
-	assert.NoError(t, err)
-	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
-
-	rec := httptest.NewRecorder()
-	c := e.NewContext(req, rec)
-	c.Set(middleware.LoggerCtxKey, &logger.ServLogger{Logger: mockLogger})
-	c.Set(middleware.UserCtxKey, middleware.UserCtx{Id: 1})
-
-	err = handler.AddRestaurantComment(c)
-
-	assert.Equal(t, http.StatusInternalServerError, c.Response().Status)
-}
