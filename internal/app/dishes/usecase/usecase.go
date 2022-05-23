@@ -1,7 +1,6 @@
 package ucase
 
 import (
-	"fmt"
 	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/dishes"
 	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/models"
 	"github.com/pkg/errors"
