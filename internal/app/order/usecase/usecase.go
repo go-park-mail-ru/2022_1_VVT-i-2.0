@@ -24,7 +24,7 @@ func (u *OrderUcase) CreateOrder(order *models.OrderUcaseReq) (*models.OrderUcas
 	for i, position := range order.Cart {
 		cart[i] = &orderProto.OrderPositionReq{Id: position.Id, Count: position.Count}
 	}
-	orderResp, err := u.OrderCli.CreateOrder(context.Background(), &orderProto.CreateOrderReq{UserId: int64(order.UserId), Address: order.Address, Comment: order.Comment, Cart: cart})
+	orderResp, err := u.OrderCli.CreateOrder(context.Background(), &orderProto.CreateOrderReq{UserId: int64(order.UserId), Address: order.Address, Comment: order.Comment, Cart: cart, Promocode: order.Promocode})
 	if err != nil {
 		return nil, servErrors.NewError(int(status.Code(err)), err.Error())
 	}
@@ -66,7 +66,7 @@ func (u *OrderUcase) GetUserOrder(req *models.GetUserOrderUcaseReq) (*models.Get
 		return nil, servErrors.NewError(int(status.Code(err)), err.Error())
 	}
 
-	resp := models.GetUserOrderUcaseResp{OrderId: order.OrderId, Address: order.Address, Date: order.Date, RestaurantName: order.RestaurantName, RestaurantSlug: order.RestaurantSlug, TotalPrice: order.TotalPrice, Status: order.Status, Cart: make([]models.OrderPositionUcaseResp, len(order.Cart))}
+	resp := models.GetUserOrderUcaseResp{OrderId: order.OrderId, Address: order.Address, Date: order.Date, RestaurantName: order.RestaurantName, RestaurantSlug: order.RestaurantSlug, TotalPrice: order.TotalPrice, Discount: order.Discount, Status: order.Status, Cart: make([]models.OrderPositionUcaseResp, len(order.Cart))}
 	for i, poz := range order.Cart {
 		resp.Cart[i] = models.OrderPositionUcaseResp{Name: poz.Name, Description: poz.Description, ImagePath: poz.ImagePath, Calories: poz.Calories, Count: poz.Count, Price: poz.Price, Weigth: poz.Weigth}
 	}

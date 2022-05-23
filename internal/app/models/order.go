@@ -6,24 +6,26 @@ type OrderPosition struct {
 }
 
 type OrderReq struct {
-	Address  string          `json:"address" valid:"address,required"`
-	Entrance string          `json:"entrance" valid:"utfletternum"`
-	Intercom string          `json:"intercom" valid:"utfletternum"`
-	Floor    string          `json:"floor" valid:"utfletternum"`
-	Flat     string          `json:"flat" valid:"utfletternum"`
-	Comment  string          `json:"comment" valid:"comment"`
-	Cart     []OrderPosition `json:"cart" valid:"required"`
+	Address   string          `json:"address" valid:"address,required"`
+	Entrance  string          `json:"entrance" valid:"utfletternum"`
+	Intercom  string          `json:"intercom" valid:"utfletternum"`
+	Floor     string          `json:"floor" valid:"utfletternum"`
+	Flat      string          `json:"flat" valid:"utfletternum"`
+	Comment   string          `json:"comment" valid:"comment"`
+	Cart      []OrderPosition `json:"cart" valid:"required"`
+	Promocode string          `json:"promocode" valid:"promocode"`
 }
 
 type OrderUcaseReq struct {
-	UserId   UserId
-	Address  string
-	Entrance string
-	Intercom string
-	Floor    string
-	Flat     string
-	Comment  string
-	Cart     []OrderPosition
+	UserId    UserId
+	Address   string
+	Entrance  string
+	Intercom  string
+	Floor     string
+	Flat      string
+	Comment   string
+	Promocode string
+	Cart      []OrderPosition
 }
 
 type OrderUcaseResp struct {
@@ -116,6 +118,7 @@ type GetUserOrderUcaseResp struct {
 	OrderId        int64
 	Date           string
 	TotalPrice     int64
+	Discount       int64
 	RestaurantName string
 	RestaurantSlug string
 	Address        string
@@ -138,6 +141,7 @@ type GetUserOrderResp struct {
 	Address        string              `json:"address"`
 	Date           string              `json:"date"`
 	TotalPrice     int64               `json:"totalPrice"`
+	Discount       int64               `json:"summaryDiscount"`
 	RestaurantName string              `json:"restName"`
 	RestaurantSlug string              `json:"restSlug"`
 	Status         string              `json:"status"`
