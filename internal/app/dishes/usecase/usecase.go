@@ -16,7 +16,7 @@ func NewDishesUcase(restaurantsRepo dishes.Repository) *DishesUcase {
 	}
 }
 
-func (u *DishesUcase) GetRestaurantDishes(req models.GetRestaurantDishesUcaseReq) (*models.GetRestaurantDishesUcaseResp, error) {
+func (u *DishesUcase) GetRestaurantDishes(req models.GetRestaurantDishesUcaseReq) (*models.GetRestaurantDishesCategoriesUcaseResp, error) {
 	restaurant, err := u.Repo.GetRestaurantBySlug(models.GetRestaurantBySlugRepoReq(req))
 	if err != nil {
 		return nil, errors.Wrap(err, "error getting restaurant")
