@@ -29,6 +29,11 @@ func NewRecommendationsHandler(ucase recommendations.Ucase, staticManager static
 func (h RecommendationsHandler) GetRecommendations(ctx echo.Context) error {
 	fmt.Println("начало работы хелндера рекоммендаций")
 
+	user := middleware.GetUserFromCtx(ctx)
+	if user == nil {
+		return ctx.JSON(http.StatusUnauthorized, httpErrDescr.AUTH_REQUIRED)
+	}
+
 	logger := middleware.GetLoggerFromCtx(ctx)
 	requestId := middleware.GetRequestIdFromCtx(ctx)
 
