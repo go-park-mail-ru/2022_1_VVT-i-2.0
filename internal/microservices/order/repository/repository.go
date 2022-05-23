@@ -25,9 +25,9 @@ func makeAddOrderQuery(order *models.CreateOrderRepoReq) string {
 	if len(order.Cart) == 0 {
 		return `INSERT INTO orders_internal (user_id , address, comment, cart) VALUES ($1,$2,$3)`
 	}
-	query := `INSERT INTO orders_internal (user_id , address, comment, cart) VALUES ($1,$2,$3, ARRAY[`
+	query := `INSERT INTO orders_internal (user_id , address, comment, promocode_id, cart) VALUES ($1,$2,$3, (SELECT id FROM promocodes WHERE promocode=$4), ARRAY[`
 
-	nextPlaceholderNum := 4
+	nextPlaceholderNum := 5
 	for i := 0; i < len(order.Cart)-1; i++ {
 		query += `($` + strconv.Itoa(nextPlaceholderNum)
 		nextPlaceholderNum++
@@ -46,7 +46,7 @@ func makeAddOrderQuery(order *models.CreateOrderRepoReq) string {
 
 func expandOrder(order *models.CreateOrderRepoReq) []interface{} {
 	var args []interface{}
-	args = append(args, order.UserId, order.Address, order.Comment)
+	args = append(args, order.UserId, order.Address, order.Comment, order.Promocode)
 	for _, orderPos := range order.Cart {
 		args = append(args, orderPos.Id, orderPos.Count, 0)
 	}
@@ -58,7 +58,6 @@ func (r *OrderRepo) CreateOrder(order *models.CreateOrderRepoReq) (*models.Creat
 
 	var newOrderId int64
 	err := r.DB.QueryRow(query, expandOrder(order)...).Scan(&newOrderId)
-
 	if err != nil {
 		if err == sql.ErrConnDone || err == sql.ErrTxDone {
 			return nil, servErrors.NewError(servErrors.DB_ERROR, err.Error())
@@ -73,7 +72,7 @@ func (r *OrderRepo) CreateOrder(order *models.CreateOrderRepoReq) (*models.Creat
 
 func (r *OrderRepo) GetUserOrders(user *models.GetUserOrdersRepoReq) (*models.GetUserOrdersRepoResp, error) {
 	orders := make([]*models.ShortOrderRepo, 0, ordersMax)
-	err := r.DB.Select(&orders, `SELECT id, date, restaurant_name, total_price, status FROM orders WHERE user_id = $1 ORDER BY fulldate DESC `, user.UserId)
+	err := r.DB.Select(&orders, `SELECT id, date, restaurant_name, total_price_discount, status FROM orders WHERE user_id = $1 ORDER BY fulldate DESC `, user.UserId)
 
 	ordersResp := make([]models.ShortOrderRepo, len(orders))
 	for i, order := range orders {
@@ -109,7 +108,7 @@ func (r *OrderRepo) GetUserOrderStatuses(user *models.GetUserOrderStatusesRepoRe
 
 func (r *OrderRepo) GetUserOrder(req *models.GetUserOrderRepoReq) (*models.GetUserOrderRepoResp, error) {
 	order := &models.GetUserOrderRepoResp{}
-	err := r.DB.Get(order, `SELECT id, address, user_id, date, restaurant_name, restaurant_slug, total_price, status FROM orders WHERE id = $1 `, req.OrderId)
+	err := r.DB.Get(order, `SELECT id, address, user_id, date, restaurant_name, restaurant_slug, total_price, total_price_discount, status FROM orders WHERE id = $1 `, req.OrderId)
 	cart := make([]*models.OrderPositionRepoResp, 0)
 	if err == nil {
 		err = r.DB.Select(&cart, `SELECT d.description, d.name, d.weight, d.calories, d.image_path, c.price price, c.count from dishes d JOIN (SELECT (unnest(cart)::order_dish).id as id, (unnest(cart)::order_dish).count, (unnest(cart)::order_dish).price FROM orders_internal WHERE id=$1) c ON d.id=c.id`, req.OrderId)

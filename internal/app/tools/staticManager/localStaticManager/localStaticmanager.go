@@ -8,20 +8,24 @@ import (
 )
 
 type LocalFileManager struct {
-	staticUrl      string
-	staticPath     string
-	avatarPath     string
-	restaurantPath string
-	dishesPath     string
+	staticUrl         string
+	staticPath        string
+	avatarPath        string
+	restaurantPath    string
+	promocodePath     string
+	logoPromocodePath string
+	dishesPath        string
 }
 
 func NewLocalFileManager(staticUrl string, staticPath string) *LocalFileManager {
 	return &LocalFileManager{
-		staticUrl:      staticUrl,
-		staticPath:     staticPath,
-		avatarPath:     "avatar/",
-		restaurantPath: "restaurants/",
-		dishesPath:     "dishes/",
+		staticUrl:         staticUrl,
+		staticPath:        staticPath,
+		avatarPath:        "avatar/",
+		restaurantPath:    "restaurants/",
+		dishesPath:        "dishes/",
+		promocodePath:     "promocodes/main/",
+		logoPromocodePath: "promocodes/logos/",
 	}
 }
 
@@ -58,4 +62,12 @@ func (f *LocalFileManager) GetRestaurantUrl(fileName string) string {
 
 func (f *LocalFileManager) GetDishesUrl(fileName string) string {
 	return f.staticUrl + f.dishesPath + fileName
+}
+
+func (f *LocalFileManager) GetPromocodeUrl(fileName string) string {
+	return f.staticUrl + f.promocodePath + fileName
+}
+
+func (f *LocalFileManager) GetPromocodeLogoUrl(fileName string) string {
+	return f.staticUrl + f.logoPromocodePath + fileName
 }

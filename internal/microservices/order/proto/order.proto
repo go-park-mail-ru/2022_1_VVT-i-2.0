@@ -16,7 +16,8 @@ message CreateOrderReq {
   string Address = 1;
   string Comment = 2;
   int64 UserId = 3;
-  repeated OrderPositionReq Cart = 4;
+  string Promocode = 4;
+  repeated OrderPositionReq Cart = 5;
 }
 
 message GetUserOrdersReq {
@@ -54,11 +55,12 @@ message GetUserOrderResp {
   int64 OrderId = 1;
   string Date = 2;
   int64 TotalPrice = 3;
-  string RestaurantName = 4;
-  string RestaurantSlug = 5;
-  string Status = 6;
-  string Address = 7;
-  repeated OrderPositionResp Cart = 8;
+  int64 Discount = 4;
+  string RestaurantName = 5;
+  string RestaurantSlug = 6;
+  string Status = 7;
+  string Address = 8;
+  repeated OrderPositionResp Cart = 9;
 }
 
 message GetUserOrderStatusesReq {

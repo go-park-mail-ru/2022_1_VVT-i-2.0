@@ -8,11 +8,13 @@ import (
 	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/models"
 )
 
-const (
-	phoneRegexp   = `^7[94][0-9]{9}$`
-	nameRegexp    = `^[A-ZА-Я]{1}[a-zа-я]{2,25}$`
-	slugRegexp    = `^[a-zA-Zа-яА-Я0-9\-]{1,128}$`
-	addressRegexp = `^[a-zA-Zа-яА-Я0-9 \,\.\/\-]{0,256}$`
+var (
+	phoneRegexp   = regexp.MustCompile(`^7[94][0-9]{9}$`)
+	codeRegexp    = regexp.MustCompile(`[0-9]{4}$`)
+	nameRegexp    = regexp.MustCompile(`^[A-ZА-Я]{1}[a-zа-я]{2,25}$`)
+	promoRegexp   = regexp.MustCompile(`^[A-ZА-Яa-zа-я0-9]{2,25}$`)
+	slugRegexp    = regexp.MustCompile(`^[a-zA-Zа-яА-Я0-9\-]{1,128}$`)
+	addressRegexp = regexp.MustCompile(`^[a-zA-Zа-яА-Я0-9 \,\.\/\-]{0,256}$`)
 	commentMaxLen = 1024
 )
 
@@ -27,8 +29,11 @@ func init() {
 	govalidator.CustomTypeTagMap.Set(
 		"code",
 		govalidator.CustomTypeValidator(func(i interface{}, o interface{}) bool {
-			code, ok := i.(int)
-			return ok && ((code <= 9999) && (code >= 0))
+			code, ok := i.(string)
+			if !ok {
+				return false
+			}
+			return codeRegexp.MatchString(code)
 		}),
 	)
 	govalidator.CustomTypeTagMap.Set(
@@ -38,9 +43,7 @@ func init() {
 			if !ok {
 				return false
 			}
-
-			isSlug, _ := regexp.MatchString(slugRegexp, slug)
-			return isSlug
+			return slugRegexp.MatchString(slug)
 		}),
 	)
 	govalidator.CustomTypeTagMap.Set(
@@ -50,9 +53,17 @@ func init() {
 			if !ok {
 				return false
 			}
-
-			isName, _ := regexp.MatchString(nameRegexp, name)
-			return isName
+			return nameRegexp.MatchString(name)
+		}),
+	)
+	govalidator.CustomTypeTagMap.Set(
+		"promocode",
+		govalidator.CustomTypeValidator(func(i interface{}, o interface{}) bool {
+			promocode, ok := i.(string)
+			if !ok {
+				return false
+			}
+			return promoRegexp.MatchString(promocode)
 		}),
 	)
 	govalidator.CustomTypeTagMap.Set(
@@ -62,9 +73,7 @@ func init() {
 			if !ok {
 				return false
 			}
-
-			isAddr, _ := regexp.MatchString(addressRegexp, addr)
-			return isAddr
+			return addressRegexp.MatchString(addr)
 		}),
 	)
 	govalidator.CustomTypeTagMap.Set(
@@ -81,9 +90,7 @@ func init() {
 			if !ok {
 				return false
 			}
-
-			isPhone, _ := regexp.MatchString(phoneRegexp, phone)
-			return isPhone
+			return phoneRegexp.MatchString(phone)
 		}),
 	)
 
@@ -104,6 +111,9 @@ func init() {
 }
 
 func IsSlug(str string) bool {
-	isSlug, _ := regexp.MatchString(slugRegexp, str)
-	return isSlug
+	return slugRegexp.MatchString(str)
+}
+
+func IsUserId(num int64) bool {
+	return num > 0
 }

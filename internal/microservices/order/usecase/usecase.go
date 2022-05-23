@@ -29,8 +29,7 @@ func (u *OrderUcase) CreateOrder(order *models.CreateOrderUcaseReq) (*models.Cre
 	for i, position := range order.Cart {
 		cart[i] = models.OrderPositionRepo(position)
 	}
-	orderId, err := u.OrderRepo.CreateOrder(&models.CreateOrderRepoReq{UserId: order.UserId, Address: orderAddr, Comment: order.Comment, Cart: cart})
-	// orderId, err := u.OrderRepo.CreateOrder(&models.CreateOrderRepoReq{UserId: order.UserId, Address: order.Address, Comment: order.Comment, Cart: cart})
+	orderId, err := u.OrderRepo.CreateOrder(&models.CreateOrderRepoReq{UserId: order.UserId, Address: orderAddr, Comment: order.Comment, Cart: cart, Promocode: order.Promocode})
 
 	if err != nil || orderId.OrderId <= 0 {
 		return nil, errors.Wrap(err, "error adding order to storage")
@@ -83,7 +82,16 @@ func (u *OrderUcase) GetUserOrder(req *models.GetUserOrderUcaseReq) (*models.Get
 		cart[i] = models.OrderPositionUcaseResp{Name: poz.Name, Description: poz.Description, ImagePath: poz.ImagePath, Calories: poz.Calories, Count: poz.Count, Price: poz.Price, Weigth: poz.Weight}
 	}
 
-	return &models.GetUserOrderUcaseResp{OrderId: order.OrderId, Address: order.Address, Date: order.Date, RestaurantName: order.RestaurantName, RestaurantSlug: order.RestaurantSlug, TotalPrice: order.TotalPrice, Status: order.Status, Cart: cart}, nil
+	return &models.GetUserOrderUcaseResp{
+		OrderId:        order.OrderId,
+		Address:        order.Address,
+		Date:           order.Date,
+		RestaurantName: order.RestaurantName,
+		RestaurantSlug: order.RestaurantSlug,
+		TotalPrice:     order.TotalPriceDiscount,
+		Status:         order.Status,
+		Discount:       order.TotalPrice - order.TotalPriceDiscount,
+		Cart:           cart}, nil
 }
 
 func (u *OrderUcase) getAddress(addrStr string) (string, error) {

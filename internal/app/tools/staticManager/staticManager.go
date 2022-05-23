@@ -16,4 +16,6 @@ type FileManager interface {
 	IsNotSuchAvatarExist(avatarName string) bool
 	GetRestaurantUrl(fileName string) string
 	GetDishesUrl(fileName string) string
+	GetPromocodeUrl(fileName string) string
+	GetPromocodeLogoUrl(fileName string) string
 }
