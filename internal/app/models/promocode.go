@@ -1,15 +1,15 @@
 package models
 
 type PromocodeResp struct {
-	Image          string `json:"img"`
-	LogoImage      string `json:"logo"`
-	Text           string `json:"text"`
-	Promocode      string `json:"promocode"`
-	RestaurantName string `json:"restName"`
-	RestaurantSlug string `json:"restSlug"`
-	Discount       int    `json:"discount"`
-	PriceReduction int    `json:"priceReduction"`
-	MinPrice       int    `json:"minPrice"`
+	Image          string  `json:"img"`
+	LogoImage      string  `json:"logo"`
+	Text           string  `json:"text"`
+	Promocode      string  `json:"promocode"`
+	RestaurantName string  `json:"restName"`
+	RestaurantSlug string  `json:"restSlug"`
+	Discount       float32 `json:"discount"`
+	PriceReduction int     `json:"priceReduction"`
+	MinPrice       int     `json:"minPrice"`
 }
 type GetPromocodesResp struct {
 	Promos []PromocodeResp `json:"promos"`
