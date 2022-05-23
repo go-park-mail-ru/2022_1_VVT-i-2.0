@@ -15,3 +15,6 @@ db_t.go
 .html
 notes.txt
 todo.txt
+
+cover.out
+cover_without_gen.out
