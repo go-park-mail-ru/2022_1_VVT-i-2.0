@@ -63,7 +63,8 @@ func (h DishesHandler) GetDishesByRestaurants(ctx echo.Context) error {
 	if restaurantDishes.ReviewCount != 0 {
 		rating = math.Round(float64(restaurantDishes.AggRating)*10/float64(restaurantDishes.ReviewCount)) / 10
 	}
-	resp := &models.GetRestaurantDishesResp{
+
+	resp := &models.GetRestaurantDishesCategoriesResp{
 		Id:             restaurantDishes.Id,
 		Name:           restaurantDishes.Name,
 		ImagePath:      h.StaticManager.GetRestaurantUrl(restaurantDishes.ImagePath),
@@ -71,12 +72,13 @@ func (h DishesHandler) GetDishesByRestaurants(ctx echo.Context) error {
 		MinPrice:       restaurantDishes.MinPrice,
 		Rating:         rating,
 		ReviewCount:    restaurantDishes.ReviewCount,
-		TimeToDelivery: strconv.Itoa(restaurantDishes.DownMinutsToDelivery) + "-" + strconv.Itoa(restaurantDishes.UpMinutsToDelivery),
-		Dishes:         make([]models.DishResp, len(restaurantDishes.Dishes)),
+		TimeToDelivery: strconv.Itoa(restaurantDishes.DownMinutesToDelivery) + "-" + strconv.Itoa(restaurantDishes.UpMinutesToDelivery),
+		Dishes: 		make([]models.DishCategoriesResp, len(restaurantDishes.Dishes)),
+		Categories: 	make([]models.CategoriesDishesDelivery, len(restaurantDishes.Categories)),
 	}
 
 	for i, dish := range restaurantDishes.Dishes {
-		resp.Dishes[i] = models.DishResp{
+		resp.Dishes[i] = models.DishCategoriesResp{
 			Id:           dish.Id,
 			RestaurantId: dish.RestaurantId,
 			Name:         dish.Name,
@@ -85,6 +87,14 @@ func (h DishesHandler) GetDishesByRestaurants(ctx echo.Context) error {
 			Calories:     dish.Calories,
 			Price:        dish.Price,
 			Weight:       dish.Weight,
+		}
+	}
+
+	for i, item := range restaurantDishes.Categories {
+		resp.Categories[i].Category = item.Categories
+		//resp.Categories[i].Dishes = item.Dishes
+		for _, item1 := range item.Dishes {
+			resp.Categories[i].Dishes = append(resp.Categories[i].Dishes, item1)
 		}
 	}
 

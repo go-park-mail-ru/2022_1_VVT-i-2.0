@@ -28,9 +28,19 @@ func (r *DishesRepo) GetRestaurantBySlug(req models.GetRestaurantBySlugRepoReq) 
 	}
 }
 
-func (r *DishesRepo) GetRestaurantDishes(req models.GetRestaurantDishesRepoReq) (*models.GetRestaurantDishesRepoResp, error) {
-	dishes := make([]*models.DishRepo, 0)
-	err := r.DB.Select(&dishes, "SELECT id, restaurant_id, name, description, image_path, calories, price, weight FROM dishes WHERE restaurant_id = $1", req.Id)
+func (r *DishesRepo) GetCategories(req models.GetCategoriesByIdRepoReq) (*models.Categories, error) {
+	var tags []string
+	if err := r.DB.QueryRow(`SELECT categories FROM restaurants WHERE id = $1`, req.Id).Scan(pq.Array(&tags)); err != nil {
+		return nil, servErrors.NewError(servErrors.NO_SUCH_ENTITY_IN_DB, err.Error())
+	}
+	categories := &models.Categories{}
+	categories.Categories = tags
+	return categories, nil
+}
+
+func (r *DishesRepo) GetRestaurantDishes(req models.GetRestaurantDishesRepoReq) (*models.GetRestaurantDishesCategoriesRepoResp, error) {
+	dishes := make([]*models.DishCategoriesRepo, 0)
+	err := r.DB.Select(&dishes, "SELECT id, restaurant_id, categori, name, description, image_path, calories, price, weight FROM dishes WHERE restaurant_id = $1", req.Id)
 	switch err {
 	case nil:
 		resp := &models.GetRestaurantDishesRepoResp{Dishes: make([]models.DishRepo, len(dishes))}

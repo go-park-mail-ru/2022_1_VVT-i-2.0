@@ -10,38 +10,38 @@ package mock
 // 	mock.Mock
 // }
 
-// func (a *CommentsUsecase) GetRestaurantComments(slug string) (*models.CommentsRestaurantUseCase, error) {
-// 	if slug != "" {
-// 		return nil, nil
-// 	}
-// 	return &models.CommentsRestaurantUseCase{Comment: []models.CommentRestaurantUseCase{{
-// 		RestaurantId: 1,
-// 		Author:       "author",
-// 		Text:         "text",
-// 		Stars:        4,
-// 		Date:         "date"}}}, nil
-// }
+func (a *CommentsUsecase) GetRestaurantComments(req models.GetRestaurantCommentsUcaseReq) (*models.CommentsRestaurantUseCase, error) {
+	if req.Slug != "" {
+		return nil, nil
+	}
+	return &models.CommentsRestaurantUseCase{Comment: []models.CommentRestaurantUseCase{{
+		RestaurantId: 1,
+		Author:       "author",
+		Text:         "text",
+		Stars:        4,
+		Date:         "date"}}}, nil
+}
 
-// func (a *CommentsUsecase) AddRestaurantComment(id models.UserId, item *models.AddCommentRestaurantUseCase) (*models.CommentRestaurantUseCase, error) {
-// 	if item == nil {
-// 		return nil, nil
-// 	}
-// 	return &models.CommentRestaurantUseCase{
-// 		RestaurantId: 1,
-// 		Author:       "author",
-// 		Text:         "text",
-// 		Stars:        4,
-// 		Date:         "date"}, nil
-// }
+func (a *CommentsUsecase) AddRestaurantComment(req models.AddCommentRestaurantUcaseReq) (*models.CommentRestaurantUseCase, error) {
+	if &req == nil {
+		return nil, nil
+	}
+	return &models.CommentRestaurantUseCase{
+		RestaurantId: 1,
+		Author:       "author",
+		Text:         "text",
+		Stars:        4,
+		Date:         "date"}, nil
+}
 
 // type CommentsUsecaseErr struct {
 // 	mock.Mock
 // }
 
-// func (a *CommentsUsecaseErr) GetRestaurantComments(slug string) (*models.CommentsRestaurantUseCase, error) {
-// 	return nil, servErrors.NewError(servErrors.DB_ERROR, "")
-// }
+func (a *CommentsUsecaseErr) GetRestaurantComments(req models.GetRestaurantCommentsUcaseReq) (*models.CommentsRestaurantUseCase, error) {
+	return nil, servErrors.NewError(servErrors.DB_ERROR, "")
+}
 
-// func (a *CommentsUsecaseErr) AddRestaurantComment(id models.UserId, item *models.AddCommentRestaurantUseCase) (*models.CommentRestaurantUseCase, error) {
-// 	return nil, servErrors.NewError(servErrors.DB_ERROR, "")
-// }
+func (a *CommentsUsecaseErr) AddRestaurantComment(req models.AddCommentRestaurantUcaseReq) (*models.CommentRestaurantUseCase, error) {
+	return nil, servErrors.NewError(servErrors.DB_ERROR, "")
+}

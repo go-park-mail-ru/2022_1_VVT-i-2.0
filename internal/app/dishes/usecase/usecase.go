@@ -1,6 +1,7 @@
 package ucase
 
 import (
+	"fmt"
 	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/dishes"
 	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/models"
 	"github.com/pkg/errors"
@@ -21,26 +22,42 @@ func (u *DishesUcase) GetRestaurantDishes(req models.GetRestaurantDishesUcaseReq
 	if err != nil {
 		return nil, errors.Wrap(err, "error getting restaurant")
 	}
+
+	categories, err := u.Repo.GetCategories(models.GetCategoriesByIdRepoReq{Id: models.Id(restaurant.Id)})
+	if err != nil {
+		return nil, errors.Wrap(err, "error getting restaurant categories")
+	}
+
 	dishes, err := u.Repo.GetRestaurantDishes(models.GetRestaurantDishesRepoReq{Id: models.Id(restaurant.Id)})
 	if err != nil {
 		return nil, errors.Wrap(err, "error getting restaurant dishes")
 	}
 
-	Resp := &models.GetRestaurantDishesUcaseResp{
-		Id:                   restaurant.Id,
-		Name:                 restaurant.Name,
-		ImagePath:            restaurant.ImagePath,
-		Slug:                 restaurant.Slug,
-		MinPrice:             restaurant.MinPrice,
-		AggRating:            restaurant.AggRating,
-		ReviewCount:          restaurant.ReviewCount,
-		UpMinutsToDelivery:   restaurant.UpMinutsToDelivery,
-		DownMinutsToDelivery: restaurant.DownMinutsToDelivery,
-		Dishes:               make([]models.DishUcase, len(dishes.Dishes)),
+	Resp := &models.GetRestaurantDishesCategoriesUcaseResp{
+			Id:                    	restaurant.Id,
+			Name:                 	restaurant.Name,
+			ImagePath:            	restaurant.ImagePath,
+			Slug:                 	restaurant.Slug,
+			MinPrice:             	restaurant.MinPrice,
+			AggRating:            	restaurant.AggRating,
+			ReviewCount:          	restaurant.ReviewCount,
+			UpMinutesToDelivery:  	restaurant.UpMinutesToDelivery,
+			DownMinutesToDelivery:	restaurant.DownMinutesToDelivery,
+			Dishes:					make([]models.DishCategoriesUsecase, len(dishes.Dishes)),
+			Categories:				make([]models.CategoriesDishesUcaseResp, len(categories.Categories)),
 	}
 
 	for i, dish := range dishes.Dishes {
-		Resp.Dishes[i] = models.DishUcase(dish)
+		Resp.Dishes[i] = models.DishCategoriesUsecase(dish)
+	}
+
+	for i, item := range categories.Categories {
+		Resp.Categories[i].Categories = item
+	}
+
+	for _, item := range dishes.Dishes {
+		var car = item.Category
+		Resp.Categories[car-1].Dishes = append(Resp.Categories[car-1].Dishes, item.Id)
 	}
 
 	return Resp, nil
