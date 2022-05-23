@@ -27,6 +27,8 @@ func (u *RecommendationsUcase) GetRecommendations(req models.RecommendationsOrde
 		return nil, errors.Wrap(err, "error getting restaurant dishes")
 	}
 
+	fmt.Println(dishes)
+
 	var categories []int
 	for _, item := range dishes.Dishes {
 		for _, item2 := range req.DishesId {
