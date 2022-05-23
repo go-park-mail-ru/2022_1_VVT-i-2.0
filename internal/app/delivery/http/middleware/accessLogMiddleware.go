@@ -9,7 +9,7 @@ import (
 
 const LoggerCtxKey = "logger"
 
-func (mw *CommonMiddlewareChain) AccessLogMiddleware(next echo.HandlerFunc) echo.HandlerFunc {
+func (mw *CommonMiddleware) AccessLogMiddleware(next echo.HandlerFunc) echo.HandlerFunc {
 	return func(ctx echo.Context) error {
 		reqId := GetRequestIdFromCtx(ctx)
 		ctx.Set(LoggerCtxKey, mw.Logger)

@@ -44,10 +44,11 @@ func (h OrderHandler) CreateOrder(ctx echo.Context) error {
 	}
 
 	newOrderId, err := h.Ucase.CreateOrder(&models.OrderUcaseReq{
-		UserId:  user.Id,
-		Address: orderReq.Address,
-		Cart:    orderReq.Cart,
-		Comment: orderReq.Comment})
+		UserId:    user.Id,
+		Address:   orderReq.Address,
+		Cart:      orderReq.Cart,
+		Promocode: orderReq.Promocode,
+		Comment:   orderReq.Comment})
 	if err != nil {
 		cause := servErrors.ErrorAs(err)
 		if cause == nil {
@@ -57,6 +58,8 @@ func (h OrderHandler) CreateOrder(ctx echo.Context) error {
 		switch cause.Code {
 		case servErrors.DB_INSERT:
 			return httpErrDescr.NewHTTPError(ctx, http.StatusConflict, httpErrDescr.CREATING_ORDER)
+		case servErrors.NO_SUCH_ADDRESS:
+			return httpErrDescr.NewHTTPError(ctx, http.StatusConflict, httpErrDescr.NO_SUCH_ADDRESS)
 		default:
 			logger.Error(requestId, err.Error())
 			return httpErrDescr.NewHTTPError(ctx, http.StatusInternalServerError, httpErrDescr.SERVER_ERROR)
@@ -153,6 +156,7 @@ func (h OrderHandler) GetUserOrder(ctx echo.Context) error {
 		RestaurantSlug: orderUcaseData.RestaurantSlug,
 		Status:         orderUcaseData.Status,
 		TotalPrice:     orderUcaseData.TotalPrice,
+		Discount:       orderUcaseData.Discount,
 		Cart:           make([]models.OrderPositionResp, len(orderUcaseData.Cart))}
 	for i, order := range orderUcaseData.Cart {
 		order.ImagePath = h.StaticManager.GetDishesUrl(order.ImagePath)

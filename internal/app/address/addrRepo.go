@@ -5,10 +5,9 @@ import (
 )
 
 type Repository interface {
-	SuggestStreet(address *models.SuggestStreetRepoInput) (*models.SuggestStreetRepoAnsw, error)
-	SuggestHouse(addres *models.SuggestHouseRepoInput) (*models.SuggestHouseRepoAnsw, error)
-	GetCity(city string) (*models.GetCityRepoAnsw, error)
-	GetStreet(street *models.GetStreetRepoInput) (*models.GetStreetRepoAnsw, error)
-	GetHouse(house *models.GetHouseRepoInput) (*models.GetHouseRepoAnsw, error)
-	// SuggestHouse(address *models.SuggestInputRepo) (*models.SuggestAnswerRepo, error)
+	SuggestStreet(address *models.SuggestStreetRepoReq) (*models.SuggestStreetRepoResp, error)
+	SuggestHouse(addres *models.SuggestHouseRepoReq) (*models.SuggestHouseRepoResp, error)
+	GetCity(city *models.GetCityRepoReq) (*models.GetCityRepoResp, error)
+	GetStreet(street *models.GetStreetRepoReq) (*models.GetStreetRepoResp, error)
+	GetHouse(house *models.GetHouseRepoReq) (*models.GetHouseRepoResp, error)
 }

@@ -1,14 +1,5 @@
 package models
 
-// type OrderStorage struct {
-// 	OrderId    int64
-// 	UserId     int64
-// 	Address    string
-// 	Comment    sql.NullString
-// 	TotalPrice string
-// 	Cart       []OrderPositionStorage
-// }
-
 type OrderPositionUcase struct {
 	Id    int64
 	Count int64
@@ -20,10 +11,11 @@ type OrderPositionRepo struct {
 }
 
 type CreateOrderRepoReq struct {
-	UserId  int64
-	Address string
-	Comment string
-	Cart    []OrderPositionRepo
+	UserId    int64
+	Address   string
+	Comment   string
+	Promocode string
+	Cart      []OrderPositionRepo
 }
 
 type CreateOrderRepoResp struct {
@@ -31,10 +23,11 @@ type CreateOrderRepoResp struct {
 }
 
 type CreateOrderUcaseReq struct {
-	UserId  int64
-	Address string
-	Comment string
-	Cart    []OrderPositionUcase
+	UserId    int64
+	Address   string
+	Comment   string
+	Promocode string
+	Cart      []OrderPositionUcase
 }
 
 type CreateOrderUcaseResp struct {
@@ -64,7 +57,7 @@ type GetUserOrdersRepoReq struct {
 type ShortOrderRepo struct {
 	OrderId        int64 `db:"id"`
 	Date           string
-	TotalPrice     int64  `db:"total_price"`
+	TotalPrice     int64  `db:"total_price_discount"`
 	RestaurantName string `db:"restaurant_name"`
 	Status         string
 }
@@ -116,15 +109,16 @@ type OrderPositionRepoResp struct {
 }
 
 type GetUserOrderRepoResp struct {
-	UserId         int64 `db:"user_id"`
-	OrderId        int64 `db:"id"`
-	Date           string
-	TotalPrice     int64  `db:"total_price"`
-	RestaurantName string `db:"restaurant_name"`
-	RestaurantSlug string `db:"restaurant_slug"`
-	Address        string
-	Status         string
-	Cart           []OrderPositionRepoResp
+	UserId             int64 `db:"user_id"`
+	OrderId            int64 `db:"id"`
+	Date               string
+	TotalPrice         int64  `db:"total_price"`
+	TotalPriceDiscount int64  `db:"total_price_discount"`
+	RestaurantName     string `db:"restaurant_name"`
+	RestaurantSlug     string `db:"restaurant_slug"`
+	Address            string
+	Status             string
+	Cart               []OrderPositionRepoResp
 }
 
 type GetUserOrderUcaseReq struct {
@@ -146,6 +140,7 @@ type GetUserOrderUcaseResp struct {
 	OrderId        int64
 	Date           string
 	TotalPrice     int64
+	Discount       int64
 	RestaurantName string
 	RestaurantSlug string
 	Address        string
@@ -153,22 +148,15 @@ type GetUserOrderUcaseResp struct {
 	Cart           []OrderPositionUcaseResp
 }
 
-type OrderPositionResp struct {
-	Name        string `json:"name"`
-	Description string `json:"description"`
-	Count       int64  `json:"count"`
-	Price       int64  `json:"price"`
-	Calories    int64  `json:"calories"`
-	Weigth      int64  `json:"weigth"`
-	ImagePath   string `json:"imagePath"`
+type GetAddressRepoReq struct {
+	City       string
+	Street     string
+	StreetType string
+	House      string
 }
-type GetUserOrderResp struct {
-	OrderId        int64               `json:"id"`
-	Address        string              `json:"address"`
-	Date           string              `json:"date"`
-	TotalPrice     int64               `json:"totalPrice"`
-	RestaurantName string              `json:"restName"`
-	RestaurantSlug string              `json:"restSlug"`
-	Status         string              `json:"status"`
-	Cart           []OrderPositionResp `json:"cart"`
+
+type GetAddressRepoResp struct {
+	City   string
+	Street string
+	House  string
 }

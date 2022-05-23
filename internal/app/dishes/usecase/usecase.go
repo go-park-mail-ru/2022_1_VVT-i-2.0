@@ -17,22 +17,19 @@ func NewDishesUcase(restaurantsRepo dishes.Repository) *DishesUcase {
 	}
 }
 
-func (u *DishesUcase) GetRestaurantDishes(req models.GetRestaurantDishesUcaseReq) (*models.GetRestaurantDishesCategoriesUcaseResp, error) {
+func (u *DishesUcase) GetRestaurantDishes(req models.GetRestaurantDishesUcaseReq) (*models.GetRestaurantDishesUcaseResp, error) {
 	restaurant, err := u.Repo.GetRestaurantBySlug(models.GetRestaurantBySlugRepoReq(req))
 	if err != nil {
-		fmt.Println("Сломалось тут 1")
 		return nil, errors.Wrap(err, "error getting restaurant")
 	}
 
 	categories, err := u.Repo.GetCategories(models.GetCategoriesByIdRepoReq{Id: models.Id(restaurant.Id)})
 	if err != nil {
-		fmt.Println("Сломалось тут 2")
 		return nil, errors.Wrap(err, "error getting restaurant categories")
 	}
 
 	dishes, err := u.Repo.GetRestaurantDishes(models.GetRestaurantDishesRepoReq{Id: models.Id(restaurant.Id)})
 	if err != nil {
-		fmt.Println("Сломалось тут 3")
 		return nil, errors.Wrap(err, "error getting restaurant dishes")
 	}
 
@@ -65,4 +62,3 @@ func (u *DishesUcase) GetRestaurantDishes(req models.GetRestaurantDishesUcaseReq
 
 	return Resp, nil
 }
-

@@ -38,16 +38,18 @@ import (
 	dishesUcase "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/dishes/usecase"
 	orderHandler "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/order/delivery/http"
 	orderUcase "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/order/usecase"
+	promocodeHandler "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/promocode/delivery/http"
+	promocodeRepo "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/promocode/repository"
+	promocodeUcase "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/promocode/usecase"
+	recommendationsHandler "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/recommendations/delivery/http"
+	recommendationsRepo "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/recommendations/repository"
+	recommendationsUcase "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/recommendations/usecase"
 	restaurantsHandler "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/restaurants/delivery/http"
 	restaurantsRepo "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/restaurants/repository"
 	restaurantsUcase "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/restaurants/usecase"
 	userHandler "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/user/delivery/http"
 	userRepo "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/user/repository"
 	userUcase "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/user/usecase"
-
-	recommendationsHandler "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/recommendations/delivery/http"
-	recommendationsRepo "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/recommendations/repository"
-	recommendationsUcase "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/recommendations/usecase"
 )
 
 // @title           Swagger Example API
@@ -121,7 +123,7 @@ func main() {
 	if err != nil {
 		log.Fatal(errors.Wrap(err, "error connecting to grpc-auth-microserver"))
 	}
-	defer authGrpcConn.Close()
+	defer orderGrpcConn.Close()
 
 	orderCli := orderProto.NewOrderServiceClient(orderGrpcConn)
 
@@ -139,6 +141,10 @@ func main() {
 	restaurantsRepo := restaurantsRepo.NewRestaurantsRepo(pgxManager)
 	restaurantsUcase := restaurantsUcase.NewRestaurantsUcase(restaurantsRepo)
 	restaurantsHandler := restaurantsHandler.NewRestaurantsHandler(restaurantsUcase, staticManager)
+
+	promocodeRepo := promocodeRepo.NewPromocodeRepo(pgxManager)
+	promocodeUcase := promocodeUcase.NewPromocodeUcase(promocodeRepo)
+	promocodeHandler := promocodeHandler.NewPromocodesHandler(promocodeUcase, staticManager)
 
 	dishesRepo := dishesRepo.NewDishesRepo(pgxManager)
 	dishesUcase := dishesUcase.NewDishesUcase(dishesRepo)
@@ -162,19 +168,18 @@ func main() {
 	router.Use(m.CollectMetrics)
 
 	serverRouting := configRouting.ServerHandlers{
-		UserHandler:			userHandler,
-		RestaurantsHandler:		restaurantsHandler,
-		SuggsHandler:			suggsHandler,
-		OrderHandler:			orderHandler,
-		DishesHandler:			dishesHandler,
-		CommentsHandler:		commentsHandler,
+		UserHandler:            userHandler,
+		RestaurantsHandler:     restaurantsHandler,
+		SuggsHandler:           suggsHandler,
+		OrderHandler:           orderHandler,
+		DishesHandler:          dishesHandler,
+		CommentsHandler:        commentsHandler,
 		RecommendstionsHandler: recommendationsHandler,
+		PromocodeHandler:       promocodeHandler,
 	}
 
-	serverRouting.ConfigureRouting(router)
-
-	comonMwChain := middleware.NewCommonMiddlewareChain(servLogger, jwtManager)
-	configRouting.ConfigureCommonMiddleware(router, &comonMwChain, &config.CorsConfig, &config.CsrfConfig)
+	comonMw := middleware.NewCommonMiddleware(servLogger, jwtManager)
+	serverRouting.ConfigureRouting(router, &comonMw, &config.CorsConfig, &config.CsrfConfig)
 
 	httpServ := http.Server{
 		Addr:         config.ServConfig.BindAddr,
@@ -184,8 +189,6 @@ func main() {
 	}
 
 	if err := router.StartServer(&httpServ); err != http.ErrServerClosed {
-		// if err := httpServ.ListenAndServeTLS("../localhost.crt", "../localhost.key"); err != http.ErrServerClosed {
-		// if err := router.StartAutoTLS(":8080"); err != http.ErrServerClosed {
 		log.Fatal(err)
 	}
 }
