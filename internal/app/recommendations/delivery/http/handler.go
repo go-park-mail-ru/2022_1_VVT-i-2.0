@@ -55,7 +55,9 @@ func (h RecommendationsHandler) GetRecommendations(ctx echo.Context) error {
 	}
 
 	if recommendations == nil {
-		result, _ := json.Marshal([]int{})
+		result, _ := json.Marshal(models.DishRecommendationListsDelivery{
+			Dishes: make([]models.DishRecommendationDelivery, 0),
+		})
 		ctx.Response().Header().Add(echo.HeaderContentLength, strconv.Itoa(len(result)))
 		return ctx.JSONBlob(http.StatusOK, result)
 	}
