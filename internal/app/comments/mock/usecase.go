@@ -42,3 +42,4 @@ func (a *CommentsUsecaseErr) GetRestaurantComments(req models.GetRestaurantComme
 func (a *CommentsUsecaseErr) AddRestaurantComment(req models.AddCommentRestaurantUcaseReq) (*models.CommentRestaurantUseCase, error) {
 	return nil, servErrors.NewError(servErrors.DB_ERROR, "")
 }
+

@@ -3,6 +3,7 @@ package mock
 import (
 	"database/sql"
 	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/models"
+	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/tools/servErrors"
 	"github.com/stretchr/testify/mock"
 )
 
@@ -87,3 +88,32 @@ func (r *CommentsRepository) UpdateRestaurantRating(req models.UpdateRestaurantR
 		UpMinutsToDelivery:   1,
 		DownMinutsToDelivery: 1}, nil
 }
+
+type CommentsRepositoryErr struct {
+	mock.Mock
+}
+
+func (c CommentsRepositoryErr) GetRestaurantByID(req models.GetRestaurantByIdRepoReq) (*models.RestaurantRepo, error) {
+	return nil, servErrors.NewError(servErrors.DB_ERROR, "")
+}
+
+func (c CommentsRepositoryErr) GetRestaurantBySlug(req models.GetRestaurantBySlugRepoReq) (*models.RestaurantRepo, error) {
+	return nil, servErrors.NewError(servErrors.DB_ERROR, "")
+}
+
+func (c CommentsRepositoryErr) GetRestaurantComments(req models.GetRestaurantCommentsRepoReq) (*models.CommentsRestaurantDataStorage, error) {
+	return nil, servErrors.NewError(servErrors.DB_ERROR, "")
+}
+
+func (c CommentsRepositoryErr) GetUserById(id models.UserId) (*models.UserDataRepo, error) {
+	return nil, servErrors.NewError(servErrors.DB_ERROR, "")
+}
+
+func (c CommentsRepositoryErr) AddRestaurantComment(req models.AddRestaurantCommentRepoReq) (*models.CommentRestaurantDataStorage, error) {
+	return nil, servErrors.NewError(servErrors.DB_ERROR, "")
+}
+
+func (c CommentsRepositoryErr) UpdateRestaurantRating(req models.UpdateRestaurantRatingRepoReq) (*models.RestaurantRepo, error) {
+	return nil, servErrors.NewError(servErrors.DB_ERROR, "")
+}
+
