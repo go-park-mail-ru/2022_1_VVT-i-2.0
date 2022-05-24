@@ -26,7 +26,6 @@ func NewRecommendationsHandler(ucase recommendations.Ucase, staticManager static
 }
 
 func (h RecommendationsHandler) GetRecommendations(ctx echo.Context) error {
-
 	logger := middleware.GetLoggerFromCtx(ctx)
 	requestId := middleware.GetRequestIdFromCtx(ctx)
 
@@ -55,8 +54,14 @@ func (h RecommendationsHandler) GetRecommendations(ctx echo.Context) error {
 		return httpErrDescr.NewHTTPError(ctx, http.StatusInternalServerError, httpErrDescr.SERVER_ERROR)
 	}
 
+	if recommendations == nil {
+		result, _ := json.Marshal([]int{})
+		ctx.Response().Header().Add(echo.HeaderContentLength, strconv.Itoa(len(result)))
+		return ctx.JSONBlob(http.StatusOK, result)
+	}
+
 	var rec = &models.DishRecommendationListsDelivery{
-		Dishes: make([]models.DishRecommendationDelivery, 3),
+		Dishes: make([]models.DishRecommendationDelivery, 2),
 	}
 
 	for i := range rec.Dishes {
@@ -66,7 +71,7 @@ func (h RecommendationsHandler) GetRecommendations(ctx echo.Context) error {
 			RestaurantId:	recommendations.Dishes[i].RestaurantId,
 			Name:			recommendations.Dishes[i].Name,
 			Description:	recommendations.Dishes[i].Description,
-			ImagePath:    h.StaticManager.GetDishesUrl(recommendations.Dishes[i].ImagePath),
+			ImagePath:    	h.StaticManager.GetDishesUrl(recommendations.Dishes[i].ImagePath),
 			Calories:		recommendations.Dishes[i].Calories,
 			Price:			recommendations.Dishes[i].Price,
 			Weight:			recommendations.Dishes[i].Weight,

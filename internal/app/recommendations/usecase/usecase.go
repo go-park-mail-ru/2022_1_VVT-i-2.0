@@ -1,6 +1,7 @@
 package usecase
 
 import (
+	"fmt"
 	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/models"
 	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/recommendations"
 	"github.com/pkg/errors"
@@ -54,8 +55,13 @@ func (u *RecommendationsUcase) GetRecommendations(req models.RecommendationsOrde
 		}
 	}
 
+	if len(recommendations) == 0 {
+		fmt.Println("aue")
+		return nil, nil
+	}
+
 	finalRecommendations := &models.DishRecommendationListsUsecase{
-		Dishes: make([]models.DishRecommendationUsecase, 3),
+		Dishes: make([]models.DishRecommendationUsecase, 2),
 	}
 
 	for i := range finalRecommendations.Dishes{
