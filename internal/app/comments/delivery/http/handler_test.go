@@ -118,7 +118,7 @@ func TestRestaurantsHandler_AddCommentsRestaurant_Err(t *testing.T) {
 	c.Set(middleware.LoggerCtxKey, &logger.ServLogger{Logger: mockLogger})
 	c.Set(middleware.UserCtxKey, middleware.UserCtx{Id: 1})
 
-	err = handler.AddRestaurantComment(c)
+	_ = handler.AddRestaurantComment(c)
 
 	assert.Equal(t, http.StatusInternalServerError, c.Response().Status)
 }

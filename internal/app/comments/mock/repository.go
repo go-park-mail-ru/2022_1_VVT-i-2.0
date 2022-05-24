@@ -67,9 +67,6 @@ func (r *CommentsRepository) GetRestaurantComments(req models.GetRestaurantComme
 }
 
 func (r *CommentsRepository) AddRestaurantComment(req models.AddRestaurantCommentRepoReq) (*models.CommentRestaurantDataStorage, error) {
-	if &req == nil {
-		return nil, nil
-	}
 	return &models.CommentRestaurantDataStorage{
 		RestaurantId: 1,
 		Author:       "author",
@@ -79,9 +76,6 @@ func (r *CommentsRepository) AddRestaurantComment(req models.AddRestaurantCommen
 }
 
 func (r *CommentsRepository) UpdateRestaurantRating(req models.UpdateRestaurantRatingRepoReq) (*models.RestaurantRepo, error) {
-	if &req == nil {
-		return nil, nil
-	}
 	return &models.RestaurantRepo{
 		Id:                   1,
 		Name:                 "Name",
