@@ -174,13 +174,22 @@ func TestCommentsRepo_GetRestaurantComments(t *testing.T) {
 	//	{3, "author3", "hello", 3, "today"},
 	//}
 
-	expect := &models.CommentsRestaurantDataStorage{
-		Comments: []models.CommentRestaurantDataStorage{
-			{1, "author1", "hello", 1, "today"},
-			{2, "author2", "hello", 2, "today"},
-			{3, "author3", "hello", 3, "today"},
+	//expect := &models.CommentsRestaurantDataStorage{
+	//	Comments: []models.CommentRestaurantDataStorage{
+	//		{1, "author1", "hello", 1, "today"},
+	//		{2, "author2", "hello", 2, "today"},
+	//		{3, "author3", "hello", 3, "today"},
+	//
+	//}}
 
-	}}
+	expect := &models.CommentsRestaurantDataStorage{
+		Comments: make([]models.CommentRestaurantDataStorage, 3),
+	}
+
+	expect.Comments[0] = models.CommentRestaurantDataStorage{RestaurantId: 1, Author: "author1", Text: "hello", Stars: 1, Date: "today"}
+	expect.Comments[1] = models.CommentRestaurantDataStorage{RestaurantId: 2, Author: "author2", Text: "hello", Stars: 2, Date: "today"}
+	expect.Comments[2] = models.CommentRestaurantDataStorage{RestaurantId: 3, Author: "author3", Text: "hello", Stars: 3, Date: "today"}
+
 	for _, item := range expect.Comments {
 		rows = rows.AddRow(item.RestaurantId, item.Author, item.Text, item.Stars, item.Date)
 	}
@@ -201,12 +210,12 @@ func TestCommentsRepo_GetRestaurantComments(t *testing.T) {
 	}
 
 	expectResp := &models.CommentsRestaurantDataStorage{
-		Comments: []models.CommentRestaurantDataStorage{
-			{1, "author1", "hello", 1, "today"},
-			{2, "author2", "hello", 2, "today"},
-			{3, "author3", "hello", 3, "today"},
+		Comments: make([]models.CommentRestaurantDataStorage, 3),
+	}
 
-		}}
+	expectResp.Comments[0] = models.CommentRestaurantDataStorage{RestaurantId: 1, Author: "author1", Text: "hello", Stars: 1, Date: "today"}
+	expectResp.Comments[1] = models.CommentRestaurantDataStorage{RestaurantId: 2, Author: "author2", Text: "hello", Stars: 2, Date: "today"}
+	expectResp.Comments[2] = models.CommentRestaurantDataStorage{RestaurantId: 3, Author: "author3", Text: "hello", Stars: 3, Date: "today"}
 
 	if !reflect.DeepEqual(item.Comments, expectResp.Comments) {
 		t.Errorf("results not match,\n want %v,\n have %v", item, expectResp.Comments)
@@ -340,12 +349,10 @@ func TestCommentsRepo_AddRestaurantComment(t *testing.T) {
 
 	rows := sqlmock.
 		NewRows([]string{"restaurant_id", "author", "text", "stars", "get_ru_date"})
-	expect := []*models.CommentRestaurantDataStorage{
-		{testComment.RestaurantId, testComment.User, testComment.CommentText, testComment.CommentRating, "date"},
+	expect := &models.CommentRestaurantDataStorage{
+		RestaurantId: testComment.RestaurantId, Author: testComment.User, Text: testComment.CommentText, Stars: testComment.CommentRating, Date: "date",
 	}
-	for _, item := range expect {
-		rows = rows.AddRow(item.RestaurantId, item.Author, item.Text, item.Stars, item.Date)
-	}
+	rows = rows.AddRow(expect.RestaurantId, expect.Author, expect.Text, expect.Stars, expect.Date)
 
 	// good query
 	mock.
@@ -369,8 +376,8 @@ func TestCommentsRepo_AddRestaurantComment(t *testing.T) {
 	if err := mock.ExpectationsWereMet(); err != nil {
 		t.Errorf("there were unfulfilled expectations: %s", err)
 	}
-	if !reflect.DeepEqual(item, expect[0]) {
-		t.Errorf("results not match, want %v, have %v", item, expect[0])
+	if !reflect.DeepEqual(item, expect) {
+		t.Errorf("results not match, want %v, have %v", item, expect)
 		return
 	}
 
