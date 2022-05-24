@@ -10,7 +10,7 @@ import (
 	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/models"
 	"github.com/jmoiron/sqlx"
 
-	sqlmock "gopkg.in/DATA-DOG/go-sqlmock.v1"
+	"gopkg.in/DATA-DOG/go-sqlmock.v1"
 )
 
 func TestCommentsRepo_GetRestaurantByID(t *testing.T) {
@@ -64,8 +64,6 @@ func TestCommentsRepo_GetRestaurantByID(t *testing.T) {
 	}
 
 	// row scan error
-	//rows = sqlmock.NewRows([]string{"id", "name"}).
-	//	AddRow(1, "name")
 	mock.
 		ExpectQuery(`SELECT`).
 		WithArgs(1).
@@ -135,8 +133,6 @@ func TestCommentsRepo_GetRestaurantBySlug(t *testing.T) {
 	}
 
 	// row scan error
-	//rows = sqlmock.NewRows([]string{"id", "name"}).
-	//	AddRow(1, "name")
 	mock.
 		ExpectQuery(`SELECT`).
 		WithArgs("slug").
@@ -168,19 +164,6 @@ func TestCommentsRepo_GetRestaurantComments(t *testing.T) {
 
 	rows := sqlmock.
 		NewRows([]string{"restaurant_id", "author", "text", "stars", "get_ru_date"})
-	//expect := []*models.CommentRestaurantDataStorage{
-	//	{1, "author1", "hello", 1, "today"},
-	//	{2, "author2", "hello", 2, "today"},
-	//	{3, "author3", "hello", 3, "today"},
-	//}
-
-	//expect := &models.CommentsRestaurantDataStorage{
-	//	Comments: []models.CommentRestaurantDataStorage{
-	//		{1, "author1", "hello", 1, "today"},
-	//		{2, "author2", "hello", 2, "today"},
-	//		{3, "author3", "hello", 3, "today"},
-	//
-	//}}
 
 	expect := &models.CommentsRestaurantDataStorage{
 		Comments: make([]models.CommentRestaurantDataStorage, 3),
@@ -486,8 +469,6 @@ func TestCommentRepo_UpdateRestaurantRating(t *testing.T) {
 	}
 
 	// row scan error
-	//rows = sqlmock.NewRows([]string{"id", "name"}).
-	//	AddRow(1, "name")
 	mock.
 		ExpectQuery(`UPDATE`).
 		WithArgs(10, 2, 1).
@@ -507,30 +488,3 @@ func TestCommentRepo_UpdateRestaurantRating(t *testing.T) {
 	}
 }
 
-//func Test1(t *testing.T) {
-//	t.Parallel()
-//
-//	db, mock, err := sqlmock.New()
-//	if err != nil {
-//		t.Fatalf("cant create mock: %s", err)
-//	}
-//	defer db.Close()
-//
-//	sqlxDB := sqlx.NewDb(db, "sqlmock")
-//
-//	repo := RestaurantsRepo{
-//		DB: sqlxDB,
-//	}
-//
-//
-//
-//	t.Run("good query", func(t *testing.T) {
-//
-//	})
-//	t.Run("query error", func(t *testing.T) {
-//
-//	})
-//	t.Run("row scan error", func(t *testing.T) {
-//
-//	})
-//}
