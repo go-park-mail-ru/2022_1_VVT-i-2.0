@@ -36,12 +36,6 @@ func main() {
 	}
 	defer pgxManager.Close()
 
-	// jwtManager := jwt.NewJwtManager(config.AuthentificatorConfig)
-
-	// if jwtManager == nil {
-	// 	log.Fatal(errors.Wrap(err, "error creating jwt-manager object"))
-	// }
-
 	memcacher, err := memcacher.NewMemcacher(&config.CacherConfig)
 	if err != nil {
 		log.Fatal(errors.Wrap(err, "error creating memcacher"))

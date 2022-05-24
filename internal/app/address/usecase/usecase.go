@@ -213,6 +213,9 @@ func (u *AddrUcase) suggestCityMain(userId int64, address addressT, limit int) (
 	if err != nil {
 		return nil, err
 	}
+	if topUserAddrs == nil {
+		return &models.SuggestsUcaseResp{Suggests: suggs.Suggests}, nil
+	}
 	return &models.SuggestsUcaseResp{Suggests: append(topUserAddrs.Suggests, suggs.Suggests...)}, nil
 }
 
@@ -240,6 +243,9 @@ func (u *AddrUcase) suggestStreetMain(userId int64, address addressT, limit int)
 	}
 
 	userAddrs, err := u.suggestStreetUserAddrs(userId, addrParser.ConcatAddrToComplete(city.Name, address.street.Name, ""), address.street.StreetType, limit/2)
+	if userAddrs == nil {
+		return &models.SuggestsUcaseResp{Suggests: suggs.Suggests}, nil
+	}
 
 	if err != nil {
 		return nil, errors.Wrap(err, "error suggesting street")
@@ -292,9 +298,11 @@ func (u *AddrUcase) suggestHouseMain(userId int64, address addressT, limit int) 
 	}
 
 	userAddrs, err := u.suggestHouseUserAddrs(userId, addrParser.ConcatAddrToComplete(city.Name, street.Name, address.house), limit/2)
-
 	if err != nil {
 		return nil, errors.Wrap(err, "error suggesting street")
+	}
+	if userAddrs == nil {
+		return &models.SuggestsUcaseResp{Suggests: suggs.Suggests}, nil
 	}
 
 	resp := models.SuggestsUcaseResp{Suggests: make([]models.OneSuggestUcaseResp, 0, limit)}

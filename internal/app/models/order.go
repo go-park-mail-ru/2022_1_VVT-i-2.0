@@ -98,7 +98,6 @@ type GetUserOrderStatusesResp struct {
 	OrderStatuses []OrderStatus `json:"statuses"`
 }
 
-// /////////////
 type GetUserOrderUcaseReq struct {
 	UserId  int64
 	OrderId int64
