@@ -31,48 +31,30 @@ func (r *AddrRepo) SuggestStreet(address *models.SuggestStreetRepoReq) (*models.
 		err = r.DB.Select(&suggs, `SELECT name FROM streets WHERE main_name ILIKE $1 AND type LIKE $2 LIMIT $3`, address.Street+"%", address.StreetType, address.SuggsLimit)
 	}
 
-	switch err {
-	case nil:
-		{
-			if len(suggs) == 0 {
-				return nil, servErrors.NewError(servErrors.NO_SUCH_ENTITY_IN_DB, "")
-			}
-			suggsRepo := make([]string, len(suggs))
-			for i := 0; i < address.SuggsLimit && i < len(suggs) && (suggs[i]) != nil; i++ {
-				suggsRepo[i] = *suggs[i]
-			}
-			return &models.SuggestStreetRepoResp{StreetSuggests: suggsRepo}, nil
-		}
-	case sql.ErrNoRows:
-		{
-			return nil, servErrors.NewError(servErrors.NO_SUCH_ENTITY_IN_DB, err.Error())
-		}
-	default:
-		{
-			return nil, servErrors.NewError(servErrors.DB_ERROR, err.Error())
-		}
+	if err != nil {
+		return nil, servErrors.NewError(servErrors.DB_ERROR, err.Error())
 	}
+
+	suggsRepo := make([]string, len(suggs))
+	for i, sugg := range suggs {
+		suggsRepo[i] = *sugg
+	}
+	return &models.SuggestStreetRepoResp{StreetSuggests: suggsRepo}, nil
 }
 
 func (r *AddrRepo) SuggestHouse(address *models.SuggestHouseRepoReq) (*models.SuggestHouseRepoResp, error) {
 	suggs := make([]*string, 0, address.SuggsLimit)
 	err := r.DB.Select(&suggs, `SELECT house FROM houses WHERE street_id =$1 AND house ILIKE $2 LIMIT $3`, address.StreetId, address.House+"_%", address.SuggsLimit)
 
-	switch err {
-	case nil:
-		if len(suggs) == 0 {
-			return nil, servErrors.NewError(servErrors.NO_SUCH_ENTITY_IN_DB, "")
-		}
-		suggsRepo := make([]string, len(suggs))
-		for i := 0; i < address.SuggsLimit && i < len(suggs) && (suggs[i]) != nil; i++ {
-			suggsRepo[i] = *suggs[i]
-		}
-		return &models.SuggestHouseRepoResp{HouseSuggests: suggsRepo}, nil
-	case sql.ErrNoRows:
-		return nil, servErrors.NewError(servErrors.NO_SUCH_ENTITY_IN_DB, err.Error())
-	default:
+	if err != nil {
 		return nil, servErrors.NewError(servErrors.DB_ERROR, err.Error())
 	}
+
+	suggsRepo := make([]string, len(suggs))
+	for i, sugg := range suggs {
+		suggsRepo[i] = *sugg
+	}
+	return &models.SuggestHouseRepoResp{HouseSuggests: suggsRepo}, nil
 }
 
 func (r *AddrRepo) GetCity(city *models.GetCityRepoReq) (*models.GetCityRepoResp, error) {
@@ -114,4 +96,34 @@ func (r *AddrRepo) GetHouse(house *models.GetHouseRepoReq) (*models.GetHouseRepo
 	default:
 		return nil, servErrors.NewError(servErrors.DB_ERROR, err.Error())
 	}
+}
+
+func (r *AddrRepo) GetTopUserAddrs(req *models.GetTopUserAddrsRepoReq) (*models.GetTopUserAddrsRepoResp, error) {
+	addrs := make([]*string, 0, req.Limit)
+	err := r.DB.Select(&addrs, `SELECT address FROM (SELECT (unnest(addresses)::order_address).address address, (unnest(addresses)::order_address).count count FROM users WHERE id=$1) AS addrs ORDER BY (count + (row_number() OVER() + 1)/2) DESC LIMIT $2`, req.UserId, req.Limit)
+
+	if err != nil {
+		return nil, servErrors.NewError(servErrors.DB_ERROR, err.Error())
+	}
+
+	addrsResp := &models.GetTopUserAddrsRepoResp{Addrs: make([]string, len(addrs))}
+	for i, addr := range addrs {
+		addrsResp.Addrs[i] = *addr
+	}
+	return addrsResp, nil
+}
+
+func (r *AddrRepo) SuggestUserAddrs(req *models.SuggestUserAddrsRepoReq) (*models.SuggestUserAddrsRepoResp, error) {
+	addrs := make([]*string, 0, req.Limit)
+	err := r.DB.Select(&addrs, `SELECT address FROM (SELECT (unnest(addresses)::order_address).address address, (unnest(addresses)::order_address).count count FROM users WHERE id=$1) as a  WHERE address ILIKE $2 AND address ILIKE $3 ORDER BY (count + (row_number() OVER())/2) DESC LIMIT $4`, req.UserId, req.Addr+"%", "%"+req.StreetType+"%", req.Limit)
+
+	if err != nil {
+		return nil, servErrors.NewError(servErrors.DB_ERROR, err.Error())
+	}
+
+	addrsResp := &models.SuggestUserAddrsRepoResp{Addrs: make([]string, len(addrs))}
+	for i, addr := range addrs {
+		addrsResp.Addrs[i] = *addr
+	}
+	return addrsResp, nil
 }

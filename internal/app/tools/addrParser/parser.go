@@ -65,3 +65,10 @@ func GetHouse(house string) string {
 func ConcatAddr(city string, street string, house string) string {
 	return city + Separator + " " + street + Separator + " " + house
 }
+
+func ConcatAddrToComplete(city string, street string, house string) string {
+	if house == "" {
+		return city + Separator + " " + street
+	}
+	return city + Separator + " " + street + Separator + " " + house
+}

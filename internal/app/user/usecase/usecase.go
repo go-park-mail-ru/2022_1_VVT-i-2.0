@@ -13,7 +13,6 @@ import (
 	"github.com/google/uuid"
 	"github.com/pkg/errors"
 
-	// "golang.org/x/image/webp"
 	"google.golang.org/grpc/status"
 )
 
@@ -23,7 +22,6 @@ var LOGIN_CODE string
 const (
 	avatarSide        = 300
 	defaultAvatarName = ""
-	// avatarSide = 30
 )
 
 type UserUcase struct {

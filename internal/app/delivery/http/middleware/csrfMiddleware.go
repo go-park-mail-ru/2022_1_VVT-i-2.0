@@ -12,7 +12,6 @@ import (
 const csrfCtxKey = "csrf"
 
 type (
-	// CSRFConfig defines the config for CSRF middleware.
 	CSRFConfig struct {
 		Skipper                   func(ctx echo.Context) bool
 		SetterTokenInUnsafeMethod func(ctx echo.Context) bool
@@ -69,7 +68,6 @@ func CSRFWithConfig(config CSRFConfig) echo.MiddlewareFunc {
 			switch {
 			case config.SetterTokenInUnsafeMethod(ctx), ctx.Request().Method == http.MethodGet, ctx.Request().Method == http.MethodHead, ctx.Request().Method == http.MethodOptions, ctx.Request().Method == http.MethodTrace:
 			default:
-				// Validate token only for requests which are not defined as 'safe' by RFC7231
 				clientToken := ctx.Request().Header.Get(echo.HeaderXCSRFToken)
 				if clientToken != token {
 					return httpErrDescr.NewHTTPError(ctx, http.StatusForbidden, httpErrDescr.INVALID_CSRF)
