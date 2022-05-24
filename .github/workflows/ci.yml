@@ -8,6 +8,8 @@ on:
 
 jobs:
   build:
+    if: github.ref == 'refs/heads/dev'
+    name: Build
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v1
@@ -33,8 +35,8 @@ jobs:
         run: docker push yutfut/vvti_order:${GITHUB_SHA::8}
 
   linter:
+    name: Linter
     runs-on: ubuntu-latest
-
     steps:
       - name: Set up Go
         uses: actions/setup-go@v2
@@ -57,9 +59,9 @@ jobs:
         run: go run github.com/golangci/golangci-lint/cmd/golangci-lint run ./...
 
   test-coverage:
+    name: Tests
     runs-on: ubuntu-latest
 #    needs: linter
-
     steps:
       - name: Set up Go
         uses: actions/setup-go@v2
@@ -79,11 +81,14 @@ jobs:
         run: go test ./...
 
       - name: Coverage tests
-        run: go test ./... --cover  --coverpkg ./... --coverprofile cover.out
-             cat cover.out | grep -v ".pb.go"|grep -v "mock" > cover_without_gen.out
-             go tool cover -func cover_without_gen.out
+        run: |
+          go test ./... --cover  --coverpkg ./... --coverprofile cover.out
+          cat cover.out | grep -v ".pb.go"|grep -v "mock" > cover_without_gen.out
+          go tool cover -func cover_without_gen.out
 
   deploy:
+    if: github.ref == 'refs/heads/dev'
+    name: Deploy
     runs-on: ubuntu-latest
     needs: build
     steps:
