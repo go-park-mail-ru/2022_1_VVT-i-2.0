@@ -92,8 +92,6 @@ type GetUserOrderStatusesRepoResp struct {
 	OrderStatuses []OrderStatusRepo
 }
 
-// //////////////
-
 type GetUserOrderRepoReq struct {
 	OrderId int64
 }

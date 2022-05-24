@@ -56,33 +56,3 @@ func (c *Memcacher) Delete(key string) error {
 	}
 	return nil
 }
-
-// func (c *Memcacher) Swap(item *cacher.Item) error {
-// 	return c.client.CompareAndSwap(&memcache.Item{
-// 		Key:        item.Key,
-// 		Value:      item.Value,
-// 		Expiration: item.Expiration,
-// 	})
-// }
-
-// func (c *Memcacher) SetOrReplace(item *cacher.Item) error {
-// 	_, err := c.client.Get(item.Key)
-// 	if err != nil && err != memcache.ErrCacheMiss {
-// 		return errors.Wrap(err, "memcache get item error")
-// 	}
-
-// 	if err == nil {
-// 		return errors.Wrap(c.client.CompareAndSwap(&memcache.Item{
-// 			Key:        item.Key,
-// 			Value:      item.Value,
-// 			Expiration: item.Expiration,
-// 		}), "memcache set item error")
-// 	}
-
-// 	return errors.Wrap(c.client.Set(&memcache.Item{
-// 		Key:        item.Key,
-// 		Value:      item.Value,
-// 		Expiration: item.Expiration,
-// 	}), "memcache set item error")
-
-// }

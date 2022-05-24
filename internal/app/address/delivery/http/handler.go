@@ -8,7 +8,6 @@ import (
 	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/delivery/http/httpErrDescr"
 	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/delivery/http/middleware"
 	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/models"
-	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/tools/servErrors"
 	_ "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/tools/validator"
 	"github.com/labstack/echo/v4"
 )
@@ -31,18 +30,24 @@ func (h SuggsHandler) Suggest(ctx echo.Context) error {
 	if _, err := govalidator.ValidateStruct(suggsReq); err != nil {
 		return httpErrDescr.NewHTTPError(ctx, http.StatusBadRequest, httpErrDescr.INVALID_DATA)
 	}
+	user := middleware.GetUserFromCtx(ctx)
+	userId := 0
+	if user != nil {
+		userId = int(user.Id)
+	}
 
-	suggsResp, err := h.Ucase.Suggest(&models.SuggestUcaseReq{Address: suggsReq.Address})
+	suggsUcaseResp, err := h.Ucase.Suggest(&models.SuggestUcaseReq{Address: suggsReq.Address, UserId: int64(userId)})
 
 	if err != nil {
-		cause := servErrors.ErrorAs(err)
-		if cause != nil && cause.Code == servErrors.NO_SUCH_ENTITY_IN_DB {
-			return ctx.JSON(http.StatusOK, models.SuggestResp{AddressFull: false, Suggests: []string{}})
-		}
 		logger.Error(requestId, err.Error())
 		return httpErrDescr.NewHTTPError(ctx, http.StatusInternalServerError, httpErrDescr.SERVER_ERROR)
 	}
 
-	return ctx.JSON(http.StatusOK, models.SuggestResp{AddressFull: suggsResp.AddressFull, Suggests: suggsResp.Suggests})
+	suggsResp := models.SuggestsResp{Suggests: make([]models.OneSuggestResp, len(suggsUcaseResp.Suggests))}
+	for i, sugg := range suggsUcaseResp.Suggests {
+		suggsResp.Suggests[i] = models.OneSuggestResp(sugg)
+	}
+
+	return ctx.JSON(http.StatusOK, suggsResp)
 
 }

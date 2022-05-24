@@ -17,11 +17,11 @@ func (mw *CommonMiddleware) ErrorHandler(err error, ctx echo.Context) {
 
 	switch err := errors.Cause(err).(type) {
 	case *echo.HTTPError:
-		ctx.JSON(err.Code, struct {
+		_ = ctx.JSON(err.Code, struct {
 			Error string `json:"error"`
 		}{Error: err.Message.(string)})
 	default:
-		ctx.JSON(http.StatusInternalServerError, struct {
+		_ = ctx.JSON(http.StatusInternalServerError, struct {
 			Error string `json:"error"`
 		}{Error: "internal server error"})
 	}

@@ -5,7 +5,6 @@ import (
 )
 
 type Logger interface {
-	// Error(msg string, reqId uint64, errorMsg string)
 	Debugw(msg string, keysAndValues ...interface{})
 	Errorw(msg string, keysAndValues ...interface{})
 	Fatalw(msg string, keysAndValues ...interface{})
