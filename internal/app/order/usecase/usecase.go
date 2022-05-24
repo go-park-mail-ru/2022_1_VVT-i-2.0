@@ -66,7 +66,7 @@ func (u *OrderUcase) GetUserOrder(req *models.GetUserOrderUcaseReq) (*models.Get
 		return nil, servErrors.NewError(int(status.Code(err)), err.Error())
 	}
 
-	resp := models.GetUserOrderUcaseResp{OrderId: order.OrderId, Address: order.Address, Date: order.Date, RestaurantName: order.RestaurantName, RestaurantSlug: order.RestaurantSlug, TotalPrice: order.TotalPrice, Discount: order.Discount, Status: order.Status, Cart: make([]models.OrderPositionUcaseResp, len(order.Cart))}
+	resp := models.GetUserOrderUcaseResp{OrderId: order.OrderId, Address: order.Address, Date: order.Date, RestaurantName: order.RestaurantName, RestaurantSlug: order.RestaurantSlug, TotalPrice: order.TotalPrice, Discount: order.Discount, DeliveryPrice: order.DeliveryPrice, Status: order.Status, Cart: make([]models.OrderPositionUcaseResp, len(order.Cart))}
 	for i, poz := range order.Cart {
 		resp.Cart[i] = models.OrderPositionUcaseResp{Name: poz.Name, Description: poz.Description, ImagePath: poz.ImagePath, Calories: poz.Calories, Count: poz.Count, Price: poz.Price, Weigth: poz.Weigth}
 	}

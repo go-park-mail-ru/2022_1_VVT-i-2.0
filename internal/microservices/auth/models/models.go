@@ -46,6 +46,15 @@ type LoginUcaseReq struct {
 	Code  string
 }
 
+type LogitUcaseResp struct {
+	Id     UserId
+	Name   string
+	Phone  string
+	Email  string
+	Avatar string
+	Addres string
+}
+
 type RegisterUcaseReq struct {
 	Phone string
 	Code  string
@@ -67,4 +76,12 @@ type UserByPhoneRepoReq struct {
 
 type HasSuchUserRepoResp struct {
 	IsRegistered bool
+}
+
+type GetTopUserAddrRepoReq struct {
+	UserId int64
+}
+
+type GetTopUserAddrRepoResp struct {
+	Address string
 }

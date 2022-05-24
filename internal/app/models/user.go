@@ -47,9 +47,26 @@ type LoginReq struct {
 	Code  string `json:"code" valid:"code,required"`
 }
 
+type LoginResp struct {
+	Name    string `json:"name"`
+	Phone   string `json:"phone"`
+	Email   string `json:"email"`
+	Avatar  string `json:"avatar"`
+	Address string `json:"address"`
+}
+
 type LoginUcaseReq struct {
 	Phone string
 	Code  string
+}
+
+type LoginUcaseResp struct {
+	Id      UserId
+	Name    string
+	Phone   string
+	Email   string
+	Avatar  string
+	Address string
 }
 
 type RegisterReq struct {

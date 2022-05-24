@@ -46,8 +46,14 @@ func (u *OrderUcase) GetUserOrders(user *models.GetUserOrdersUcaseReq) (*models.
 		return nil, errors.Wrap(err, "error getting orders from storage")
 	}
 	ordersResp := make([]models.ShortOrderUcase, len(orders.Orders))
-	for i, position := range orders.Orders {
-		ordersResp[i] = models.ShortOrderUcase(position)
+	for i, order := range orders.Orders {
+		ordersResp[i] = models.ShortOrderUcase{
+			OrderId:        order.OrderId,
+			TotalPrice:     order.TotalPrice + order.DeliveryPrice,
+			Date:           order.Date,
+			RestaurantName: order.RestaurantName,
+			Status:         order.Status,
+		}
 	}
 	return &models.GetUserOrdersUcaseResp{Orders: ordersResp}, nil
 }
@@ -89,6 +95,7 @@ func (u *OrderUcase) GetUserOrder(req *models.GetUserOrderUcaseReq) (*models.Get
 		RestaurantName: order.RestaurantName,
 		RestaurantSlug: order.RestaurantSlug,
 		TotalPrice:     order.TotalPriceDiscount,
+		DeliveryPrice:  order.DeliveryPrice,
 		Status:         order.Status,
 		Discount:       order.TotalPrice - order.TotalPriceDiscount,
 		Cart:           cart}, nil

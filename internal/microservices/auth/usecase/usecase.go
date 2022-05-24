@@ -77,7 +77,7 @@ func (u *AuthUcase) isCodeCorrect(codeDst string, code string) (bool, error) {
 	return true, nil
 }
 
-func (u *AuthUcase) Login(req *models.LoginUcaseReq) (*models.UserDataUcase, error) {
+func (u *AuthUcase) Login(req *models.LoginUcaseReq) (*models.LogitUcaseResp, error) {
 	isCorrect, err := u.isCodeCorrect(req.Phone, req.Code)
 	if err != nil {
 		return nil, errors.Wrap(err, "code check failed")
@@ -89,12 +89,17 @@ func (u *AuthUcase) Login(req *models.LoginUcaseReq) (*models.UserDataUcase, err
 	if err != nil {
 		return nil, errors.Wrap(err, "error getting user by phone")
 	}
-	return &models.UserDataUcase{
+	topAddressRepoResp, err := u.AuthRepo.GetTopUserAddr(&models.GetTopUserAddrRepoReq{UserId: int64(userData.Id)})
+	if err != nil {
+		return nil, errors.Wrap(err, "error getting user address")
+	}
+	return &models.LogitUcaseResp{
 		Id:     userData.Id,
 		Phone:  userData.Phone,
 		Name:   userData.Name,
 		Email:  userData.Email,
 		Avatar: userData.Avatar.String,
+		Addres: topAddressRepoResp.Address,
 	}, nil
 }
 

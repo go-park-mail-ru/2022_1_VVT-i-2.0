@@ -5,7 +5,7 @@ import (
 )
 
 type Ucase interface {
-	Login(req *models.LoginUcaseReq) (*models.UserDataUcase, error)
+	Login(req *models.LoginUcaseReq) (*models.LogitUcaseResp, error)
 	Register(req *models.RegisterUcaseReq) (*models.UserDataUcase, error)
 	SendCode(*models.SendCodeUcaseReq) (models.SendCodeUcaseResp, error)
 }

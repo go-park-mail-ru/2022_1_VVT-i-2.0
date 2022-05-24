@@ -24,6 +24,15 @@ message LoginReq  {
 	string Code = 2;
 }
 
+message LoginResp {
+	uint64 Id = 1;
+	string Name = 2;
+	string Phone = 3;
+	string Email = 4;
+	string Avatar = 5;
+	string Address = 6;
+}
+
 message RegisterReq  {
 	string Phone = 1;
 	string Code = 2;
@@ -33,6 +42,6 @@ message RegisterReq  {
 
 service AuthService {
   rpc SendCode(SendCodeReq) returns (IsRegistered) {}
-  rpc Login(LoginReq) returns (UserData) {}
+  rpc Login(LoginReq) returns (LoginResp) {}
   rpc Register(RegisterReq) returns (UserData) {}
 }
