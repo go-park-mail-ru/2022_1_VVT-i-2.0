@@ -36,14 +36,18 @@ func TestDishesUcase_RestaurantDishes(t *testing.T) {
 	}
 }
 
+func TestDishesUcase_RestaurantDishes_Err(t *testing.T) {
+	mockRestaurantsRepo := new(mock.DishesRepoErr)
+	ucase := NewDishesUcase(mockRestaurantsRepo)
+
+	_, err := ucase.GetRestaurantDishes(models.GetRestaurantDishesUcaseReq{Slug: "slug"})
+	assert.Error(t, err)
+}
+
 func TestDishesUcase_RestaurantDishes_EmptySlug(t *testing.T) {
 	mockRestaurantsRepo := new(mock.DishesRepoErr)
 	ucase := NewDishesUcase(mockRestaurantsRepo)
 
-	dishData, _ := ucase.GetRestaurantDishes(models.GetRestaurantDishesUcaseReq{Slug: "slug"})
-
-	if reflect.DeepEqual(dishData, nil) {
-		t.Errorf("results not match, want %v, have %v", dishData, nil)
-		return
-	}
+	_, err := ucase.GetRestaurantDishes(models.GetRestaurantDishesUcaseReq{Slug: ""})
+	assert.Error(t, err)
 }

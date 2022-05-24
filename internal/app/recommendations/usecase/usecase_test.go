@@ -27,3 +27,11 @@ func TestRecommendationsUcase_GetRecommendations(t *testing.T) {
 		return
 	}
 }
+
+func TestRecommendationsUcase_GetRecommendations_Err(t *testing.T) {
+	mockRecommendationRepo := new(mock.RecommendationRepoErr)
+	ucase := NewRecommendationsUcase(mockRecommendationRepo)
+
+	_, err := ucase.GetRecommendations(models.RecommendationsOrderListsUsecaseReq{RestId: 1, DishesId: []int64{1}})
+	assert.Error(t, err)
+}

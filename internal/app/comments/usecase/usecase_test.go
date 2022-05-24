@@ -60,27 +60,20 @@ func TestCommentsUsecase_GetRestaurantComment_Err(t *testing.T) {
 	mockCommentsRepo := new(mock.CommentsRepositoryErr)
 	useCase := NewCommentsUsecase(mockCommentsRepo)
 
-	commentRestaurantData, _ := useCase.GetRestaurantComments(models.GetRestaurantCommentsUcaseReq{Slug: "slug"})
-
-	if reflect.DeepEqual(commentRestaurantData, nil) {
-		t.Errorf("results not match, want %v, have %v", commentRestaurantData.Comment[0], nil)
-		return
-	}
+	_, err := useCase.GetRestaurantComments(models.GetRestaurantCommentsUcaseReq{Slug: "slug"})
+	assert.Error(t, err)
 }
 
 func TestCommentsUsecase_AddRestaurantComment_Err(t *testing.T) {
 	mockCommentsRepo := new(mock.CommentsRepositoryErr)
 	useCase := NewCommentsUsecase(mockCommentsRepo)
 
-	commentRestaurantData, _ := useCase.AddRestaurantComment(models.AddCommentRestaurantUcaseReq{
+	_, err := useCase.AddRestaurantComment(models.AddCommentRestaurantUcaseReq{
 		UserId: 1,
 		Slug:          "slug",
 		CommentText:   "text",
 		CommentRating: 5,
 	})
 
-	if reflect.DeepEqual(commentRestaurantData, nil) {
-		t.Errorf("results not match, want %v, have %v", commentRestaurantData, nil)
-		return
-	}
+	assert.Error(t, err)
 }

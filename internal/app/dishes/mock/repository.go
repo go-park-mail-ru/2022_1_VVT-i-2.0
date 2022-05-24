@@ -45,13 +45,13 @@ type DishesRepoErr struct {
 }
 
 func (r *DishesRepoErr) GetRestaurantBySlug(req models.GetRestaurantBySlugRepoReq) (*models.DishesRestaurantRepo, error) {
-	return nil, servErrors.NewError(servErrors.DB_ERROR, "err.Error()")
+	return nil, servErrors.NewError(servErrors.DB_ERROR, "")
 }
 
 func (r *DishesRepoErr) GetCategories(req models.GetCategoriesByIdRepoReq) (*models.Categories, error) {
-	return nil, nil
+	return nil, servErrors.NewError(servErrors.DB_ERROR, "")
 }
 
 func (r *DishesRepoErr) GetRestaurantDishes(req models.GetRestaurantDishesRepoReq) (*models.GetRestaurantDishesCategoriesRepoResp, error) {
-	return nil, nil
+	return nil, servErrors.NewError(servErrors.DB_ERROR, "")
 }
