@@ -17,7 +17,7 @@ func NewRecommendationsRepo(db *sqlx.DB) *RecommendationsRepo {
 
 func (r *RecommendationsRepo) GetRestaurantDishes(req models.GetRestaurantDishesRepoReq) (*models.GetRestaurantDishesCategoriesRepoResp, error) {
 	dishes := make([]*models.DishCategoriesRepo, 0)
-	err := r.DB.Select(&dishes, "SELECT id, restaurant_id, category, name, description, image_path, calories, price, weight FROM dishes WHERE restaurant_id = $1", req.Id)
+	err := r.DB.Select(&dishes, "SELECT id, restaurant_id, categori, name, description, image_path, calories, price, weight FROM dishes WHERE restaurant_id = $1", req.Id)
 	switch err {
 	case nil:
 		resp := &models.GetRestaurantDishesCategoriesRepoResp{Dishes: make([]models.DishCategoriesRepo, len(dishes))}

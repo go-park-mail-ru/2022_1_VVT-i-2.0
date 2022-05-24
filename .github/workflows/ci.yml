@@ -1,33 +1,97 @@
 name: Docker Build
 
-on:
-  push:
-    branches: [dev]
-  pull_request:
-    branches: [dev]
+#on:
+#  push:
+#    branches: [dev, yutfut]
+#  pull_request:
+#    branches: [dev]
+
+on: [push]
 
 jobs:
   build:
+    if: github.ref == 'refs/heads/dev'
+    name: Build
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v1
       - name: Login to DockerHub Registry
         run: echo ${{ secrets.DOCKERHUB_PASSWORD }} | docker login -u ${{ secrets.DOCKERHUB_USERNAME }} --password-stdin
+
       - name: Build Docker image back
         run: docker build -f=Dockerfile -t yutfut/vvti_back:${GITHUB_SHA::8} .
+
       - name: Push the image bcak
         run: docker push yutfut/vvti_back:${GITHUB_SHA::8}
+
       - name: Build Docker image auth
         run: docker build -f=auth.Dockerfile -t yutfut/vvti_auth:${GITHUB_SHA::8} .
+
       - name: Push the image auth
         run: docker push yutfut/vvti_auth:${GITHUB_SHA::8}
+
       - name: Build Docker image order
         run: docker build -f=order.Dockerfile -t yutfut/vvti_order:${GITHUB_SHA::8} .
+
       - name: Push the image order
         run: docker push yutfut/vvti_order:${GITHUB_SHA::8}
 
+  linter:
+    name: Linter
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set up Go
+        uses: actions/setup-go@v2
+        with:
+          go-version: 1.17
+
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Install Dependecies
+        run: go get ./...
+
+      - name: Go mod tidy
+        run: go mod tidy
+
+      - name: Install GolangCI-Lint
+        run: go get github.com/golangci/golangci-lint/cmd/golangci-lint@v1.42.1
+
+      - name: Run GolangCI-Lint
+        run: go run github.com/golangci/golangci-lint/cmd/golangci-lint run ./...
+
+  test-coverage:
+    name: Tests
+    runs-on: ubuntu-latest
+#    needs: linter
+    steps:
+      - name: Set up Go
+        uses: actions/setup-go@v2
+        with:
+          go-version: 1.17
+
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Install Dependecies
+        run: go get ./...
+
+      - name: Go mod tidy
+        run: go mod tidy
+
+      - name: Test
+        run: go test ./...
+
+      - name: Coverage tests
+        run: |
+          go test ./... --cover  --coverpkg ./... --coverprofile cover.out
+          cat cover.out | grep -v ".pb.go"|grep -v "mock" > cover_without_gen.out
+      - name: Print total coverage
+        run: go tool cover -func cover_without_gen.out
 
   deploy:
+    if: github.ref == 'refs/heads/dev'
+    name: Deploy
     runs-on: ubuntu-latest
     needs: build
     steps:

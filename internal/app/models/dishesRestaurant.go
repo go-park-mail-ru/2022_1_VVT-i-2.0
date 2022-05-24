@@ -40,7 +40,7 @@ type Categories struct {
 
 type DishCategoriesRepo struct {
 	Id           	int
-	Category     	int		`db:"category"`
+	Category     	int		`db:"categori"`
 	RestaurantId 	int		`db:"restaurant_id"`
 	Name        	string
 	Description 	string
@@ -77,7 +77,7 @@ type DishCategoriesUsecase struct {
 
 type CategoriesDishesUcaseResp struct {
 	Categories string
-	Dishes     []DishCategoriesUsecase
+	Dishes     []int
 }
 
 type GetRestaurantDishesCategoriesUcaseResp struct {
@@ -90,7 +90,8 @@ type GetRestaurantDishesCategoriesUcaseResp struct {
 	ReviewCount          	int
 	UpMinutesToDelivery   	int
 	DownMinutesToDelivery	int
-	Dishes               	[]CategoriesDishesUcaseResp
+	Dishes					[]DishCategoriesUsecase
+	Categories              []CategoriesDishesUcaseResp
 }
 
 //// Handler
@@ -110,18 +111,19 @@ type DishCategoriesResp struct {
 }
 
 type CategoriesDishesDelivery struct {
-	Category	string
-	Dishes		[]DishCategoriesResp
+	Category	string	`json:"category"`
+	Dishes		[]int	`json:"dishes"`
 }
 
 type GetRestaurantDishesCategoriesResp struct {
-	Id             int      `json:"id"`
-	Name           string   `json:"restName"`
-	ImagePath      string   `json:"imgPath"`
-	Slug           string   `json:"slug"`
-	MinPrice       int		`json:"minPrice"`
-	Rating         float64	`json:"rating"`
-	TimeToDelivery string   `json:"timeToDeliver"`
-	ReviewCount    int      `json:"reviewCount"`
-	Dishes         []CategoriesDishesDelivery `json:"dishes"`
+	Id             	int      `json:"id"`
+	Name           	string   `json:"restName"`
+	ImagePath      	string   `json:"imgPath"`
+	Slug           	string   `json:"slug"`
+	MinPrice      	int		`json:"minPrice"`
+	Rating         	float64	`json:"rating"`
+	TimeToDelivery 	string   `json:"timeToDeliver"`
+	ReviewCount    	int      `json:"reviewCount"`
+	Dishes			[]DishCategoriesResp	`json:"dishes"`
+	Categories      []CategoriesDishesDelivery `json:"categories"`
 }

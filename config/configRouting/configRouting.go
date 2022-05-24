@@ -66,5 +66,5 @@ func (sh *ServerHandlers) ConfigureRouting(router *echo.Echo, mw *middleware.Com
 	router.GET(v1Prefix+"promo", sh.PromocodeHandler.GetAllPromocodes, mwChain...)
 	router.GET(v1Prefix+"", sh.RestaurantsHandler.GetAllRestaurants, mwChain...)
 	router.GET(v1Prefix+"restaurant/:slug", sh.DishesHandler.GetDishesByRestaurants, mwChain...)
-	router.GET(v1Prefix+"recommendations", sh.RecommendstionsHandler.GetRecommendations, mwChain...)
+	router.POST(v1Prefix+"recommendations", sh.RecommendstionsHandler.GetRecommendations, mwChain...)
 }
