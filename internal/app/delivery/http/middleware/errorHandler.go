@@ -17,12 +17,29 @@ func (mw *CommonMiddleware) ErrorHandler(err error, ctx echo.Context) {
 
 	switch err := errors.Cause(err).(type) {
 	case *echo.HTTPError:
-		ctx.JSON(err.Code, struct {
+		err2 := ctx.JSON(err.Code, struct {
 			Error string `json:"error"`
 		}{Error: err.Message.(string)})
+		if err2 != nil {
+			return
+		}
 	default:
-		ctx.JSON(http.StatusInternalServerError, struct {
+		err2 := ctx.JSON(http.StatusInternalServerError, struct {
 			Error string `json:"error"`
 		}{Error: "internal server error"})
+		if err2 != nil {
+			return
+		}
 	}
+
+	//switch err := errors.Cause(err).(type) {
+	//case *echo.HTTPError:
+	//	ctx.JSON(err.Code, struct {
+	//		Error string `json:"error"`
+	//	}{Error: err.Message.(string)})
+	//default:
+	//	ctx.JSON(http.StatusInternalServerError, struct {
+	//		Error string `json:"error"`
+	//	}{Error: "internal server error"})
+	//}
 }

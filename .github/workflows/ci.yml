@@ -1,10 +1,12 @@
 name: Docker Build
 
-on:
-  push:
-    branches: [dev, yutfut]
-  pull_request:
-    branches: [dev]
+#on:
+#  push:
+#    branches: [dev, yutfut]
+#  pull_request:
+#    branches: [dev]
+
+on: [push]
 
 jobs:
   build:

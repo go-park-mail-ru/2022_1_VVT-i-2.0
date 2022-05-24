@@ -15,9 +15,15 @@ func (mw *CommonMiddleware) PanicMiddleware(next echo.HandlerFunc) echo.HandlerF
 				requestId := GetRequestIdFromCtx(ctx)
 				mw.Logger.Error(requestId, "panic recovered: "+fmt.Sprint(err))
 				mw.Logger.Access(requestId, ctx.Request().Method, ctx.Request().RemoteAddr, ctx.Request().URL.Path, time.Duration(0))
-				ctx.JSON(http.StatusInternalServerError, struct {
+				err := ctx.JSON(http.StatusInternalServerError, struct {
 					Error string `json:"error"`
 				}{Error: "internal server error"})
+				if err != nil {
+					return
+				}
+				//ctx.JSON(http.StatusInternalServerError, struct {
+				//	Error string `json:"error"`
+				//}{Error: "internal server error"})
 			}
 		}()
 		return next(ctx)
