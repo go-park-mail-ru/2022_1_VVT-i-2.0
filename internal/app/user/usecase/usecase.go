@@ -90,13 +90,13 @@ func (u *UserUcase) UpdateUser(updates *models.UpdateUserUcase) (*models.UserDat
 	updUser, err := u.UserRepo.UpdateUser(&models.UpdateUserStorage{Id: updates.Id, Email: updates.Email, Name: updates.Name, Avatar: newAvatarName})
 	if err != nil {
 		if newAvatarName != "" {
-			u.StaticManager.RemoveAvatar(newAvatarName)
+			_ = u.StaticManager.RemoveAvatar(newAvatarName)
 		}
 		return nil, errors.Wrap(err, "error updating user")
 	}
 	if updUser == nil {
 		if newAvatarName != "" {
-			u.StaticManager.RemoveAvatar(newAvatarName)
+			_ = u.StaticManager.RemoveAvatar(newAvatarName)
 		}
 		updUser, err = u.UserRepo.GetUserById(updates.Id)
 		if err != nil {

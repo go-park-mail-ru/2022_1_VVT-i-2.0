@@ -75,12 +75,11 @@ func (u *AddrUcase) getTopUserAddrs(userId int64, limit int) (*models.SuggestsUc
 	if !validator.IsUserId(userId) {
 		return nil, nil
 	}
-	resp := []models.OneSuggestUcaseResp{}
 	userAddrsRepo, err := u.AddrRepo.GetTopUserAddrs(&models.GetTopUserAddrsRepoReq{UserId: userId, Limit: limit - len(cityResp)})
 	if err != nil {
 		return nil, errors.Wrap(err, "error getting user address from storage")
 	}
-	resp = make([]models.OneSuggestUcaseResp, len(userAddrsRepo.Addrs))
+	resp := make([]models.OneSuggestUcaseResp, len(userAddrsRepo.Addrs))
 	for i, addr := range userAddrsRepo.Addrs {
 		resp[i] = models.OneSuggestUcaseResp{Address: addr, Full: true}
 	}
@@ -182,12 +181,11 @@ func (u *AddrUcase) suggestStreetUserAddrs(userId int64, req string, streetType 
 	if !validator.IsUserId(userId) {
 		return nil, nil
 	}
-	resp := []models.OneSuggestUcaseResp{}
 	userAddrsRepo, err := u.AddrRepo.SuggestUserAddrs(&models.SuggestUserAddrsRepoReq{Addr: req, UserId: userId, StreetType: streetType, Limit: limit})
 	if err != nil {
 		return nil, errors.Wrap(err, "error getting user addresses from storage")
 	}
-	resp = make([]models.OneSuggestUcaseResp, len(userAddrsRepo.Addrs))
+	resp := make([]models.OneSuggestUcaseResp, len(userAddrsRepo.Addrs))
 	for i, addr := range userAddrsRepo.Addrs {
 		resp[i] = models.OneSuggestUcaseResp{Address: addr, Full: true}
 	}
@@ -198,12 +196,11 @@ func (u *AddrUcase) suggestHouseUserAddrs(userId int64, req string, limit int) (
 	if !validator.IsUserId(userId) {
 		return nil, nil
 	}
-	resp := []models.OneSuggestUcaseResp{}
 	userAddrsRepo, err := u.AddrRepo.SuggestUserAddrs(&models.SuggestUserAddrsRepoReq{Addr: req, UserId: userId, Limit: limit})
 	if err != nil {
 		return nil, errors.Wrap(err, "error getting user addresses from storage")
 	}
-	resp = make([]models.OneSuggestUcaseResp, len(userAddrsRepo.Addrs))
+	resp := make([]models.OneSuggestUcaseResp, len(userAddrsRepo.Addrs))
 	for i, addr := range userAddrsRepo.Addrs {
 		resp[i] = models.OneSuggestUcaseResp{Address: addr, Full: true}
 	}
