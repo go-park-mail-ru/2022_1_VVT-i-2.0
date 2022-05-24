@@ -54,8 +54,12 @@ func (u *RecommendationsUcase) GetRecommendations(req models.RecommendationsOrde
 		}
 	}
 
+	if len(recommendations) == 0 {
+		return nil, nil
+	}
+
 	finalRecommendations := &models.DishRecommendationListsUsecase{
-		Dishes: make([]models.DishRecommendationUsecase, 3),
+		Dishes: make([]models.DishRecommendationUsecase, 2),
 	}
 
 	for i := range finalRecommendations.Dishes{

@@ -18,6 +18,9 @@ func (mw *CommonMiddleware) PanicMiddleware(next echo.HandlerFunc) echo.HandlerF
 				_ = ctx.JSON(http.StatusInternalServerError, struct {
 					Error string `json:"error"`
 				}{Error: "internal server error"})
+				if err != nil {
+					return
+				}
 			}
 		}()
 		return next(ctx)

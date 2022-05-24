@@ -20,9 +20,15 @@ func (mw *CommonMiddleware) ErrorHandler(err error, ctx echo.Context) {
 		_ = ctx.JSON(err.Code, struct {
 			Error string `json:"error"`
 		}{Error: err.Message.(string)})
+		if err2 != nil {
+			return
+		}
 	default:
 		_ = ctx.JSON(http.StatusInternalServerError, struct {
 			Error string `json:"error"`
 		}{Error: "internal server error"})
+		if err2 != nil {
+			return
+		}
 	}
 }

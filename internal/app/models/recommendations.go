@@ -29,7 +29,7 @@ type DishRecommendationDelivery struct {
 }
 
 type DishRecommendationListsDelivery struct {
-	Dishes []DishRecommendationDelivery
+	Dishes []DishRecommendationDelivery	`json:"dishes"`
 }
 
 //// UseCase

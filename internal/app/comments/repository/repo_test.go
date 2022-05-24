@@ -18,7 +18,13 @@ func TestCommentsRepo_GetRestaurantByID(t *testing.T) {
 	if err != nil {
 		t.Fatalf("cant create mock: %s", err)
 	}
-	defer db.Close()
+	defer func(db *sql.DB) {
+		err := db.Close()
+		if err != nil {
+
+		}
+	}(db)
+	//defer db.Close()
 
 	sqlxDB := sqlx.NewDb(db, "sqlmock")
 
@@ -91,7 +97,13 @@ func TestCommentsRepo_GetRestaurantBySlug(t *testing.T) {
 	if err != nil {
 		t.Fatalf("cant create mock: %s", err)
 	}
-	defer db.Close()
+	defer func(db *sql.DB) {
+		err := db.Close()
+		if err != nil {
+
+		}
+	}(db)
+	//defer db.Close()
 
 	sqlxDB := sqlx.NewDb(db, "sqlmock")
 
@@ -166,7 +178,13 @@ func TestCommentsRepo_GetRestaurantComments(t *testing.T) {
 	if err != nil {
 		t.Fatalf("cant create mock: %s", err)
 	}
-	defer db.Close()
+	defer func(db *sql.DB) {
+		err := db.Close()
+		if err != nil {
+
+		}
+	}(db)
+	//defer db.Close()
 
 	sqlxDB := sqlx.NewDb(db, "sqlmock")
 
@@ -251,7 +269,13 @@ func TestCommentsRepo_GetUserById(t *testing.T) {
 	if err != nil {
 		t.Fatalf("cant create mock: %s", err)
 	}
-	defer db.Close()
+	defer func(db *sql.DB) {
+		err := db.Close()
+		if err != nil {
+
+		}
+	}(db)
+	//defer db.Close()
 
 	sqlxDB := sqlx.NewDb(db, "sqlmock")
 
