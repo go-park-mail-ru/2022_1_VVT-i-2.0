@@ -5,5 +5,5 @@ import (
 )
 
 type Ucase interface {
-	Suggest(req *models.SuggestUcaseReq) (*models.SuggestUcaseResp, error)
+	Suggest(req *models.SuggestUcaseReq) (*models.SuggestsUcaseResp, error)
 }

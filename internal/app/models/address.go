@@ -1,21 +1,30 @@
 package models
 
 type SuggestReq struct {
-	Address string `json:"address" valid:"address,required"`
+	Address string `json:"address" valid:"address"`
 }
 
-type SuggestResp struct {
-	Suggests    []string `json:"suggests"`
-	AddressFull bool     `json:"end"`
+type OneSuggestResp struct {
+	Address string `json:"address"`
+	Full    bool   `json:"end"`
+}
+
+type SuggestsResp struct {
+	Suggests []OneSuggestResp `json:"suggests"`
+}
+
+type OneSuggestUcaseResp struct {
+	Address string `json:"address"`
+	Full    bool   `json:"end"`
+}
+
+type SuggestsUcaseResp struct {
+	Suggests []OneSuggestUcaseResp `json:"suggests"`
 }
 
 type SuggestUcaseReq struct {
 	Address string
-}
-
-type SuggestUcaseResp struct {
-	Suggests    []string
-	AddressFull bool
+	UserId  int64
 }
 
 type SuggestStreetRepoReq struct {
@@ -68,4 +77,24 @@ type GetHouseRepoReq struct {
 
 type GetHouseRepoResp struct {
 	House string
+}
+
+type GetTopUserAddrsRepoReq struct {
+	UserId int64
+	Limit  int
+}
+
+type GetTopUserAddrsRepoResp struct {
+	Addrs []string
+}
+
+type SuggestUserAddrsRepoReq struct {
+	Addr       string
+	StreetType string
+	UserId     int64
+	Limit      int
+}
+
+type SuggestUserAddrsRepoResp struct {
+	Addrs []string
 }

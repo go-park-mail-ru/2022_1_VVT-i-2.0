@@ -10,4 +10,6 @@ type Repository interface {
 	GetCity(city *models.GetCityRepoReq) (*models.GetCityRepoResp, error)
 	GetStreet(street *models.GetStreetRepoReq) (*models.GetStreetRepoResp, error)
 	GetHouse(house *models.GetHouseRepoReq) (*models.GetHouseRepoResp, error)
+	GetTopUserAddrs(req *models.GetTopUserAddrsRepoReq) (*models.GetTopUserAddrsRepoResp, error)
+	SuggestUserAddrs(req *models.SuggestUserAddrsRepoReq) (*models.SuggestUserAddrsRepoResp, error)
 }

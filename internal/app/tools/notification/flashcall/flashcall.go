@@ -83,10 +83,3 @@ func (f Flashcaller) SendCode(phone string, code string) error {
 
 	return nil
 }
-
-/*
-grpc~~~~~~~code: 2643 ~~~~~~~~
-{"success":false,"data":null,"message":"Not enough money."}
-{false Not enough money. {}}
-
-*/

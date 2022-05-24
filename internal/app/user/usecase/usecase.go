@@ -13,7 +13,6 @@ import (
 	"github.com/google/uuid"
 	"github.com/pkg/errors"
 
-	// "golang.org/x/image/webp"
 	"google.golang.org/grpc/status"
 )
 
@@ -23,7 +22,6 @@ var LOGIN_CODE string
 const (
 	avatarSide        = 300
 	defaultAvatarName = ""
-	// avatarSide = 30
 )
 
 type UserUcase struct {
@@ -92,21 +90,13 @@ func (u *UserUcase) UpdateUser(updates *models.UpdateUserUcase) (*models.UserDat
 	updUser, err := u.UserRepo.UpdateUser(&models.UpdateUserStorage{Id: updates.Id, Email: updates.Email, Name: updates.Name, Avatar: newAvatarName})
 	if err != nil {
 		if newAvatarName != "" {
-			err := u.StaticManager.RemoveAvatar(newAvatarName)
-			if err != nil {
-				return nil, err
-			}
-			//u.StaticManager.RemoveAvatar(newAvatarName)
+			_ = u.StaticManager.RemoveAvatar(newAvatarName)
 		}
 		return nil, errors.Wrap(err, "error updating user")
 	}
 	if updUser == nil {
 		if newAvatarName != "" {
-			err := u.StaticManager.RemoveAvatar(newAvatarName)
-			if err != nil {
-				return nil, err
-			}
-			//u.StaticManager.RemoveAvatar(newAvatarName)
+			_ = u.StaticManager.RemoveAvatar(newAvatarName)
 		}
 		updUser, err = u.UserRepo.GetUserById(updates.Id)
 		if err != nil {

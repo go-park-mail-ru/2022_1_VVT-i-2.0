@@ -6,13 +6,7 @@ import (
 	"github.com/labstack/echo/v4/middleware"
 )
 
-/*
-	AllowedHeaders: []string{"access-control-allow-origin", "content-type",
-		"x-csrf-token", "access-control-expose-headers"},
-*/
-
 func getCorsConfig(cfg *config.CorsConfig) middleware.CORSConfig {
-	// TODO: это все заголовки?
 	return middleware.CORSConfig{
 		AllowOrigins:     cfg.AllowOrigins,
 		AllowCredentials: true,

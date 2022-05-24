@@ -6,19 +6,12 @@ import (
 	"github.com/pkg/errors"
 )
 
-// ошибки, которые нужно залогировать
-const (
-	// -iota - 1
-	CACH_ERROR = -iota - 1
-)
-
-// ошибки, которые не нужно логировать
 const (
 	OK = iota
+	CACH_ERROR
 	CACH_MISS_CODE
 	FLASHCALL_RESPONSE_ERR
 	FLASHCALL_PHONE_ALREADY_IN_QUEUE
-
 	WRONG_AUTH_CODE
 	NO_SUCH_RESTAURANT
 	NO_SUCH_USER
@@ -27,7 +20,6 @@ const (
 	CREATE_TOKEN
 	PARSE_TOKEN
 	WRONG_TOKEN_CLAIMS
-	// невалидные данные от пользователя
 	NO_SUCH_ENTITY_IN_DB
 	INVALID_DATA
 	DB_ERROR
@@ -44,16 +36,15 @@ const (
 )
 
 const (
-	DB_ERROR_DESCR             = "ошибка при работе с базой данных"
-	CACH_MISS_DESCR            = "в кэше отсутствует элемент по данному ключу"
-	BAD_AUTH_TOKEN_DESCR       = "не валидный токен авторизации"
-	NO_SUCH_RESTAURANT_DESCR   = "не существует такого ресторана"
-	NO_SUCH_AUTH_DATA_DESCR    = "не найдены данные для авторизации пользователя"
-	BAD_REQUEST_BODY_DESCR     = "не правильное тело запроса"
-	WRONG_AUTH_CODE_DESCR      = "не верный код для входа"
-	NO_SUCH_ENTITY_IN_DB_DESCR = "нет такой сущности в базе данных"
-	NO_SUCH_USER_DESCR         = "не существует такого пользователя"
-	// невалидные данные от пользователя
+	DB_ERROR_DESCR                         = "ошибка при работе с базой данных"
+	CACH_MISS_DESCR                        = "в кэше отсутствует элемент по данному ключу"
+	BAD_AUTH_TOKEN_DESCR                   = "не валидный токен авторизации"
+	NO_SUCH_RESTAURANT_DESCR               = "не существует такого ресторана"
+	NO_SUCH_AUTH_DATA_DESCR                = "не найдены данные для авторизации пользователя"
+	BAD_REQUEST_BODY_DESCR                 = "не правильное тело запроса"
+	WRONG_AUTH_CODE_DESCR                  = "не верный код для входа"
+	NO_SUCH_ENTITY_IN_DB_DESCR             = "нет такой сущности в базе данных"
+	NO_SUCH_USER_DESCR                     = "не существует такого пользователя"
 	DB_INSERT_DESCR                        = "неуспешная вставка в базу данных"
 	NO_SUCH_CITY_DESCR                     = "не существует такого города"
 	NO_SUCH_STREET_DESCR                   = "не существует такой улицы"
