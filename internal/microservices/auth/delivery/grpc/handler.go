@@ -34,16 +34,16 @@ func (h *grpcAuthHandler) SendCode(ctx context.Context, req *proto.SendCodeReq) 
 	return &proto.IsRegistered{IsRegistered: isRegistered.IsRegistered}, nil
 }
 
-func (h *grpcAuthHandler) Login(ctx context.Context, req *proto.LoginReq) (*proto.UserData, error) {
+func (h *grpcAuthHandler) Login(ctx context.Context, req *proto.LoginReq) (*proto.LoginResp, error) {
 	userDataUcase, err := h.Ucase.Login(&models.LoginUcaseReq{Phone: req.GetPhone(), Code: req.Code})
 	if err != nil {
 		cause := servErrors.ErrorAs(err)
 		if cause == nil {
-			return &proto.UserData{}, status.Error(codes.Internal, err.Error())
+			return &proto.LoginResp{}, status.Error(codes.Internal, err.Error())
 		}
-		return &proto.UserData{}, status.Error(codes.Code(cause.Code), err.Error())
+		return &proto.LoginResp{}, status.Error(codes.Code(cause.Code), err.Error())
 	}
-	return &proto.UserData{Id: uint64(userDataUcase.Id), Phone: userDataUcase.Phone, Email: userDataUcase.Email, Name: userDataUcase.Name, Avatar: userDataUcase.Avatar}, nil
+	return &proto.LoginResp{Id: uint64(userDataUcase.Id), Phone: userDataUcase.Phone, Email: userDataUcase.Email, Name: userDataUcase.Name, Avatar: userDataUcase.Avatar, Address: userDataUcase.Addres}, nil
 }
 
 func (h *grpcAuthHandler) Register(ctx context.Context, req *proto.RegisterReq) (*proto.UserData, error) {

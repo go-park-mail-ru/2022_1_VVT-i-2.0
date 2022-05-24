@@ -86,5 +86,5 @@ func (h grpcOrderHandler) GetUserOrder(ctx context.Context, req *proto.GetUserOr
 		cart[i] = &proto.OrderPositionResp{Name: poz.Name, Description: poz.Description, ImagePath: poz.ImagePath, Calories: poz.Calories, Count: poz.Count, Price: poz.Price, Weigth: poz.Weigth}
 	}
 
-	return &proto.GetUserOrderResp{OrderId: order.OrderId, Address: order.Address, Date: order.Date, RestaurantName: order.RestaurantName, RestaurantSlug: order.RestaurantSlug, TotalPrice: order.TotalPrice, Discount: order.Discount, Status: order.Status, Cart: cart}, nil
+	return &proto.GetUserOrderResp{OrderId: order.OrderId, Address: order.Address, Date: order.Date, RestaurantName: order.RestaurantName, RestaurantSlug: order.RestaurantSlug, TotalPrice: order.TotalPrice, Discount: order.Discount, DeliveryPrice: order.DeliveryPrice, Status: order.Status, Cart: cart}, nil
 }

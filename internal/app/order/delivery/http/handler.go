@@ -157,6 +157,7 @@ func (h OrderHandler) GetUserOrder(ctx echo.Context) error {
 		Status:         orderUcaseData.Status,
 		TotalPrice:     orderUcaseData.TotalPrice,
 		Discount:       orderUcaseData.Discount,
+		DeliveryPrice:  orderUcaseData.DeliveryPrice,
 		Cart:           make([]models.OrderPositionResp, len(orderUcaseData.Cart))}
 	for i, order := range orderUcaseData.Cart {
 		order.ImagePath = h.StaticManager.GetDishesUrl(order.ImagePath)

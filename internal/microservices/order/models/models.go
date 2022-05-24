@@ -58,6 +58,7 @@ type ShortOrderRepo struct {
 	OrderId        int64 `db:"id"`
 	Date           string
 	TotalPrice     int64  `db:"total_price_discount"`
+	DeliveryPrice  int64  `db:"delivery_price"`
 	RestaurantName string `db:"restaurant_name"`
 	Status         string
 }
@@ -112,6 +113,7 @@ type GetUserOrderRepoResp struct {
 	Date               string
 	TotalPrice         int64  `db:"total_price"`
 	TotalPriceDiscount int64  `db:"total_price_discount"`
+	DeliveryPrice      int64  `db:"delivery_price"`
 	RestaurantName     string `db:"restaurant_name"`
 	RestaurantSlug     string `db:"restaurant_slug"`
 	Address            string
@@ -139,6 +141,7 @@ type GetUserOrderUcaseResp struct {
 	Date           string
 	TotalPrice     int64
 	Discount       int64
+	DeliveryPrice  int64
 	RestaurantName string
 	RestaurantSlug string
 	Address        string

@@ -118,6 +118,7 @@ type GetUserOrderUcaseResp struct {
 	Date           string
 	TotalPrice     int64
 	Discount       int64
+	DeliveryPrice  int64
 	RestaurantName string
 	RestaurantSlug string
 	Address        string
@@ -141,6 +142,7 @@ type GetUserOrderResp struct {
 	Date           string              `json:"date"`
 	TotalPrice     int64               `json:"totalPrice"`
 	Discount       int64               `json:"summaryDiscount"`
+	DeliveryPrice  int64               `json:"deliveryPrice"`
 	RestaurantName string              `json:"restName"`
 	RestaurantSlug string              `json:"restSlug"`
 	Status         string              `json:"status"`

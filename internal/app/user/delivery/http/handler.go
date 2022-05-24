@@ -99,7 +99,7 @@ func (h UserHandler) Login(ctx echo.Context) error {
 	if csrfToken != "" {
 		ctx.Response().Header().Add(echo.HeaderXCSRFToken, csrfToken)
 	}
-	return ctx.JSON(http.StatusOK, models.UserDataResp{Phone: userDataUcase.Phone, Email: userDataUcase.Email, Name: userDataUcase.Name, Avatar: h.StaticManager.GetAvatarUrl(userDataUcase.Avatar)})
+	return ctx.JSON(http.StatusOK, models.LoginResp{Phone: userDataUcase.Phone, Email: userDataUcase.Email, Name: userDataUcase.Name, Avatar: h.StaticManager.GetAvatarUrl(userDataUcase.Avatar), Address: userDataUcase.Address})
 }
 
 func (h UserHandler) Register(ctx echo.Context) error {

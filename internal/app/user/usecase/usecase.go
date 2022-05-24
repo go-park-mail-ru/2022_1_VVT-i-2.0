@@ -54,12 +54,12 @@ func (u *UserUcase) Register(req *models.RegisterUcaseReq) (*models.UserDataUcas
 	return &models.UserDataUcase{Id: models.UserId(userData.Id), Phone: userData.Phone, Name: userData.Name, Email: userData.Email, Avatar: userData.Avatar}, err
 }
 
-func (u *UserUcase) Login(req *models.LoginUcaseReq) (*models.UserDataUcase, error) {
+func (u *UserUcase) Login(req *models.LoginUcaseReq) (*models.LoginUcaseResp, error) {
 	userData, err := u.Authorizer.Login(context.Background(), &authProto.LoginReq{Phone: req.Phone, Code: req.Code})
 	if err != nil {
 		return nil, servErrors.NewError(int(status.Code(err)), err.Error())
 	}
-	return &models.UserDataUcase{Id: models.UserId(userData.Id), Phone: userData.Phone, Name: userData.Name, Email: userData.Email, Avatar: userData.Avatar}, err
+	return &models.LoginUcaseResp{Id: models.UserId(userData.Id), Phone: userData.Phone, Name: userData.Name, Email: userData.Email, Avatar: userData.Avatar, Address: userData.Address}, err
 }
 
 func (u *UserUcase) GetUser(id models.UserId) (*models.UserDataUcase, error) {
