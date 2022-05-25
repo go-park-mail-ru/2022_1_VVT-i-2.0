@@ -3,8 +3,7 @@ bindAddr = ":8082"
 
 [database]
 user = "yutfut"
-# password = ${{ secrets.DB_PASSWORD }}
-password = "example"
+password = ${{ secrets.DB_PASSWORD }}
 port = 5432
 host = "db"
 connectionMax = 500

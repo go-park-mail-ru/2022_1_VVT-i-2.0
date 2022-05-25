@@ -2,20 +2,17 @@
 bindAddr = ":8081"
 
 [authManager]
-# key = ${{ secrets.KEY }}
-key="!@1eqQWERwer$%^YWFgsfghw$%%^E67ws"
+key = ${{ secrets.KEY }}
 method="HS256"
 expiryTime="168h" #duration type
 
 [notificator]
-# apiKey=${{ secrets.APIKEY }}
-apiKey="PkzvymZDAVs0qasTSsdz1bxhhA"
+apiKey=${{ secrets.APIKEY }}
 email="nat-s.skv@yandex.ru"
 
 [database]
 user = "yutfut"
-# password = ${{ secrets.DB_PASSWORD }}
-password = "example"
+password = ${{ secrets.DB_PASSWORD }}
 port = 5432
 host = "db"
 connectionMax = 500
