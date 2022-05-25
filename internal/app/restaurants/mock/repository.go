@@ -53,14 +53,14 @@ type RestaurantsRepoErr struct {
 	mock.Mock
 }
 
-func (r RestaurantsRepoErr) GetRestaurants() (*models.RestaurantsRepo, error) {
+func (r *RestaurantsRepoErr) GetRestaurants() (*models.RestaurantsRepo, error) {
 	return nil, servErrors.NewError(servErrors.DB_ERROR, "")
 }
 
-func (r RestaurantsRepoErr) GetRestaurantsByCategory(category models.GetRestaurantByCategoryRepoReq) (*models.RestaurantsRepo, error) {
+func (r *RestaurantsRepoErr) GetRestaurantsByCategory(category models.GetRestaurantByCategoryRepoReq) (*models.RestaurantsRepo, error) {
 	return nil, servErrors.NewError(servErrors.DB_ERROR, "")
 }
 
-func (r RestaurantsRepoErr) GetRestaurantsBySearchQuery(query models.GetRestaurantBySearchQueryRepoReq) (*models.RestaurantsRepo, error) {
+func (r *RestaurantsRepoErr) GetRestaurantsBySearchQuery(query models.GetRestaurantBySearchQueryRepoReq) (*models.RestaurantsRepo, error) {
 	return nil, servErrors.NewError(servErrors.DB_ERROR, "")
 }
