@@ -1,90 +1,98 @@
 package ucase
 
-// import (
-// 	"testing"
+import (
+	"testing"
 
-// 	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/address/mock"
-// 	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/models"
-// 	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/tools/servErrors"
-// 	"github.com/stretchr/testify/assert"
-// )
+	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/address/mock"
+	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/models"
+	"github.com/stretchr/testify/assert"
+)
 
-// func TestSuggestUcase_SuggestCity(t *testing.T) {
-// 	mockDishesRepo := new(mock.AddrRepo)
-// 	ucase := NewAddrUcase(mockDishesRepo)
+func TestSuggestUcase_SuggestCity(t *testing.T) {
+	mockDishesRepo := new(mock.AddrRepo)
+	ucase := NewAddrUcase(mockDishesRepo)
 
-// 	suggs, err := ucase.Suggest(&models.SuggestUcaseReq{Address: "Мо"})
-// 	assert.NoError(t, err)
+	suggs, err := ucase.Suggest(&models.SuggestUcaseReq{Address: "Мо"})
+	assert.NoError(t, err)
 
-// 	expect := models.SuggestResp{Suggests: defaultRes}
+	assert.Equal(t, cityResp, suggs.Suggests)
+}
 
-// 	assert.False(t, suggs.AddressFull)
-// 	assert.Equal(t, expect.Suggests, suggs.Suggests)
+func TestSuggestUcase_SuggestCityUser(t *testing.T) {
+	mockDishesRepo := new(mock.AddrRepo)
+	ucase := NewAddrUcase(mockDishesRepo)
 
-// 	suggs, err = ucase.Suggest(nil)
-// 	assert.NoError(t, err)
+	suggs, err := ucase.Suggest(&models.SuggestUcaseReq{Address: "Мо", UserId: 1})
+	assert.NoError(t, err)
 
-// 	assert.False(t, suggs.AddressFull)
-// 	assert.Equal(t, expect.Suggests, suggs.Suggests)
-// }
+	assert.Equal(t, []models.OneSuggestUcaseResp{{Address: "Москва, Петровка,38", Full: true}, {Address: "Москва, ", Full: false}}, suggs.Suggests)
+}
 
-// func TestSuggestUcase_SuggestStreet(t *testing.T) {
-// 	mockAddrRepo := new(mock.AddrRepo)
-// 	ucase := NewAddrUcase(mockAddrRepo)
+func TestSuggestUcase_SuggestStreet(t *testing.T) {
+	mockAddrRepo := new(mock.AddrRepo)
+	ucase := NewAddrUcase(mockAddrRepo)
 
-// 	suggs, err := ucase.Suggest(&models.SuggestUcaseReq{Address: "Москвa, "})
-// 	assert.NoError(t, err)
+	suggs, err := ucase.Suggest(&models.SuggestUcaseReq{Address: "Москвa, "})
+	assert.NoError(t, err)
 
-// 	expect := models.SuggestResp{Suggests: []string{"Москва, Измайловская улица, ", "Москва, Измайловский проспект, "}}
+	expect := models.SuggestsUcaseResp{Suggests: []models.OneSuggestUcaseResp{{Address: "Москва, Измайловский проспект, ", Full: false}, {Address: "Москва, Измайловская улица, ", Full: false}}}
+	assert.Equal(t, suggs.Suggests, expect.Suggests)
+}
 
-// 	assert.False(t, suggs.AddressFull)
-// 	assert.Equal(t, suggs.Suggests, expect.Suggests)
-// }
+func TestSuggestUcase_SuggestStreetUser(t *testing.T) {
+	mockAddrRepo := new(mock.AddrRepo)
+	ucase := NewAddrUcase(mockAddrRepo)
 
-// func TestSuggestUcase_SuggestHouse(t *testing.T) {
-// 	mockDishesRepo := new(mock.AddrRepo)
-// 	ucase := NewAddrUcase(mockDishesRepo)
+	suggs, err := ucase.Suggest(&models.SuggestUcaseReq{Address: "Москвa, ", UserId: 1})
+	assert.NoError(t, err)
 
-// 	suggs, err := ucase.Suggest(&models.SuggestUcaseReq{Address: "Москва, Измайловский проспект,"})
-// 	assert.NoError(t, err)
+	expect := models.SuggestsUcaseResp{Suggests: []models.OneSuggestUcaseResp{{Address: "Москва, Петровка,38", Full: true}, {Address: "Москва, Измайловский проспект, ", Full: false}, {Address: "Москва, Измайловская улица, ", Full: false}}}
+	assert.Equal(t, suggs.Suggests, expect.Suggests)
+}
 
-// 	expect := models.SuggestResp{Suggests: []string{"Москва, Измайловский проспект, 1"}}
+func TestSuggestUcase_SuggestHouse(t *testing.T) {
+	mockDishesRepo := new(mock.AddrRepo)
+	ucase := NewAddrUcase(mockDishesRepo)
 
-// 	assert.True(t, suggs.AddressFull)
-// 	assert.Equal(t, expect.Suggests, suggs.Suggests)
-// }
+	suggs, err := ucase.Suggest(&models.SuggestUcaseReq{Address: "Москва, Измайловский проспект,"})
+	assert.NoError(t, err)
 
-// func TestSuggestUcase_SuggestWrongHouse(t *testing.T) {
-// 	mockDishesRepo := new(mock.AddrRepoGetHouseErr)
-// 	ucase := NewAddrUcase(mockDishesRepo)
+	expect := models.SuggestsUcaseResp{Suggests: []models.OneSuggestUcaseResp{{Address: "Москва, Измайловский проспект, 1", Full: true}}}
 
-// 	suggs, err := ucase.Suggest(&models.SuggestUcaseReq{Address: "Москва, Измайловский проспект, 3"})
-// 	assert.NoError(t, err)
+	assert.Equal(t, expect.Suggests, suggs.Suggests)
+}
 
-// 	expect := models.SuggestResp{Suggests: []string{"Москва, Измайловский проспект, 1"}}
+func TestSuggestUcase_SuggestHouseUser(t *testing.T) {
+	mockDishesRepo := new(mock.AddrRepo)
+	ucase := NewAddrUcase(mockDishesRepo)
 
-// 	assert.True(t, suggs.AddressFull)
-// 	assert.Equal(t, expect.Suggests, suggs.Suggests)
-// }
+	suggs, err := ucase.Suggest(&models.SuggestUcaseReq{Address: "Москва, Измайловский проспект,", UserId: 1})
+	assert.NoError(t, err)
 
-// func TestSuggestUcase_SuggestStreetErr(t *testing.T) {
-// 	mockAddrRepo := new(mock.AddrRepoErr)
-// 	ucase := NewAddrUcase(mockAddrRepo)
+	expect := models.SuggestsUcaseResp{Suggests: []models.OneSuggestUcaseResp{{Address: "Москва, Петровка,38", Full: true}, {Address: "Москва, Измайловский проспект, 1", Full: true}}}
 
-// 	suggs, err := ucase.Suggest(&models.SuggestUcaseReq{Address: "Москвa, "})
-// 	assert.NoError(t, err)
+	assert.Equal(t, expect.Suggests, suggs.Suggests)
+}
 
-// 	assert.Equal(t, defaultRes, suggs.Suggests)
-// 	assert.False(t, suggs.AddressFull)
-// }
+func TestSuggestUcase_SuggestWrongHouse(t *testing.T) {
+	mockDishesRepo := new(mock.AddrRepoGetHouseErr)
+	ucase := NewAddrUcase(mockDishesRepo)
 
-// func TestSuggestUcase_SuggestHouseErr(t *testing.T) {
-// 	mockDishesRepo := new(mock.AddrRepoHouseErr)
-// 	ucase := NewAddrUcase(mockDishesRepo)
+	suggs, err := ucase.Suggest(&models.SuggestUcaseReq{Address: "Москва, Измайловский проспект, 3"})
+	assert.NoError(t, err)
 
-// 	suggs, err := ucase.Suggest(&models.SuggestUcaseReq{Address: "Москва, Измайловский проспект,"})
-// 	assert.Error(t, err)
-// 	cause := servErrors.ErrorAs(err)
-// 	assert.Equal(t, *cause, servErrors.NewError(servErrors.NO_SUCH_ENTITY_IN_DB, ""))
-// 	assert.Nil(t, suggs)
-// }
+	expect := models.SuggestsUcaseResp{Suggests: []models.OneSuggestUcaseResp{{Address: "Москва, Измайловский проспект, 1", Full: true}}}
+
+	assert.Equal(t, expect.Suggests, suggs.Suggests)
+}
+
+func TestSuggestUcase_SuggestStreetErr(t *testing.T) {
+	mockAddrRepo := new(mock.AddrRepoErr)
+	ucase := NewAddrUcase(mockAddrRepo)
+
+	suggs, err := ucase.Suggest(&models.SuggestUcaseReq{Address: "Москвa, "})
+	assert.NoError(t, err)
+
+	expect := models.SuggestsUcaseResp{Suggests: []models.OneSuggestUcaseResp{{Address: "Москва, ", Full: false}}}
+	assert.Equal(t, expect.Suggests, suggs.Suggests)
+}
