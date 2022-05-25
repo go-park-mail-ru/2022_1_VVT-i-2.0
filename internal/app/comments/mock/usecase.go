@@ -23,9 +23,6 @@ func (a *CommentsUsecase) GetRestaurantComments(req models.GetRestaurantComments
 }
 
 func (a *CommentsUsecase) AddRestaurantComment(req models.AddCommentRestaurantUcaseReq) (*models.CommentRestaurantUseCase, error) {
-	if &req == nil {
-		return nil, nil
-	}
 	return &models.CommentRestaurantUseCase{
 		RestaurantId: 1,
 		Author:       "author",
@@ -45,3 +42,4 @@ func (a *CommentsUsecaseErr) GetRestaurantComments(req models.GetRestaurantComme
 func (a *CommentsUsecaseErr) AddRestaurantComment(req models.AddCommentRestaurantUcaseReq) (*models.CommentRestaurantUseCase, error) {
 	return nil, servErrors.NewError(servErrors.DB_ERROR, "")
 }
+

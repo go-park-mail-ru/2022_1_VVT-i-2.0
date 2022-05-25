@@ -86,6 +86,7 @@ jobs:
         run: |
           go test ./... --cover  --coverpkg ./... --coverprofile cover.out
           cat cover.out | grep -v ".pb.go"|grep -v "mock" > cover_without_gen.out
+
       - name: Print total coverage
         run: go tool cover -func cover_without_gen.out
 

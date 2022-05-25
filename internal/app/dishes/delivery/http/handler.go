@@ -93,9 +93,10 @@ func (h DishesHandler) GetDishesByRestaurants(ctx echo.Context) error {
 	for i, item := range restaurantDishes.Categories {
 		resp.Categories[i].Category = item.Categories
 		resp.Categories[i].Dishes = make([]int, len(item.Dishes))
-		for j, item1 := range item.Dishes {
-			resp.Categories[i].Dishes[j] = item1
-		}
+		copy(resp.Categories[i].Dishes, item.Dishes)
+		//for j, item1 := range item.Dishes {
+		//	resp.Categories[i].Dishes[j] = item1
+		//}
 	}
 
 	result, _ := json.Marshal(resp)
