@@ -4,22 +4,24 @@ type SuggestReq struct {
 	Address string `json:"address" valid:"address"`
 }
 
+//easyjson:json
 type OneSuggestResp struct {
 	Address string `json:"address"`
 	Full    bool   `json:"end"`
 }
 
+//easyjson:json
 type SuggestsResp struct {
 	Suggests []OneSuggestResp `json:"suggests"`
 }
 
 type OneSuggestUcaseResp struct {
-	Address string `json:"address"`
-	Full    bool   `json:"end"`
+	Address string
+	Full    bool
 }
 
 type SuggestsUcaseResp struct {
-	Suggests []OneSuggestUcaseResp `json:"suggests"`
+	Suggests []OneSuggestUcaseResp
 }
 
 type SuggestUcaseReq struct {

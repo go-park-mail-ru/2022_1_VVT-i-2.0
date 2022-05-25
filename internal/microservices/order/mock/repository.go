@@ -41,3 +41,7 @@ func (r *OrderRepo) GetUserOrder(user *models.GetUserOrderRepoReq) (*models.GetU
 func (r *OrderRepo) GetUserOrderStatuses(user *models.GetUserOrderStatusesRepoReq) (*models.GetUserOrderStatusesRepoResp, error) {
 	return &models.GetUserOrderStatusesRepoResp{OrderStatuses: []models.OrderStatusRepo{{OrderId: 1, Status: "Получен"}}}, nil
 }
+
+func (r *OrderRepo) GetAddress(req *models.GetAddressRepoReq) (*models.GetAddressRepoResp, error) {
+	return &models.GetAddressRepoResp{City: "Москва", Street: "Петровка", House: "38"}, nil
+}

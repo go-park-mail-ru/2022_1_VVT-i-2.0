@@ -108,7 +108,7 @@ func (r *OrderRepo) GetUserOrderStatuses(user *models.GetUserOrderStatusesRepoRe
 
 func (r *OrderRepo) GetUserOrder(req *models.GetUserOrderRepoReq) (*models.GetUserOrderRepoResp, error) {
 	order := &models.GetUserOrderRepoResp{}
-	err := r.DB.Get(order, `SELECT id, address, user_id, date, restaurant_name, restaurant_slug, total_price, total_price_discount,delivery_price, status FROM orders WHERE id = $1 `, req.OrderId)
+	err := r.DB.Get(order, `SELECT id, address, user_id, date, restaurant_name, restaurant_slug, total_price, total_price_discount, delivery_price, status FROM orders WHERE id = $1 `, req.OrderId)
 	cart := make([]*models.OrderPositionRepoResp, 0)
 	if err == nil {
 		err = r.DB.Select(&cart, `SELECT d.description, d.name, d.weight, d.calories, d.image_path, c.price price, c.count from dishes d JOIN (SELECT (unnest(cart)::order_dish).id as id, (unnest(cart)::order_dish).count, (unnest(cart)::order_dish).price FROM orders_internal WHERE id=$1) c ON d.id=c.id`, req.OrderId)

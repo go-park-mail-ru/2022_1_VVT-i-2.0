@@ -62,6 +62,7 @@ type RestaurantsUcase struct {
 
 //// Handler
 
+//easyjson:json
 type RestaurantResp struct {
 	Id             int     `json:"id"`
 	Name           string  `json:"restName"`
@@ -72,6 +73,7 @@ type RestaurantResp struct {
 	TimeToDelivery string  `json:"timeToDeliver"`
 }
 
+//easyjson:json
 type AllRestaurantsResp struct {
 	Restaurants []RestaurantResp `json:"restaurants"`
 }

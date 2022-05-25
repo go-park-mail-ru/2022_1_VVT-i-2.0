@@ -1,10 +1,12 @@
 package models
 
+//easyjson:json
 type OrderPosition struct {
 	Id    int64 `json:"id"`
 	Count int64 `json:"count"`
 }
 
+//easyjson:json
 type OrderReq struct {
 	Address   string          `json:"address" valid:"address,required"`
 	Entrance  string          `json:"entrance" valid:"utfletternum"`
@@ -60,6 +62,7 @@ type ShortOrderResp struct {
 	Status         string
 }
 
+//easyjson:json
 type ShortOrder struct {
 	OrderId        int64  `json:"orderNumber"`
 	Date           string `json:"date"`
@@ -68,6 +71,7 @@ type ShortOrder struct {
 	Status         string `json:"status"`
 }
 
+//easyjson:json
 type GetUserOrdersResp struct {
 	Orders []ShortOrder `json:"orderList"`
 }
@@ -89,11 +93,13 @@ type GetUserOrderStatusesReq struct {
 	UserId int64
 }
 
+//easyjson:json
 type OrderStatus struct {
 	OrderId int64  `json:"id"`
 	Status  string `json:"status"`
 }
 
+//easyjson:json
 type GetUserOrderStatusesResp struct {
 	OrderStatuses []OrderStatus `json:"statuses"`
 }
@@ -126,6 +132,7 @@ type GetUserOrderUcaseResp struct {
 	Cart           []OrderPositionUcaseResp
 }
 
+//easyjson:json
 type OrderPositionResp struct {
 	Name        string `json:"name"`
 	Description string `json:"description"`
@@ -136,6 +143,7 @@ type OrderPositionResp struct {
 	ImagePath   string `json:"imgPath"`
 }
 
+//easyjson:json
 type GetUserOrderResp struct {
 	OrderId        int64               `json:"orderNumber"`
 	Address        string              `json:"address"`

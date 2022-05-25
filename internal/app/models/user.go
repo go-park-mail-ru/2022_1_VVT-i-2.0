@@ -35,6 +35,7 @@ type UpdateAvatarRepo struct {
 	UserId  UserId
 }
 
+//easyjson:json
 type UserDataResp struct {
 	Name   string `json:"name"`
 	Phone  string `json:"phone"`
@@ -42,11 +43,13 @@ type UserDataResp struct {
 	Avatar string `json:"avatar"`
 }
 
+//easyjson:json
 type LoginReq struct {
 	Phone string `json:"phone" valid:"phone, required"`
 	Code  string `json:"code" valid:"code,required"`
 }
 
+//easyjson:json
 type LoginResp struct {
 	Name    string `json:"name"`
 	Phone   string `json:"phone"`
@@ -69,6 +72,7 @@ type LoginUcaseResp struct {
 	Address string
 }
 
+//easyjson:json
 type RegisterReq struct {
 	Phone string `json:"phone" valid:"phone, required"`
 	Code  string `json:"code" valid:"code,required"`
@@ -83,10 +87,12 @@ type RegisterUcaseReq struct {
 	Email string
 }
 
+//easyjson:json
 type SendCodeReq struct {
 	Phone string `json:"phone" valid:"phone, required"`
 }
 
+//easyjson:json
 type SendCodeResp struct {
 	IsRegistered bool `json:"registered"`
 }
@@ -99,6 +105,7 @@ type SendCodeUcaseResp struct {
 	IsRegistered bool
 }
 
+//easyjson:json
 type UpdateUserReq struct {
 	Name  string `json:"name" valid:"name"`
 	Email string `json:"email" valid:"email"`

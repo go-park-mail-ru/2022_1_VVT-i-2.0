@@ -233,3 +233,71 @@ func TestHasUserByPhone(t *testing.T) {
 		return
 	}
 }
+
+func TestGetTopUserAddress(t *testing.T) {
+	db, mock, err := sqlmock.New()
+	if err != nil {
+		t.Fatalf("cant create mock: %s", err)
+	}
+	defer db.Close()
+
+	sqlxDB := sqlx.NewDb(db, "sqlmock")
+
+	repo := NewAuthRepo(sqlxDB)
+
+	rows := sqlmock.
+		NewRows([]string{"address"})
+	expect := []*models.GetTopUserAddrRepoResp{
+		{Address: "Москва, Петровка, 38"},
+	}
+	for _, item := range expect {
+		rows = rows.AddRow(item.Address)
+	}
+
+	// good query
+	mock.
+		ExpectQuery(`SELECT address FROM `).
+		WithArgs("1").
+		WillReturnRows(rows)
+
+	item, err := repo.GetTopUserAddr(&models.GetTopUserAddrRepoReq{UserId: 1})
+	if err != nil {
+		t.Errorf("unexpected err: %s", err)
+		return
+	}
+
+	if !reflect.DeepEqual(item, &models.GetTopUserAddrRepoResp{}) {
+		t.Errorf("results not match, want %v, have %v", true, item)
+		return
+	}
+
+	// // query error
+	// mock.
+	// 	ExpectQuery(`SELECT id FROM users WHERE phone`).
+	// 	WithArgs("89166152595").
+	// 	WillReturnError(fmt.Errorf("db_error"))
+	// _, err = repo.HasUserByPhone(models.UserByPhoneRepoReq{Phone: "89166152595"})
+	// if err := mock.ExpectationsWereMet(); err != nil {
+	// 	t.Errorf("there were unfulfilled expectations: %s", err)
+	// 	return
+	// }
+	// if err == nil {
+	// 	t.Errorf("expected error, got nil")
+	// 	return
+	// }
+
+	// // row scan error
+	// mock.
+	// 	ExpectQuery(`SELECT id FROM users WHERE phone`).
+	// 	WithArgs("89166152595").
+	// 	WillReturnError(sql.ErrNoRows)
+	// _, err = repo.HasUserByPhone(models.UserByPhoneRepoReq{Phone: "89166152595"})
+	// if err := mock.ExpectationsWereMet(); err != nil {
+	// 	t.Errorf("there were unfulfilled expectations: %s", err)
+	// 	return
+	// }
+	// if err != nil {
+	// 	t.Errorf("expected error, got nil")
+	// 	return
+	// }
+}
