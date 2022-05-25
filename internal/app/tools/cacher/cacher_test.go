@@ -6,23 +6,14 @@ import (
 )
 
 func TestNewItem(t *testing.T) {
-	type args struct {
-		key        string
-		value      []byte
-		expiration int32
+	response := NewItem("1", []byte("1"), 1)
+	expect := &Item{
+		Key: "1",
+		Value: []byte("1"),
+		Expiration: 1,
 	}
-	tests := []struct {
-		name string
-		args args
-		want *Item
-	}{
-		// TODO: Add test cases.
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			if got := NewItem(tt.args.key, tt.args.value, tt.args.expiration); !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("NewItem() = %v, want %v", got, tt.want)
-			}
-		})
+	if !reflect.DeepEqual(response, expect) {
+		t.Errorf("results not match, want %v, have %v", response, expect)
+		return
 	}
 }
