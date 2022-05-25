@@ -30,9 +30,9 @@ func TestCommentsUsecase_GetRestaurantComment(t *testing.T) {
 }
 
 func TestCommentsUsecase_AddRestaurantComment(t *testing.T) {
-	mockRestaurantsRepo := new(mock.CommentsRepository)
+	mockCommentsRepo := new(mock.CommentsRepository)
 	useCase := CommentsUsecase{
-		Repository: mockRestaurantsRepo,
+		Repository: mockCommentsRepo,
 	}
 
 	commentRestaurantData, err := useCase.AddRestaurantComment(models.AddCommentRestaurantUcaseReq{
@@ -54,4 +54,26 @@ func TestCommentsUsecase_AddRestaurantComment(t *testing.T) {
 		t.Errorf("results not match, want %v, have %v", commentRestaurantData, mockComment)
 		return
 	}
+}
+
+func TestCommentsUsecase_GetRestaurantComment_Err(t *testing.T) {
+	mockCommentsRepo := new(mock.CommentsRepositoryErr)
+	useCase := NewCommentsUsecase(mockCommentsRepo)
+
+	_, err := useCase.GetRestaurantComments(models.GetRestaurantCommentsUcaseReq{Slug: "slug"})
+	assert.Error(t, err)
+}
+
+func TestCommentsUsecase_AddRestaurantComment_Err(t *testing.T) {
+	mockCommentsRepo := new(mock.CommentsRepositoryErr)
+	useCase := NewCommentsUsecase(mockCommentsRepo)
+
+	_, err := useCase.AddRestaurantComment(models.AddCommentRestaurantUcaseReq{
+		UserId: 1,
+		Slug:          "slug",
+		CommentText:   "text",
+		CommentRating: 5,
+	})
+
+	assert.Error(t, err)
 }
