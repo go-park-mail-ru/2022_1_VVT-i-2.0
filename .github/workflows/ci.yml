@@ -39,6 +39,7 @@ jobs:
   linter:
     name: Linter
     runs-on: ubuntu-latest
+    needs: build
     steps:
       - name: Set up Go
         uses: actions/setup-go@v2
@@ -63,7 +64,7 @@ jobs:
   test-coverage:
     name: Tests
     runs-on: ubuntu-latest
-#    needs: linter
+    needs: linter
     steps:
       - name: Set up Go
         uses: actions/setup-go@v2
@@ -94,7 +95,7 @@ jobs:
     if: github.ref == 'refs/heads/dev'
     name: Deploy
     runs-on: ubuntu-latest
-    needs: build
+    needs: test-coverage
     steps:
       - name: executing remote ssh commands to deploy
         uses: appleboy/ssh-action@master
