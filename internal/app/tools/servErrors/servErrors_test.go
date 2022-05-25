@@ -1,6 +1,7 @@
 package servErrors
 
 import (
+	"github.com/stretchr/testify/assert"
 	"reflect"
 	"testing"
 )
@@ -26,72 +27,29 @@ func TestErrorAs(t *testing.T) {
 }
 
 func TestError_Cause(t *testing.T) {
-	type fields struct {
-		Description string
-		Code        int
-	}
-	tests := []struct {
-		name    string
-		fields  fields
-		wantErr bool
-	}{
-		// TODO: Add test cases.
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			e := Error{
-				Description: tt.fields.Description,
-				Code:        tt.fields.Code,
-			}
-			if err := e.Cause(); (err != nil) != tt.wantErr {
-				t.Errorf("Cause() error = %v, wantErr %v", err, tt.wantErr)
-			}
-		})
-	}
+	errI := &Error{"",1}
+	response := errI.Cause()
+	assert.Error(t, response)
 }
 
 func TestError_Error(t *testing.T) {
-	type fields struct {
-		Description string
-		Code        int
-	}
-	tests := []struct {
-		name   string
-		fields fields
-		want   string
-	}{
-		// TODO: Add test cases.
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			e := Error{
-				Description: tt.fields.Description,
-				Code:        tt.fields.Code,
-			}
-			if got := e.Error(); got != tt.want {
-				t.Errorf("Error() = %v, want %v", got, tt.want)
-			}
-		})
+	errI := &Error{"",1}
+	response := errI.Error()
+	expect := "error with code 1 description: "
+	if !reflect.DeepEqual(response, expect) {
+		t.Errorf("results not match, want %v, have %v", response, expect)
+		return
 	}
 }
 
 func TestNewError(t *testing.T) {
-	type args struct {
-		eCode  int
-		eDescr string
+	response := NewError(1,"")
+	expect := Error{
+		Code:        1,
+		Description: "",
 	}
-	tests := []struct {
-		name string
-		args args
-		want Error
-	}{
-		// TODO: Add test cases.
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			if got := NewError(tt.args.eCode, tt.args.eDescr); !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("NewError() = %v, want %v", got, tt.want)
-			}
-		})
+	if !reflect.DeepEqual(response, expect) {
+		t.Errorf("results not match, want %v, have %v", response, expect)
+		return
 	}
 }
