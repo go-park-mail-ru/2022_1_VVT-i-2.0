@@ -1,67 +1,66 @@
 package authManager
 
 import (
-	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/models"
 	"reflect"
 	"testing"
 )
 
-func TestMapToTokenPayload(t *testing.T) {
-	type args struct {
-		payloadMap map[string]interface{}
-	}
-	tests := []struct {
-		name string
-		args args
-		want *TokenPayload
-	}{
-		// TODO: Add test cases.
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			if got := MapToTokenPayload(tt.args.payloadMap); !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("MapToTokenPayload() = %v, want %v", got, tt.want)
-			}
-		})
+func TestNewTokenPayload(t *testing.T) {
+	response := NewTokenPayload(1)
+	expect := &TokenPayload{Id: 1}
+	if !reflect.DeepEqual(response, expect) {
+		t.Errorf("results not match, want %v, have %v", response, expect)
+		return
 	}
 }
 
-func TestNewTokenPayload(t *testing.T) {
-	type args struct {
-		id models.UserId
-	}
-	tests := []struct {
-		name string
-		args args
-		want *TokenPayload
-	}{
-		// TODO: Add test cases.
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			if got := NewTokenPayload(tt.args.id); !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("NewTokenPayload() = %v, want %v", got, tt.want)
-			}
-		})
+func TestNewTokenPayloadErr(t *testing.T) {
+	response := NewTokenPayload(1)
+	expect := &TokenPayload{}
+	if reflect.DeepEqual(response, expect) {
+		t.Errorf("results not match, want %v, have %v", response, expect)
+		return
 	}
 }
 
 func TestTokenPayloadToMap(t *testing.T) {
-	type args struct {
-		payload TokenPayload
+	dataTest := NewTokenPayload(1)
+	response := TokenPayloadToMap(*dataTest)
+	expectTest := NewTokenPayload(1)
+	expect := map[string]interface{}{
+		idTitle:      expectTest.Id,
+		expiresTitle: expectTest.Exp,
 	}
-	tests := []struct {
-		name string
-		args args
-		want map[string]interface{}
-	}{
-		// TODO: Add test cases.
+	if !reflect.DeepEqual(response, expect) {
+		t.Errorf("results not match, want %v, have %v", response, expect)
+		return
 	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			if got := TokenPayloadToMap(tt.args.payload); !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("TokenPayloadToMap() = %v, want %v", got, tt.want)
-			}
-		})
+}
+
+func TestTokenPayloadToMapErr(t *testing.T) {
+	dataTest := NewTokenPayload(1)
+	response := TokenPayloadToMap(*dataTest)
+	expectTest := NewTokenPayload(2)
+	expect := map[string]interface{}{
+		idTitle:      expectTest.Id,
+		expiresTitle: expectTest.Exp,
+	}
+	if reflect.DeepEqual(response, expect) {
+		t.Errorf("results not match, want %v, have %v", response, expect)
+		return
+	}
+}
+
+func TestMapToTokenPayloadErr(t *testing.T) {
+	dataTest := NewTokenPayload(1)
+	data := map[string]interface{}{
+		idTitle:      dataTest.Id,
+		expiresTitle: dataTest.Exp,
+	}
+	response := MapToTokenPayload(data)
+	expect := &TokenPayload{Id: 1}
+	if reflect.DeepEqual(response, expect) {
+		t.Errorf("results not match, want %v, have %v", response, expect)
+		return
 	}
 }
