@@ -11,8 +11,8 @@ cmd/static_1
 
 db_t.go
 
-.out
-.html
+*.out
+*.html
 notes.txt
 todo.txt
 

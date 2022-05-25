@@ -76,6 +76,7 @@ type CommentsRestaurantUseCase struct {
 
 // handler request
 
+//easyjson:json
 type AddCommentRestaurantReq struct {
 	Slug          string `json:"slug" valid:"slug,required"`
 	CommentText   string `json:"text" valid:"comment,required"`
@@ -84,6 +85,7 @@ type AddCommentRestaurantReq struct {
 
 // handler models
 
+//easyjson:json
 type GetCommentDataDelivery struct {
 	Author string `json:"author"`
 	Text   string `json:"text"`
@@ -91,10 +93,12 @@ type GetCommentDataDelivery struct {
 	Date   string `json:"date"`
 }
 
+//easyjson:json
 type GetCommentsDataDelivery struct {
 	Comment []GetCommentDataDelivery `json:"comment"`
 }
 
+//easyjson:json
 type CommentDataDelivery struct {
 	RestaurantId int    `json:"restaurants_id"`
 	Author       string `json:"author"`

@@ -39,6 +39,7 @@ type GetRestaurantDishesUcaseResp struct {
 	Dishes               []DishUcase
 }
 
+//easyjson:json
 type DishResp struct {
 	Id           int    `json:"id"`
 	RestaurantId int    `json:"restaurant"`
@@ -50,6 +51,7 @@ type DishResp struct {
 	Weight       int    `json:"weight"`
 }
 
+//easyjson:json
 type GetRestaurantDishesResp struct {
 	Id             int        `json:"id"`
 	Name           string     `json:"restName"`

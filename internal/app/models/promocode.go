@@ -1,5 +1,6 @@
 package models
 
+//easyjson:json
 type PromocodeResp struct {
 	Image          string  `json:"img"`
 	LogoImage      string  `json:"logo"`
@@ -11,6 +12,8 @@ type PromocodeResp struct {
 	PriceReduction int     `json:"priceReduction"`
 	MinPrice       int     `json:"minPrice"`
 }
+
+//easyjson:json
 type GetPromocodesResp struct {
 	Promos []PromocodeResp `json:"promos"`
 }
