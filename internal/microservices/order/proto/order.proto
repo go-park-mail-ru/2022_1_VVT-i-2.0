@@ -1,0 +1,85 @@
+syntax = "proto3";
+
+option go_package = "./;order";
+package order;
+
+message CreateOrderResp {
+  int64 OrderId = 1;
+}
+
+message OrderPositionReq {
+  int64 Id = 1;
+  int64 Count = 2;
+}
+
+message CreateOrderReq {
+  string Address = 1;
+  string Comment = 2;
+  int64 UserId = 3;
+  string Promocode = 4;
+  repeated OrderPositionReq Cart = 5;
+}
+
+message GetUserOrdersReq {
+  int64 UserId = 1;
+}
+
+message ShortOrderResp {
+  int64 OrderId = 1;
+  string Date = 2;
+  int64 TotalPrice = 3;
+  string RestaurantName = 4;
+  string Status = 5;
+}
+
+message GetUserOrdersResp {
+  repeated ShortOrderResp Orders = 1;
+}
+
+message OrderPositionResp {
+  string Name = 1;
+  string Description = 2;
+  int64 Count = 3;
+  int64 Price = 4;
+  int64 Calories = 5;
+  int64 Weigth = 6;
+  string ImagePath = 7;
+}
+
+message GetUserOrderReq {
+  int64 UserId = 1;
+  int64 OrderId = 2;
+}
+
+message GetUserOrderResp {
+  int64 OrderId = 1;
+  string Date = 2;
+  int64 TotalPrice = 3;
+  int64 Discount = 4;
+  int64 DeliveryPrice = 5;
+  string RestaurantName = 6;
+  string RestaurantSlug = 7;
+  string Status = 8;
+  string Address = 9;
+  repeated OrderPositionResp Cart = 10;
+}
+
+message GetUserOrderStatusesReq {
+  int64 UserId = 1;
+}
+
+message OrderStatus {
+  int64 OrderId = 1;
+  string Status = 2;
+}
+
+message GetUserOrderStatusesResp {
+  repeated OrderStatus OrderStatuses = 1;
+}
+
+service OrderService {
+  rpc CreateOrder(CreateOrderReq) returns (CreateOrderResp) {}
+  rpc GetUserOrders(GetUserOrdersReq) returns (GetUserOrdersResp) {}
+  rpc GetUserOrder(GetUserOrderReq) returns (GetUserOrderResp) {}
+  rpc GetUserOrderStatuses(GetUserOrderStatusesReq) returns (GetUserOrderStatusesResp) {}
+}
