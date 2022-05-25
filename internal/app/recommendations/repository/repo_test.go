@@ -3,11 +3,12 @@ package repository
 import (
 	"database/sql"
 	"fmt"
+	"reflect"
+	"testing"
+
 	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/models"
 	"github.com/jmoiron/sqlx"
 	"gopkg.in/DATA-DOG/go-sqlmock.v1"
-	"reflect"
-	"testing"
 )
 
 func TestRecommendationsRepo_GetRestaurantDishesRepo(t *testing.T) {
@@ -24,7 +25,7 @@ func TestRecommendationsRepo_GetRestaurantDishesRepo(t *testing.T) {
 	}
 
 	rows := sqlmock.
-		NewRows([]string{"id", "restaurant_id", "categori", "name", "description", "image_path", "calories", "price", "weight"})
+		NewRows([]string{"id", "restaurant_id", "category", "name", "description", "image_path", "calories", "price", "weight"})
 	expect := []*models.DishCategoriesRepo{
 		{Id: 1, RestaurantId: 1, Category: 1, Name: "name", Description: "description", ImagePath: "image_path", Calories: 1, Price: 1, Weight: 1},
 		{Id: 2, RestaurantId: 1, Category: 1, Name: "name2", Description: "description2", ImagePath: "image_path2", Calories: 2, Price: 2, Weight: 2},

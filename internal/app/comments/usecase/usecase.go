@@ -29,17 +29,10 @@ func (u *CommentsUsecase) GetRestaurantComments(req models.GetRestaurantComments
 		return nil, errors.Wrapf(err, "error getting comments")
 	}
 
-	commentsUC := &models.CommentsRestaurantUseCase{}
+	commentsUC := &models.CommentsRestaurantUseCase{Comment: make([]models.CommentRestaurantUseCase, len(commentsData.Comments))}
 
-	for _, comment := range commentsData.Comments {
-		item := &models.CommentRestaurantUseCase{
-			RestaurantId: comment.RestaurantId,
-			Author:       comment.Author,
-			Text:         comment.Text,
-			Stars:        comment.Stars,
-			Date:         comment.Date,
-		}
-		commentsUC.Comment = append(commentsUC.Comment, *item)
+	for i, comment := range commentsData.Comments {
+		commentsUC.Comment[i] = models.CommentRestaurantUseCase(comment)
 	}
 	return commentsUC, nil
 }
