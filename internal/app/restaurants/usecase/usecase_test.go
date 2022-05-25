@@ -80,3 +80,27 @@ func TestRestaurantsUcase_GetRestaurantsByQuery(t *testing.T) {
 		return
 	}
 }
+
+func TestRestaurantsUcase_GetAllRestaurants_Err(t *testing.T) {
+	mockRestaurantsRepo := new(mock.RestaurantsRepoErr)
+	ucase := NewRestaurantsUcase(mockRestaurantsRepo)
+
+	_, err := ucase.GetAllRestaurants()
+	assert.Error(t, err)
+}
+
+func TestRestaurantsUcase_GetRestaurantsByCategory_Err(t *testing.T) {
+	mockRestaurantsRepo := new(mock.RestaurantsRepoErr)
+	ucase := NewRestaurantsUcase(mockRestaurantsRepo)
+
+	_, err := ucase.GetRestaurantsByCategory(models.GetRestaurantByCategoryUcaseReq{Name: "category"})
+	assert.Error(t, err)
+}
+
+func TestRestaurantsUcase_GetRestaurantsByQuery_Err(t *testing.T) {
+	mockRestaurantsRepo := new(mock.RestaurantsRepoErr)
+	ucase := NewRestaurantsUcase(mockRestaurantsRepo)
+
+	_, err := ucase.GetRestaurantBySearchQuery(models.GetRestaurantBySearchQueryUcaseReq{Query: "суши"})
+	assert.Error(t, err)
+}
