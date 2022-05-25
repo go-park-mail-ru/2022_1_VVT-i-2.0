@@ -12,7 +12,7 @@ email="nat-s.skv@yandex.ru"
 
 [database]
 user = "yutfut" # TODO установить норм имя
-password = "example"
+password = ${{ secrets.DB_PASSWORD }}
 port = 5432
 host = "db"
 connectionMax = 500

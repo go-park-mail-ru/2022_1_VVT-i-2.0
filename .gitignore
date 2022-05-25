@@ -18,3 +18,7 @@ todo.txt
 
 cover.out
 cover_without_gen.out
+
+config/auth.toml
+config/order.toml
+config/serv.toml
