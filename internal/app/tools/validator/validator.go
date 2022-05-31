@@ -5,7 +5,6 @@ import (
 	"time"
 
 	"github.com/asaskevich/govalidator"
-	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/models"
 )
 
 var (
@@ -97,7 +96,7 @@ func init() {
 	govalidator.CustomTypeTagMap.Set(
 		"userId",
 		govalidator.CustomTypeValidator(func(i interface{}, o interface{}) bool {
-			id, ok := i.(models.UserId)
+			id, ok := i.(int64)
 			return ok && id > 0
 		}),
 	)

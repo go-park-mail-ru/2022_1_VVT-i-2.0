@@ -37,7 +37,7 @@ func (u *UserRepository) GetUserByPhone(phone string) (*models.UserDataRepo, err
 		Avatar: sql.NullString{String: "avatar.png"}}, nil
 }
 
-func (u *UserRepository) GetUserById(id models.UserId) (*models.UserDataRepo, error) {
+func (u *UserRepository) GetUserById(id int64) (*models.UserDataRepo, error) {
 	if id == 0 {
 		return nil, servErrors.NewError(servErrors.DB_ERROR, "")
 	}
@@ -87,7 +87,7 @@ func (u *UserRepositoryErr) GetUserByPhone(phone string) (*models.UserDataRepo, 
 	return nil, errors.New("unknown error")
 }
 
-func (u *UserRepositoryErr) GetUserById(id models.UserId) (*models.UserDataRepo, error) {
+func (u *UserRepositoryErr) GetUserById(id int64) (*models.UserDataRepo, error) {
 	if id == 0 {
 		return nil, servErrors.NewError(servErrors.DB_ERROR, "")
 	}

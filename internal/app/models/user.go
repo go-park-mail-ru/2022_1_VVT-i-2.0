@@ -5,10 +5,8 @@ import (
 	"io"
 )
 
-type UserId uint64
-
 type UserDataRepo struct {
-	Id     UserId
+	Id     int64
 	Name   string
 	Phone  string
 	Email  string
@@ -23,7 +21,7 @@ type UserAddDataStorage struct {
 }
 
 type UserDataUcase struct {
-	Id     UserId
+	Id     int64
 	Name   string
 	Phone  string
 	Email  string
@@ -32,7 +30,7 @@ type UserDataUcase struct {
 
 type UpdateAvatarRepo struct {
 	ImgPath string
-	UserId  UserId
+	UserId  int64
 }
 
 //easyjson:json
@@ -64,7 +62,7 @@ type LoginUcaseReq struct {
 }
 
 type LoginUcaseResp struct {
-	Id      UserId
+	Id      int64
 	Name    string
 	Phone   string
 	Email   string
@@ -112,14 +110,14 @@ type UpdateUserReq struct {
 }
 
 type UpdateUserUcase struct {
-	Id        UserId
+	Id        int64
 	Name      string
 	Email     string
 	AvatarImg io.Reader
 }
 
 type UpdateUserStorage struct {
-	Id     UserId
+	Id     int64
 	Name   string
 	Email  string
 	Avatar string

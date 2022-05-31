@@ -51,7 +51,7 @@ func (u *UserUcase) Register(req *models.RegisterUcaseReq) (*models.UserDataUcas
 	if err != nil {
 		return nil, servErrors.NewError(int(status.Code(err)), err.Error())
 	}
-	return &models.UserDataUcase{Id: models.UserId(userData.Id), Phone: userData.Phone, Name: userData.Name, Email: userData.Email, Avatar: userData.Avatar}, err
+	return &models.UserDataUcase{Id: int64(userData.Id), Phone: userData.Phone, Name: userData.Name, Email: userData.Email, Avatar: userData.Avatar}, err
 }
 
 func (u *UserUcase) Login(req *models.LoginUcaseReq) (*models.LoginUcaseResp, error) {
@@ -59,10 +59,10 @@ func (u *UserUcase) Login(req *models.LoginUcaseReq) (*models.LoginUcaseResp, er
 	if err != nil {
 		return nil, servErrors.NewError(int(status.Code(err)), err.Error())
 	}
-	return &models.LoginUcaseResp{Id: models.UserId(userData.Id), Phone: userData.Phone, Name: userData.Name, Email: userData.Email, Avatar: userData.Avatar, Address: userData.Address}, err
+	return &models.LoginUcaseResp{Id: int64(userData.Id), Phone: userData.Phone, Name: userData.Name, Email: userData.Email, Avatar: userData.Avatar, Address: userData.Address}, err
 }
 
-func (u *UserUcase) GetUser(id models.UserId) (*models.UserDataUcase, error) {
+func (u *UserUcase) GetUser(id int64) (*models.UserDataUcase, error) {
 	userData, err := u.UserRepo.GetUserById(id)
 	if err != nil {
 		return nil, errors.Wrapf(err, "error getting user by id %d", id)

@@ -2,7 +2,6 @@ package middleware
 
 import (
 	"github.com/asaskevich/govalidator"
-	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/models"
 	_ "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/tools/validator"
 	"github.com/labstack/echo/v4"
 )
@@ -11,7 +10,7 @@ const UserCtxKey = "user"
 const TokenKeyCookie = "token"
 
 type UserCtx struct {
-	Id models.UserId
+	Id int64
 }
 
 func (mw *CommonMiddleware) AuthMiddleware(next echo.HandlerFunc) echo.HandlerFunc {

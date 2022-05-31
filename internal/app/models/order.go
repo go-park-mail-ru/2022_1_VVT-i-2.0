@@ -19,7 +19,7 @@ type OrderReq struct {
 }
 
 type OrderUcaseReq struct {
-	UserId    UserId
+	UserId    int64
 	Address   string
 	Entrance  string
 	Intercom  string

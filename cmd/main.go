@@ -30,9 +30,6 @@ import (
 	suggsHandler "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/address/delivery/http"
 	suggsRepo "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/address/repository"
 	suggsUcase "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/address/usecase"
-	commentHandler "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/comments/delivery/http"
-	commentRepo "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/comments/repository"
-	commentUcase "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/comments/usecase"
 	dishesHandler "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/dishes/delivery/http"
 	dishesRepo "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/dishes/repository"
 	dishesUcase "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/dishes/usecase"
@@ -47,6 +44,9 @@ import (
 	restaurantsHandler "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/restaurants/delivery/http"
 	restaurantsRepo "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/restaurants/repository"
 	restaurantsUcase "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/restaurants/usecase"
+	reviewsHandler "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/reviews/delivery/http"
+	reviewsRepo "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/reviews/repository"
+	reviewsUcase "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/reviews/usecase"
 	userHandler "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/user/delivery/http"
 	userRepo "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/user/repository"
 	userUcase "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/user/usecase"
@@ -150,9 +150,9 @@ func main() {
 	dishesUcase := dishesUcase.NewDishesUcase(dishesRepo)
 	dishesHandler := dishesHandler.NewDishesHandler(dishesUcase, staticManager)
 
-	commentsRepo := commentRepo.NewCommentsRepo(pgxManager)
-	commentsUcase := commentUcase.NewCommentsUsecase(commentsRepo)
-	commentsHandler := commentHandler.NewCommentsHandler(commentsUcase)
+	commentsRepo := reviewsRepo.NewReviewsRepo(pgxManager)
+	commentsUcase := reviewsUcase.NewRestaurantReviewsUcase(commentsRepo)
+	commentsHandler := reviewsHandler.NewRestaurantReviewsHandler(commentsUcase)
 
 	recommendationsRepo := recommendationsRepo.NewRecommendationsRepo(pgxManager)
 	recommendationsUcase := recommendationsUcase.NewRecommendationsUcase(recommendationsRepo)
@@ -173,7 +173,7 @@ func main() {
 		SuggsHandler:           suggsHandler,
 		OrderHandler:           orderHandler,
 		DishesHandler:          dishesHandler,
-		CommentsHandler:        commentsHandler,
+		ReviewsHandler:         commentsHandler,
 		RecommendstionsHandler: recommendationsHandler,
 		PromocodeHandler:       promocodeHandler,
 	}

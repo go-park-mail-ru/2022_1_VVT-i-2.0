@@ -102,7 +102,7 @@ func TestUserUsecase_GetUser(t *testing.T) {
 	staticManager := localStaticManager.NewLocalFileManager("", "")
 	useCase := NewUcase(mockUserRepo, staticManager, mockAuthCli)
 
-	user := models.UserId(1)
+	user := int64(1)
 
 	restData, err := useCase.GetUser(user)
 	assert.NoError(t, err)
@@ -180,7 +180,7 @@ func TestUserUsecase_GetUserErr(t *testing.T) {
 	staticManager := localStaticManager.NewLocalFileManager("", "")
 	useCase := NewUcase(mockUserRepo, staticManager, mockAuthCli)
 
-	user := models.UserId(1)
+	user := int64(1)
 
 	_, err := useCase.GetUser(user)
 	assert.Error(t, err)

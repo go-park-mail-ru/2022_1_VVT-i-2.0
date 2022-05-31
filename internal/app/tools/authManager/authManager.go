@@ -2,13 +2,11 @@ package authManager
 
 import (
 	"time"
-
-	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/models"
 )
 
 type TokenPayload struct {
-	Id  models.UserId `valid:"userId, required"`
-	Exp time.Time     `valid:"expired, required"`
+	Id  int64     `valid:"userId, required"`
+	Exp time.Time `valid:"expired, required"`
 }
 
 const (
@@ -16,7 +14,7 @@ const (
 	expiresTitle = "expired"
 )
 
-func NewTokenPayload(id models.UserId) *TokenPayload {
+func NewTokenPayload(id int64) *TokenPayload {
 	return &TokenPayload{
 		Id: id,
 	}
@@ -42,7 +40,7 @@ func MapToTokenPayload(payloadMap map[string]interface{}) *TokenPayload {
 	}
 	exp, _ := time.Parse(time.RFC3339, expStr)
 	return &TokenPayload{
-		Id:  models.UserId(payloadMap[idTitle].(float64)),
+		Id:  int64(payloadMap[idTitle].(float64)),
 		Exp: exp,
 	}
 }
