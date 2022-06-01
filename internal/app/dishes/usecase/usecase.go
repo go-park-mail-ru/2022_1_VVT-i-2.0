@@ -33,17 +33,17 @@ func (u *DishesUcase) GetRestaurantDishes(req models.GetRestaurantDishesUcaseReq
 	}
 
 	Resp := &models.GetRestaurantDishesCategoriesUcaseResp{
-			Id:                    	restaurant.Id,
-			Name:                 	restaurant.Name,
-			ImagePath:            	restaurant.ImagePath,
-			Slug:                 	restaurant.Slug,
-			MinPrice:             	restaurant.MinPrice,
-			AggRating:            	restaurant.AggRating,
-			ReviewCount:          	restaurant.ReviewCount,
-			UpMinutesToDelivery:  	restaurant.UpMinutesToDelivery,
-			DownMinutesToDelivery:	restaurant.DownMinutesToDelivery,
-			Dishes:					make([]models.DishCategoriesUsecase, len(dishes.Dishes)),
-			Categories:				make([]models.CategoriesDishesUcaseResp, len(categories.Categories)),
+		Id:                    restaurant.Id,
+		Name:                  restaurant.Name,
+		ImagePath:             restaurant.ImagePath,
+		Slug:                  restaurant.Slug,
+		MinPrice:              restaurant.MinPrice,
+		AggRating:             restaurant.AggRating,
+		ReviewCount:           restaurant.ReviewCount,
+		UpMinutesToDelivery:   restaurant.UpMinutesToDelivery,
+		DownMinutesToDelivery: restaurant.DownMinutesToDelivery,
+		Dishes:                make([]models.DishCategoriesUsecase, len(dishes.Dishes)),
+		Categories:            make([]models.CategoriesDishesUcaseResp, len(categories.Categories)),
 	}
 
 	for i, dish := range dishes.Dishes {
@@ -55,8 +55,7 @@ func (u *DishesUcase) GetRestaurantDishes(req models.GetRestaurantDishesUcaseReq
 	}
 
 	for _, item := range dishes.Dishes {
-		var car = item.Category
-		Resp.Categories[car-1].Dishes = append(Resp.Categories[car-1].Dishes, item.Id)
+		Resp.Categories[item.Category-1].Dishes = append(Resp.Categories[item.Category-1].Dishes, item.Id)
 	}
 
 	return Resp, nil

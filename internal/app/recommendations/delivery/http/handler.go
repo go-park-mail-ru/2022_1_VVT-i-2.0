@@ -2,6 +2,9 @@ package recommendationsHandler
 
 import (
 	"encoding/json"
+	"net/http"
+	"strconv"
+
 	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/delivery/http/httpErrDescr"
 	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/delivery/http/middleware"
 	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/models"
@@ -9,8 +12,10 @@ import (
 	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/tools/servErrors"
 	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/tools/staticManager"
 	"github.com/labstack/echo/v4"
-	"net/http"
-	"strconv"
+)
+
+const (
+	defaultRecommendationCount = 2
 )
 
 type RecommendationsHandler struct {
@@ -25,25 +30,26 @@ func NewRecommendationsHandler(ucase recommendations.Ucase, staticManager static
 	}
 }
 
-func (h RecommendationsHandler) GetRecommendations(ctx echo.Context) error {
+func (h *RecommendationsHandler) GetRecommendations(ctx echo.Context) error {
 	logger := middleware.GetLoggerFromCtx(ctx)
 	requestId := middleware.GetRequestIdFromCtx(ctx)
 
-	var ordersList models.RecommendationsOrderLists
-	if err := ctx.Bind(&ordersList); err != nil {
+	var req models.RecommendationsReq
+	if err := ctx.Bind(&req); err != nil {
 		return httpErrDescr.NewHTTPError(ctx, http.StatusBadRequest, httpErrDescr.BAD_REQUEST_BODY)
 	}
 
-	var OrederListsReq = models.RecommendationsOrderListsUsecaseReq{
-		RestId: ordersList.RestId,
-		DishesId: make([]int64, len(ordersList.OrderList)),
+	var reqUcase = models.RecommendationsUcaseReq{
+		RestId:   req.RestId,
+		DishesId: make([]int64, len(req.OrderList)),
+		Limit:    defaultRecommendationCount,
 	}
 
-	for i, item := range ordersList.OrderList {
-		OrederListsReq.DishesId[i] = item.Id
+	for i, item := range req.OrderList {
+		reqUcase.DishesId[i] = item.Id
 	}
 
-	recommendations, err := h.Ucase.GetRecommendations(OrederListsReq)
+	recommendationsUcaseResp, err := h.Ucase.GetRecommendations(&reqUcase)
 
 	if err != nil {
 		cause := servErrors.ErrorAs(err)
@@ -54,33 +60,21 @@ func (h RecommendationsHandler) GetRecommendations(ctx echo.Context) error {
 		return httpErrDescr.NewHTTPError(ctx, http.StatusInternalServerError, httpErrDescr.SERVER_ERROR)
 	}
 
-	if recommendations == nil {
-		result, _ := json.Marshal(models.DishRecommendationListsDelivery{
-			Dishes: make([]models.DishRecommendationDelivery, 0),
+	if recommendationsUcaseResp == nil {
+		result, _ := json.Marshal(models.RecommendationsResp{
+			Dishes: make([]models.RecommendationResp, 0),
 		})
 		ctx.Response().Header().Add(echo.HeaderContentLength, strconv.Itoa(len(result)))
 		return ctx.JSONBlob(http.StatusOK, result)
 	}
 
-	var rec = &models.DishRecommendationListsDelivery{
-		Dishes: make([]models.DishRecommendationDelivery, 2),
-	}
+	recommendationResp := &models.RecommendationsResp{Dishes: make([]models.RecommendationResp, 0, defaultRecommendationCount)}
 
-	for i := range rec.Dishes {
-		var newRec = models.DishRecommendationDelivery {
-			Id:				recommendations.Dishes[i].Id,
-			Category:		recommendations.Dishes[i].Category,
-			RestaurantId:	recommendations.Dishes[i].RestaurantId,
-			Name:			recommendations.Dishes[i].Name,
-			Description:	recommendations.Dishes[i].Description,
-			ImagePath:    	h.StaticManager.GetDishesUrl(recommendations.Dishes[i].ImagePath),
-			Calories:		recommendations.Dishes[i].Calories,
-			Price:			recommendations.Dishes[i].Price,
-			Weight:			recommendations.Dishes[i].Weight,
-		}
-		rec.Dishes[i] = newRec
+	for i, recommendation := range recommendationsUcaseResp.Dishes {
+		recommendationResp.Dishes = append(recommendationResp.Dishes, models.RecommendationResp(recommendation))
+		recommendationResp.Dishes[i].ImagePath = h.StaticManager.GetDishesUrl(recommendation.ImagePath)
 	}
-	result, _ := json.Marshal(rec)
-	ctx.Response().Header().Add(echo.HeaderContentLength, strconv.Itoa(len(result)))
-	return ctx.JSONBlob(http.StatusOK, result)
+	respBodyJson, _ := json.Marshal(recommendationResp)
+	ctx.Response().Header().Add(echo.HeaderContentLength, strconv.Itoa(len(respBodyJson)))
+	return ctx.JSONBlob(http.StatusOK, respBodyJson)
 }

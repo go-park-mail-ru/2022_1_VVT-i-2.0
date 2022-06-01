@@ -6,7 +6,6 @@ import (
 	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/models"
 	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/tools/servErrors"
 	"github.com/jmoiron/sqlx"
-	"github.com/lib/pq"
 )
 
 type DishesRepo struct {
@@ -19,7 +18,7 @@ func NewDishesRepo(db *sqlx.DB) *DishesRepo {
 
 func (r *DishesRepo) GetRestaurantBySlug(req models.GetRestaurantBySlugRepoReq) (*models.DishesRestaurantRepo, error) {
 	restaurant := &models.DishesRestaurantRepo{}
-	err := r.DB.Get(restaurant, "SELECT id, name,  image_path, slug, min_price, agg_rating, review_count, up_time_to_delivery, down_time_to_delivery FROM restaurants WHERE slug = $1", req.Slug)
+	err := r.DB.Get(restaurant, "SELECT id, name, image_path, slug, min_price, agg_rating, review_count, up_time_to_delivery, down_time_to_delivery FROM restaurants WHERE slug = $1", req.Slug)
 	switch err {
 	case nil:
 		return restaurant, nil
@@ -32,7 +31,8 @@ func (r *DishesRepo) GetRestaurantBySlug(req models.GetRestaurantBySlugRepoReq) 
 
 func (r *DishesRepo) GetCategories(req models.GetCategoriesByIdRepoReq) (*models.Categories, error) {
 	var tags []string
-	if err := r.DB.QueryRow(`SELECT categories FROM restaurants WHERE id = $1`, req.Id).Scan(pq.Array(&tags)); err != nil {
+	err := r.DB.Select(&tags, `SELECT unnest(categories) categories  FROM restaurants WHERE id = $1`, req.Id)
+	if err != nil {
 		return nil, servErrors.NewError(servErrors.NO_SUCH_ENTITY_IN_DB, err.Error())
 	}
 	categories := &models.Categories{}

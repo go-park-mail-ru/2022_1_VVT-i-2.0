@@ -2,10 +2,6 @@ package models
 
 type Id uint64
 
-////Repository
-
-// Repository Request
-
 type GetRestaurantBySlugRepoReq struct {
 	Slug string
 }
@@ -17,8 +13,6 @@ type GetCategoriesByIdRepoReq struct {
 type GetRestaurantDishesRepoReq struct {
 	Id Id
 }
-
-// Repository models
 
 type DishesRestaurantRepo struct {
 	Id                    int `db:"id"`
@@ -52,15 +46,10 @@ type GetRestaurantDishesCategoriesRepoResp struct {
 	Dishes []DishCategoriesRepo
 }
 
-//// UseCase
-
-// UseCase Request
-
 type GetRestaurantDishesUcaseReq struct {
 	Slug string
 }
 
-// UseCase models
 type DishCategoriesUsecase struct {
 	Id           int
 	Category     int
@@ -91,10 +80,6 @@ type GetRestaurantDishesCategoriesUcaseResp struct {
 	Dishes                []DishCategoriesUsecase
 	Categories            []CategoriesDishesUcaseResp
 }
-
-//// Handler
-
-// models
 
 //easyjson:json
 type DishCategoriesResp struct {

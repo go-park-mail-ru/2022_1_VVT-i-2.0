@@ -31,7 +31,7 @@ func TestUpdateUser(t *testing.T) {
 	for _, item := range expect {
 		rows = rows.AddRow(item.Id, item.Name, item.Phone, item.Email, item.Avatar.String)
 	}
-	fullUpdataData := &models.UpdateUserStorage{Id: models.UserId(1), Name: "name", Email: "email", Avatar: "avatar"}
+	fullUpdataData := &models.UpdateUserStorage{Id: int64(1), Name: "name", Email: "email", Avatar: "avatar"}
 
 	// good query
 	mock.

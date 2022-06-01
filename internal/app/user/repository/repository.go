@@ -16,7 +16,7 @@ func NewUserRepo(db *sqlx.DB) *UserRepo {
 	return &UserRepo{DB: db}
 }
 
-func (r *UserRepo) GetUserById(id models.UserId) (*models.UserDataRepo, error) {
+func (r *UserRepo) GetUserById(id int64) (*models.UserDataRepo, error) {
 	user := &models.UserDataRepo{}
 	err := r.DB.Get(user, `SELECT id, phone, email, name, avatar FROM users WHERE id = $1`, id)
 

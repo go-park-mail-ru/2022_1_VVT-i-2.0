@@ -4,13 +4,13 @@ import (
 	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/config"
 	_ "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/docs"
 	suggestHandler "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/address/delivery/http"
-	commentHandler "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/comments/delivery/http"
 	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/delivery/http/middleware"
 	dishesHandler "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/dishes/delivery/http"
 	orderHandler "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/order/delivery/http"
 	promocodeHandler "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/promocode/delivery/http"
 	recommendationsHandler "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/recommendations/delivery/http"
 	restaurantsHandler "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/restaurants/delivery/http"
+	reviewsHandler "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/reviews/delivery/http"
 	userHandler "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/user/delivery/http"
 	"github.com/labstack/echo/v4"
 	echoMiddleware "github.com/labstack/echo/v4/middleware"
@@ -24,7 +24,7 @@ type ServerHandlers struct {
 	DishesHandler          *dishesHandler.DishesHandler
 	SuggsHandler           *suggestHandler.SuggsHandler
 	OrderHandler           *orderHandler.OrderHandler
-	CommentsHandler        *commentHandler.CommentsHandler
+	ReviewsHandler         *reviewsHandler.RestaurantReviewsHandler
 	RecommendstionsHandler *recommendationsHandler.RecommendationsHandler
 	PromocodeHandler       *promocodeHandler.PromocodesHandler
 }
@@ -60,8 +60,8 @@ func (sh *ServerHandlers) ConfigureRouting(router *echo.Echo, mw *middleware.Com
 	router.GET(v1Prefix+"orders", sh.OrderHandler.GetUserOrders, mwChain...)
 	router.GET(v1Prefix+"order_statuses", sh.OrderHandler.GetUserOrderStatuses, mwChain...)
 	router.GET(v1Prefix+"order/:orderId", sh.OrderHandler.GetUserOrder, mwChain...)
-	router.GET(v1Prefix+"comments/:slug", sh.CommentsHandler.GetRestaurantComments, mwChain...)
-	router.POST(v1Prefix+"comment", sh.CommentsHandler.AddRestaurantComment, mwChain...)
+	router.GET(v1Prefix+"comments/:slug", sh.ReviewsHandler.GetRestaurantComments, mwChain...)
+	router.POST(v1Prefix+"comment", sh.ReviewsHandler.AddRestaurantReview, mwChain...)
 	router.GET(v1Prefix+"restaurants", sh.RestaurantsHandler.GetAllRestaurantsMain, mwChain...)
 	router.GET(v1Prefix+"promo", sh.PromocodeHandler.GetAllPromocodes, mwChain...)
 	router.GET(v1Prefix+"", sh.RestaurantsHandler.GetAllRestaurants, mwChain...)

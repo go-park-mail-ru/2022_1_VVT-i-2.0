@@ -34,7 +34,7 @@ func (u *UserUcase) SendCode(req *models.SendCodeUcaseReq) (models.SendCodeUcase
 	return models.SendCodeUcaseResp{IsRegistered: true}, nil
 }
 
-func (u *UserUcase) GetUser(id models.UserId) (*models.UserDataUcase, error) {
+func (u *UserUcase) GetUser(id int64) (*models.UserDataUcase, error) {
 	return &models.UserDataUcase{
 		Id:     1,
 		Name:   "Name",
@@ -68,7 +68,7 @@ func (u *UserUcaseDBErr) SendCode(req *models.SendCodeUcaseReq) (models.SendCode
 	return models.SendCodeUcaseResp{IsRegistered: false}, servErrors.NewError(servErrors.DB_ERROR, "")
 }
 
-func (u *UserUcaseDBErr) GetUser(id models.UserId) (*models.UserDataUcase, error) {
+func (u *UserUcaseDBErr) GetUser(id int64) (*models.UserDataUcase, error) {
 	return nil, servErrors.NewError(servErrors.DB_ERROR, "")
 }
 
@@ -92,7 +92,7 @@ func (u *UserUcaseUnknownErr) SendCode(req *models.SendCodeUcaseReq) (models.Sen
 	return models.SendCodeUcaseResp{IsRegistered: false}, errors.New("unknown error")
 }
 
-func (u *UserUcaseUnknownErr) GetUser(id models.UserId) (*models.UserDataUcase, error) {
+func (u *UserUcaseUnknownErr) GetUser(id int64) (*models.UserDataUcase, error) {
 	return nil, errors.New("unknown error")
 }
 

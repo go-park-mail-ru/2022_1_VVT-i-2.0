@@ -2,6 +2,11 @@ package recommendationsHandler
 
 import (
 	"encoding/json"
+	"net/http"
+	"net/http/httptest"
+	"strings"
+	"testing"
+
 	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/delivery/http/middleware"
 	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/models"
 	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/recommendations/mock"
@@ -10,19 +15,14 @@ import (
 	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/tools/staticManager/localStaticManager"
 	"github.com/labstack/echo/v4"
 	"github.com/stretchr/testify/assert"
-	"net/http"
-	"net/http/httptest"
-	"strings"
-	"testing"
 )
 
 func TestRecommendationsHandler_GetRecommendations(t *testing.T) {
-	request := models.RecommendationsOrderLists{
+	request := models.RecommendationsReq{
 		RestId: 1,
 		OrderList: []models.RecommendationsOrderPosition{
 			{
 				Id: 1,
-				Count: 1,
 			},
 		},
 	}
@@ -42,7 +42,7 @@ func TestRecommendationsHandler_GetRecommendations(t *testing.T) {
 	staticManager := localStaticManager.NewLocalFileManager("http:/static", "/static")
 
 	handler := RecommendationsHandler{
-		Ucase: mockUCase,
+		Ucase:         mockUCase,
 		StaticManager: staticManager,
 	}
 
@@ -55,12 +55,11 @@ func TestRecommendationsHandler_GetRecommendations(t *testing.T) {
 }
 
 func TestRecommendationsHandler_GetRecommendations_Err(t *testing.T) {
-	request := models.RecommendationsOrderLists{
+	request := models.RecommendationsReq{
 		RestId: 1,
 		OrderList: []models.RecommendationsOrderPosition{
 			{
 				Id: 1,
-				Count: 1,
 			},
 		},
 	}
@@ -82,7 +81,7 @@ func TestRecommendationsHandler_GetRecommendations_Err(t *testing.T) {
 	staticManager := localStaticManager.NewLocalFileManager("http:/static", "/static")
 
 	handler := RecommendationsHandler{
-		Ucase: mockUCase,
+		Ucase:         mockUCase,
 		StaticManager: staticManager,
 	}
 

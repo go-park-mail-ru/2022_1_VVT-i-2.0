@@ -8,6 +8,6 @@ type Ucase interface {
 	Register(req *models.RegisterUcaseReq) (*models.UserDataUcase, error)
 	Login(req *models.LoginUcaseReq) (*models.LoginUcaseResp, error)
 	SendCode(req *models.SendCodeUcaseReq) (models.SendCodeUcaseResp, error)
-	GetUser(id models.UserId) (*models.UserDataUcase, error)
+	GetUser(id int64) (*models.UserDataUcase, error)
 	UpdateUser(req *models.UpdateUserUcase) (*models.UserDataUcase, error)
 }
