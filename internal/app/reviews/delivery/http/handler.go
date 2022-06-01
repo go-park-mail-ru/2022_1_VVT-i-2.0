@@ -93,8 +93,8 @@ func (h RestaurantReviewsHandler) AddRestaurantReview(ctx echo.Context) error {
 	reviewUcaseResp, err := h.Ucase.AddRestaurantReview(&models.AddRestaurantReviewUcaseReq{
 		UserId: user.Id,
 		Slug:   req.Slug,
-		Text:   req.CommentText,
-		Rating: req.CommentRating,
+		Text:   req.Text,
+		Rating: req.Rating,
 	})
 	if err != nil {
 		cause := servErrors.ErrorAs(err)

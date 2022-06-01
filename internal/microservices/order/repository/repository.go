@@ -45,7 +45,7 @@ func makeAddOrderQuery(order *models.CreateOrderRepoReq) string {
 }
 
 func expandOrder(order *models.CreateOrderRepoReq) []interface{} {
-	var args []interface{}
+	args := make([]interface{}, 0, len(order.Cart)*3+4)
 	args = append(args, order.UserId, order.Address, order.Comment, order.Promocode)
 	for _, orderPos := range order.Cart {
 		args = append(args, orderPos.Id, orderPos.Count, 0)

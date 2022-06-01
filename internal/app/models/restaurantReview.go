@@ -45,9 +45,9 @@ type GetRestaurantReviewsRepoResp struct {
 
 //easyjson:json
 type AddRestaurantReviewReq struct {
-	Slug          string `json:"slug" valid:"slug,required"`
-	CommentText   string `json:"text" valid:"comment,required"`
-	CommentRating int    `json:"stars" valid:"stars,required"`
+	Slug   string `json:"slug" valid:"slug,required"`
+	Text   string `json:"text" valid:"comment,required"`
+	Rating int    `json:"stars" valid:"stars,required"`
 }
 
 //easyjson:json

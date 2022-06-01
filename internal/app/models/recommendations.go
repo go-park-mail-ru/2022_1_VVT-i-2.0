@@ -1,25 +1,18 @@
 package models
 
-//// Delivery
-
-// Delivery Request
-
 //easyjson:json
 type RecommendationsOrderPosition struct {
-	Id    int64 `json:"id"`
-	Count int64 `json:"count"`
+	Id int64 `json:"id"`
 }
 
 //easyjson:json
-type RecommendationsOrderLists struct {
+type RecommendationsReq struct {
 	RestId    int64                          `json:"restId"`
 	OrderList []RecommendationsOrderPosition `json:"orderList"`
 }
 
-// models
-
 //easyjson:json
-type DishRecommendationDelivery struct {
+type RecommendationResp struct {
 	Id           int    `json:"id"`
 	Category     int    `json:"category"`
 	RestaurantId int    `json:"restaurant"`
@@ -31,22 +24,39 @@ type DishRecommendationDelivery struct {
 	Weight       int    `json:"weight"`
 }
 
-type DishRecommendationListsDelivery struct {
-	Dishes []DishRecommendationDelivery `json:"dishes"`
+type RecommendationsResp struct {
+	Dishes []RecommendationResp `json:"dishes"`
 }
 
-//// UseCase
-
-// UseCase Request
-
-type RecommendationsOrderListsUsecaseReq struct {
+type RecommendationsUcaseReq struct {
+	Limit    int
 	RestId   int64
 	DishesId []int64
 }
 
-// UseCase models
+type RecommendationsRepoReq struct {
+	Limit    int
+	RestId   int64
+	DishesId []int64
+}
 
-type DishRecommendationUsecase struct {
+type RecommendationRepo struct {
+	Id           int
+	Category     int `db:"category"`
+	RestaurantId int `db:"restaurant_id"`
+	Name         string
+	Description  string
+	ImagePath    string `db:"image_path"`
+	Calories     int
+	Price        int
+	Weight       int
+}
+
+type RecommendationsRepoResp struct {
+	Dishes []RecommendationRepo
+}
+
+type RecommendationUcase struct {
 	Id           int
 	Category     int
 	RestaurantId int
@@ -58,6 +68,6 @@ type DishRecommendationUsecase struct {
 	Weight       int
 }
 
-type DishRecommendationListsUsecase struct {
-	Dishes []DishRecommendationUsecase
+type RecommendationsUcaseResp struct {
+	Dishes []RecommendationUcase
 }
