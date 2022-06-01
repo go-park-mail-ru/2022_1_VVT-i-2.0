@@ -72,20 +72,17 @@ func TestRestaurantsHandler_AddCommentsRestaurantByRestaurants(t *testing.T) {
 	assert.Equal(t, json, rec.Body.String())
 }
 
-func TestCommentsHandler_GetRestaurantComments_Err(t *testing.T) {
-	id := "1"
-
+func TestCommentsHandler_GetRestaurantComments_WithOutSlug(t *testing.T) {
 	mockUCase := new(mock.CommentsUsecaseErr)
 	mockLogger := new(mockLogger.Logger)
 	handler := NewRestaurantReviewsHandler(mockUCase)
 	e := echo.New()
-	req, err := http.NewRequest(echo.GET, "/comments/1"+id, strings.NewReader("1"))
+	req, err := http.NewRequest(echo.GET, "/comments/", strings.NewReader(""))
 	assert.NoError(t, err)
 
 	rec := httptest.NewRecorder()
 	c := e.NewContext(req, rec)
 	c.Set(middleware.LoggerCtxKey, &logger.ServLogger{Logger: mockLogger})
-	c.Set("id", id)
 
 	err = handler.GetRestaurantComments(c)
 
