@@ -1,0 +1,45 @@
+authMicroserviceAddr = "localhost:8081"
+orderMicroserviceAddr = "localhost:8082"
+
+[server]
+bindAddr = ":8080"
+readTimeout = 10
+writeTimeout= 10
+staticUrl="http://localhost:8080/static/"
+staticPath="static/"
+# staticUrl="http://tavide.xyz:8080/static/"
+
+[cors]
+allowOrigins=["", "http://localhost:3000", "http://tavide.xyz:3000"]
+maxAge=86400
+
+[csrf]
+maxAge=604800 # 7 суток, как и токен авторизации
+
+
+[logger]
+level = "debug"
+encoding = "json"
+outputPaths = ["../access_log"]
+errorOutputPaths = ["../error_log"]
+messageKey = "msg"
+timeKey = "finished"
+levelKey = "lvl"
+namekey  = "name" 
+# functionKey = "funclion"
+# stacktraceKey = "stack_trace"
+
+[authManager]
+key="!@1eqQWERwer$%^YWFgsfghw$%%^E67ws"
+method="HS256"
+expiryTime="168h" #duration type
+
+[database]
+user = "yutfut" # TODO установить норм имя
+password = "example"
+port = 5432
+# host = "db"
+host = "127.0.0.1"
+connectionMax = 500
+dbname = "vvti"
+# dbname = "test"
