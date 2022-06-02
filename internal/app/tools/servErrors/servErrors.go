@@ -33,6 +33,7 @@ const (
 	UNKNOWN_STATIC_TYPE
 	UNKNOWN_ERROR
 	THIS_ORDER_DOESNOT_BELONG_USER
+	ORDER_ALREADY_REVIEWED
 )
 
 const (
@@ -55,6 +56,7 @@ const (
 	THIS_ORDER_DOESNOT_BELONG_USER_DESCR   = "запрошенный заказ не принадлежит текущему пользователю"
 	FLASHCALL_PHONE_ALREADY_IN_QUEUE_DESCR = "этот телефон уже в очереди, необходимо подождать"
 	FLASHCALL_RESPONSE_ERR_DESCR           = "ошибка flashcaller-a"
+	ORDER_ALREADY_REVIEWED_DESCR           = "отзыв на этот заказ уже есть"
 )
 
 var codeDescr = map[int]string{
@@ -65,6 +67,7 @@ var codeDescr = map[int]string{
 	FLASHCALL_PHONE_ALREADY_IN_QUEUE: FLASHCALL_PHONE_ALREADY_IN_QUEUE_DESCR,
 	FLASHCALL_RESPONSE_ERR:           FLASHCALL_RESPONSE_ERR_DESCR,
 	NO_SUCH_ADDRESS:                  NO_SUCH_ADDRESS_DESCR,
+	ORDER_ALREADY_REVIEWED:           ORDER_ALREADY_REVIEWED_DESCR,
 }
 
 type Error struct {

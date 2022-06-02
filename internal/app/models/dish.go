@@ -1,5 +1,6 @@
 package models
 
+/*
 type DishRepo struct {
 	Id           int
 	RestaurantId int `db:"restaurant_id"`
@@ -63,3 +64,5 @@ type GetRestaurantDishesResp struct {
 	ReviewCount    int        `json:"reviewCount"`
 	Dishes         []DishResp `json:"dishes"`
 }
+
+*/

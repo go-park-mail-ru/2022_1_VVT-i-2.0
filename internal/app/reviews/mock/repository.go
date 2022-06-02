@@ -27,6 +27,10 @@ func (r *CommentsRepository) AddRestaurantReview(req *models.AddRestaurantReview
 		Date:   "date"}, nil
 }
 
+func (r *CommentsRepository) HasReviewToOrder(req *models.CanReviewedRepoReq) (*models.CanReviewedRepoResp, error) {
+	return &models.CanReviewedRepoResp{Can: true}, nil
+}
+
 type CommentsRepositoryErr struct {
 	mock.Mock
 }
@@ -37,4 +41,8 @@ func (c *CommentsRepositoryErr) GetRestaurantReviews(req *models.GetRestaurantRe
 
 func (c *CommentsRepositoryErr) AddRestaurantReview(req *models.AddRestaurantReviewRepoReq) (*models.RestaurantReviewRepo, error) {
 	return nil, servErrors.NewError(servErrors.DB_ERROR, "")
+}
+
+func (r *CommentsRepositoryErr) HasReviewToOrder(req *models.CanReviewedRepoReq) (*models.CanReviewedRepoResp, error) {
+	return &models.CanReviewedRepoResp{Can: true}, nil
 }

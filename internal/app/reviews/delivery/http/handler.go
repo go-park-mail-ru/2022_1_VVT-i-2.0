@@ -91,10 +91,11 @@ func (h RestaurantReviewsHandler) AddRestaurantReview(ctx echo.Context) error {
 	}
 
 	reviewUcaseResp, err := h.Ucase.AddRestaurantReview(&models.AddRestaurantReviewUcaseReq{
-		UserId: user.Id,
-		Slug:   req.Slug,
-		Text:   req.Text,
-		Rating: req.Rating,
+		OrderId: req.OrderId,
+		UserId:  user.Id,
+		Slug:    req.Slug,
+		Text:    req.Text,
+		Rating:  req.Rating,
 	})
 	if err != nil {
 		cause := servErrors.ErrorAs(err)
@@ -104,6 +105,9 @@ func (h RestaurantReviewsHandler) AddRestaurantReview(ctx echo.Context) error {
 		}
 		if cause.Code == servErrors.NO_SUCH_ENTITY_IN_DB {
 			return httpErrDescr.NewHTTPError(ctx, http.StatusNotFound, httpErrDescr.NO_SUCH_RESTAURANT)
+		}
+		if cause.Code == servErrors.ORDER_ALREADY_REVIEWED {
+			return httpErrDescr.NewHTTPError(ctx, http.StatusNotFound, httpErrDescr.ORDER_ALREADY_REVIEWED)
 		}
 		logger.Error(requestId, err.Error())
 		return httpErrDescr.NewHTTPError(ctx, http.StatusInternalServerError, httpErrDescr.SERVER_ERROR)
