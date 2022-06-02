@@ -45,9 +45,10 @@ type GetRestaurantReviewsRepoResp struct {
 
 //easyjson:json
 type AddRestaurantReviewReq struct {
-	Slug   string `json:"slug" valid:"slug,required"`
-	Text   string `json:"text" valid:"comment,required"`
-	Rating int    `json:"stars" valid:"stars,required"`
+	Slug    string `json:"slug" valid:"slug,required"`
+	Text    string `json:"text" valid:"comment,required"`
+	Rating  int    `json:"stars" valid:"stars,required"`
+	OrderId int64  `json:"orderId"`
 }
 
 //easyjson:json
@@ -59,10 +60,11 @@ type AddRestaurantReviewResp struct {
 }
 
 type AddRestaurantReviewUcaseReq struct {
-	UserId int64
-	Slug   string
-	Text   string
-	Rating int
+	UserId  int64
+	Slug    string
+	Text    string
+	Rating  int
+	OrderId int64
 }
 
 type AddRestaurantReviewUcaseResp struct {
@@ -73,8 +75,18 @@ type AddRestaurantReviewUcaseResp struct {
 }
 
 type AddRestaurantReviewRepoReq struct {
-	UserId int64
-	Slug   string
-	Text   string
-	Rating int
+	UserId  int64
+	Slug    string
+	Text    string
+	Rating  int
+	OrderId int64
+}
+
+type CanReviewedRepoReq struct {
+	OrderId int64
+	UserId  int64
+}
+
+type CanReviewedRepoResp struct {
+	Can bool `db:"can_reviewed"`
 }

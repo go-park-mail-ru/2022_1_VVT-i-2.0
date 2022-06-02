@@ -129,7 +129,7 @@ func TestCommentsRepo_AddRestaurantComment(t *testing.T) {
 	// good query
 	mock.
 		ExpectQuery(`INSERT`).
-		WithArgs(testReview.Slug, testReview.UserId, testReview.Text, testReview.Rating).
+		WithArgs(testReview.Slug, testReview.UserId, testReview.Text, testReview.Rating, testReview.OrderId).
 		WillReturnRows(rows)
 	item, err := repo.AddRestaurantReview(testReview)
 	if err != nil {
@@ -151,7 +151,7 @@ func TestCommentsRepo_AddRestaurantComment(t *testing.T) {
 	// query error
 	mock.
 		ExpectQuery(`INSERT`).
-		WithArgs(testReview.Slug, testReview.UserId, testReview.Text, testReview.Rating).
+		WithArgs(testReview.Slug, testReview.UserId, testReview.Text, testReview.Rating, testReview.OrderId).
 		WillReturnError(fmt.Errorf("db_error"))
 
 	_, err = repo.AddRestaurantReview(testReview)
@@ -168,7 +168,7 @@ func TestCommentsRepo_AddRestaurantComment(t *testing.T) {
 	// row scan error
 	mock.
 		ExpectQuery(`INSERT`).
-		WithArgs(testReview.Slug, testReview.UserId, testReview.Text, testReview.Rating).
+		WithArgs(testReview.Slug, testReview.UserId, testReview.Text, testReview.Rating, testReview.OrderId).
 		WillReturnError(sql.ErrNoRows)
 		//WillReturnError(fmt.Errorf("db_error"))
 

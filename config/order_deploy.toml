@@ -2,8 +2,7 @@
 bindAddr = ":8082"
 
 [database]
-user = "yutfut"
-# password = ${{ secrets.DB_PASSWORD }}
+user = "yutfut" # TODO установить норм имя
 password = "example"
 port = 5432
 host = "db"

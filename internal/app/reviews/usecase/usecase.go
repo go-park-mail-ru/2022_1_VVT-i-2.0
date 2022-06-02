@@ -3,6 +3,7 @@ package usecase
 import (
 	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/models"
 	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/reviews"
+	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/tools/servErrors"
 	"github.com/pkg/errors"
 )
 
@@ -31,14 +32,17 @@ func (u *RestaurantReviewsUcase) GetRestaurantReviews(req *models.GetRestaurantR
 }
 
 func (u *RestaurantReviewsUcase) AddRestaurantReview(req *models.AddRestaurantReviewUcaseReq) (*models.AddRestaurantReviewUcaseResp, error) {
-	// проверка есть ли заказ в этом рестике и не оставлен ли отзыв
-	// сколько заказов в этом рестике
-	// сколько комментов по этому рестику
-	// canUserAddReview, err = u.Repo
-	comment, err := u.Repo.AddRestaurantReview(&models.AddRestaurantReviewRepoReq{UserId: int64(req.UserId), Slug: req.Slug, Rating: req.Rating, Text: req.Text})
+	canReviewed, err := u.Repo.HasReviewToOrder(&models.CanReviewedRepoReq{UserId: req.UserId, OrderId: req.OrderId})
+	if err != nil {
+		return nil, errors.Wrap(err, "error chacking can such user review order")
+	}
+	if !canReviewed.Can {
+		return nil, servErrors.NewError(servErrors.ORDER_ALREADY_REVIEWED, "")
+	}
+	comment, err := u.Repo.AddRestaurantReview(&models.AddRestaurantReviewRepoReq{UserId: int64(req.UserId), Slug: req.Slug, Rating: req.Rating, Text: req.Text, OrderId: req.OrderId})
 
 	if err != nil {
-		return nil, errors.Wrap(err, "error updating restaurant rating")
+		return nil, errors.Wrap(err, "error adding review")
 	}
 	return (*models.AddRestaurantReviewUcaseResp)(comment), nil
 }
