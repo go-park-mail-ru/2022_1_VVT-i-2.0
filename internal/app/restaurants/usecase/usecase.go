@@ -50,15 +50,34 @@ func (u *RestaurantsUcase) GetRestaurantsByCategory(category models.GetRestauran
 
 func (u *RestaurantsUcase) GetRestaurantBySearchQuery(query models.GetRestaurantBySearchQueryUcaseReq) (*models.RestaurantsUcase, error) {
 	query.Query = strings.Trim(query.Query, " \n\t")
-	restaurantsRepoResp, err := u.RestaurantsRepo.GetRestaurantsBySearchQuery(models.GetRestaurantBySearchQueryRepoReq(query))
+
+	restaurantsByNameRepoResp, err := u.RestaurantsRepo.GetRestaurantsByNameQuery(models.GetRestaurantBySearchQueryRepoReq(query))
 	if err != nil {
 		return nil, errors.Wrapf(err, "error getting restaurants")
 	}
 
-	restaurantsResp := &models.RestaurantsUcase{Restaurants: make([]models.RestaurantUcase, len(restaurantsRepoResp.Restaurants))}
+	restaurantsByCategoryRepoResp, err := u.RestaurantsRepo.GetRestaurantsByCategoryQuery(models.GetRestaurantBySearchQueryRepoReq(query))
+	if err != nil {
+		return nil, errors.Wrapf(err, "error getting restaurants")
+	}
 
-	for i, rest := range restaurantsRepoResp.Restaurants {
-		restaurantsResp.Restaurants[i] = models.RestaurantUcase(rest)
+	restaurantsByDishRepoResp, err := u.RestaurantsRepo.GetRestaurantsByQueryDish(models.GetRestaurantBySearchQueryRepoReq(query))
+	if err != nil {
+		return nil, errors.Wrapf(err, "error getting restaurants")
+	}
+
+	if err != nil {
+		return nil, errors.Wrapf(err, "error getting restaurants")
+	}
+
+	restaurantsResp := &models.RestaurantsUcase{Restaurants: make([]models.RestaurantUcase, 0, len(restaurantsByNameRepoResp.Restaurants)+len(restaurantsByCategoryRepoResp.Restaurants)+len(restaurantsByDishRepoResp.Restaurants))}
+
+	uniqueRestaurants := make(map[string]bool)
+	for _, rest := range append(append(restaurantsByNameRepoResp.Restaurants, restaurantsByCategoryRepoResp.Restaurants...), restaurantsByDishRepoResp.Restaurants...) {
+		if uniqueRestaurants[rest.Name] == false {
+			restaurantsResp.Restaurants = append(restaurantsResp.Restaurants, models.RestaurantUcase(rest))
+			uniqueRestaurants[rest.Name] = true
+		}
 	}
 
 	return restaurantsResp, nil

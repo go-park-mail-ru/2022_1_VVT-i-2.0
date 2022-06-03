@@ -16,7 +16,7 @@ func NewRestaurantsRepo(db *sqlx.DB) *RestaurantsRepo {
 
 func (r *RestaurantsRepo) GetRestaurants() (*models.RestaurantsRepo, error) {
 	restaurants := make([]*models.RestaurantRepo, 0)
-	err := r.DB.Select(&restaurants, "SELECT id, name,  image_path, slug, min_price, agg_rating, review_count, up_time_to_delivery, down_time_to_delivery FROM restaurants ORDER BY CASE WHEN review_count=0 THEN 0 ELSE agg_rating::float/review_count END DESC")
+	err := r.DB.Select(&restaurants, "SELECT id, name,  image_path, slug, min_price, agg_rating, review_count, up_time_to_delivery, down_time_to_delivery FROM restaurants ORDER BY CASE WHEN review_count=0 THEN 0 ELSE agg_rating::float/review_count END DESC, review_count DESC")
 	switch err {
 	case nil:
 		resp := models.RestaurantsRepo{Restaurants: make([]models.RestaurantRepo, len(restaurants))}
@@ -31,7 +31,7 @@ func (r *RestaurantsRepo) GetRestaurants() (*models.RestaurantsRepo, error) {
 
 func (r *RestaurantsRepo) GetRestaurantsByCategory(category models.GetRestaurantByCategoryRepoReq) (*models.RestaurantsRepo, error) {
 	restaurants := make([]*models.RestaurantRepo, 0)
-	err := r.DB.Select(&restaurants, `SELECT r.id id, r.name, r.image_path image_path, r.slug slug, r.min_price min_price, r.agg_rating agg_rating, r.review_count review_count, up_time_to_delivery, down_time_to_delivery FROM restaurants r JOIN categori_restaurant cr ON r.id=cr.restaurant_id JOIN categories c ON cr.categori_id=c.id WHERE c.name=$1 ORDER BY CASE WHEN review_count=0 THEN 0 ELSE agg_rating::float/review_count END DESC`, category.Name)
+	err := r.DB.Select(&restaurants, `SELECT r.id id, r.name, r.image_path image_path, r.slug slug, r.min_price min_price, r.agg_rating agg_rating, r.review_count review_count, up_time_to_delivery, down_time_to_delivery FROM restaurants r JOIN categori_restaurant cr ON r.id=cr.restaurant_id JOIN categories c ON cr.categori_id=c.id WHERE c.name=$1 ORDER BY CASE WHEN review_count=0 THEN 0 ELSE agg_rating::float/review_count END DESC, review_count DESC`, category.Name)
 	switch err {
 	case nil:
 		resp := models.RestaurantsRepo{Restaurants: make([]models.RestaurantRepo, len(restaurants))}
@@ -44,12 +44,39 @@ func (r *RestaurantsRepo) GetRestaurantsByCategory(category models.GetRestaurant
 	}
 }
 
-func (r *RestaurantsRepo) GetRestaurantsBySearchQuery(query models.GetRestaurantBySearchQueryRepoReq) (*models.RestaurantsRepo, error) {
+func (r *RestaurantsRepo) GetRestaurantsByCategoryQuery(query models.GetRestaurantBySearchQueryRepoReq) (*models.RestaurantsRepo, error) {
 	restaurants := make([]*models.RestaurantRepo, 0)
-	err := r.DB.Select(&restaurants, `SELECT r.id id, r.name, r.image_path image_path, r.slug slug, r.min_price min_price, r.agg_rating agg_rating, r.review_count review_count, up_time_to_delivery, down_time_to_delivery FROM restaurants r JOIN categori_restaurant cr ON r.id=cr.restaurant_id JOIN categories c ON cr.categori_id=c.id WHERE c.name ILIKE $1 ORDER BY CASE WHEN review_count=0 THEN 0 ELSE agg_rating::float/review_count END DESC`, "%"+query.Query+"%")
-	if len(restaurants) == 0 {
-		err = r.DB.Select(&restaurants, `SELECT id id, name, image_path image_path, slug slug, min_price min_price, agg_rating agg_rating, review_count review_count, up_time_to_delivery, down_time_to_delivery FROM restaurants WHERE name ILIKE $1 ORDER BY CASE WHEN review_count=0 THEN 0 ELSE agg_rating::float/review_count END DESC`, "%"+query.Query+"%")
+	err := r.DB.Select(&restaurants, `SELECT r.id id, r.name, r.image_path image_path, r.slug slug, r.min_price min_price, r.agg_rating agg_rating, r.review_count review_count, up_time_to_delivery, down_time_to_delivery FROM restaurants r JOIN categori_restaurant cr ON r.id=cr.restaurant_id JOIN categories c ON cr.categori_id=c.id WHERE c.name ILIKE $1 ORDER BY CASE WHEN review_count=0 THEN 0 ELSE agg_rating::float/review_count END DESC, review_count DESC`, "%"+query.Query+"%")
+	switch err {
+	case nil:
+		resp := models.RestaurantsRepo{Restaurants: make([]models.RestaurantRepo, len(restaurants))}
+		for i, restaurant := range restaurants {
+			resp.Restaurants[i] = *restaurant
+		}
+		return &resp, nil
+	default:
+		return nil, servErrors.NewError(servErrors.DB_ERROR, err.Error())
 	}
+}
+
+func (r *RestaurantsRepo) GetRestaurantsByNameQuery(query models.GetRestaurantBySearchQueryRepoReq) (*models.RestaurantsRepo, error) {
+	restaurants := make([]*models.RestaurantRepo, 0)
+	err := r.DB.Select(&restaurants, `SELECT id id, name, image_path image_path, slug slug, min_price min_price, agg_rating agg_rating, review_count review_count, up_time_to_delivery, down_time_to_delivery FROM restaurants WHERE name ILIKE $1 ORDER BY CASE WHEN review_count=0 THEN 0 ELSE agg_rating::float/review_count END DESC, review_count DESC`, "%"+query.Query+"%")
+	switch err {
+	case nil:
+		resp := models.RestaurantsRepo{Restaurants: make([]models.RestaurantRepo, len(restaurants))}
+		for i, restaurant := range restaurants {
+			resp.Restaurants[i] = *restaurant
+		}
+		return &resp, nil
+	default:
+		return nil, servErrors.NewError(servErrors.DB_ERROR, err.Error())
+	}
+}
+
+func (r *RestaurantsRepo) GetRestaurantsByQueryDish(query models.GetRestaurantBySearchQueryRepoReq) (*models.RestaurantsRepo, error) {
+	restaurants := make([]*models.RestaurantRepo, 0)
+	err := r.DB.Select(&restaurants, `SELECT * FROM (SELECT DISTINCT r.id id, r.name, r.image_path image_path, r.slug slug, r.min_price min_price, r.agg_rating agg_rating, r.review_count review_count, up_time_to_delivery, down_time_to_delivery FROM restaurants r JOIN dishes d ON r.id=d.restaurant_id WHERE d.name ILIKE $1 OR d.name ILIKE $2) r ORDER BY CASE WHEN review_count=0 THEN 0 ELSE agg_rating::float/review_count END DESC, review_count DESC`, "% "+query.Query+" %", query.Query+" %")
 	switch err {
 	case nil:
 		resp := models.RestaurantsRepo{Restaurants: make([]models.RestaurantRepo, len(restaurants))}
