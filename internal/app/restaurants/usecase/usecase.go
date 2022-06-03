@@ -1,12 +1,15 @@
 package ucase
 
 import (
+	"regexp"
 	"strings"
 
 	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/models"
 	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/restaurants"
 	"github.com/pkg/errors"
 )
+
+var cutExtraSpaceRegexp = regexp.MustCompile(`\s+`)
 
 type RestaurantsUcase struct {
 	RestaurantsRepo restaurants.Repository
@@ -50,6 +53,9 @@ func (u *RestaurantsUcase) GetRestaurantsByCategory(category models.GetRestauran
 
 func (u *RestaurantsUcase) GetRestaurantBySearchQuery(query models.GetRestaurantBySearchQueryUcaseReq) (*models.RestaurantsUcase, error) {
 	query.Query = strings.Trim(query.Query, " \n\t")
+	// TODO двойные пробелы
+
+	query.Query = cutExtraSpaceRegexp.ReplaceAllString(query.Query, " ")
 
 	restaurantsByNameRepoResp, err := u.RestaurantsRepo.GetRestaurantsByNameQuery(models.GetRestaurantBySearchQueryRepoReq(query))
 	if err != nil {
