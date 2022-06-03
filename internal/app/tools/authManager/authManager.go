@@ -2,11 +2,13 @@ package authManager
 
 import (
 	"time"
+
+	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/tools/validator"
 )
 
 type TokenPayload struct {
-	Id  int64     `valid:"userId, required"`
-	Exp time.Time `valid:"expired, required"`
+	Id  int64
+	Exp time.Time
 }
 
 const (
@@ -43,4 +45,8 @@ func MapToTokenPayload(payloadMap map[string]interface{}) *TokenPayload {
 		Id:  int64(payloadMap[idTitle].(float64)),
 		Exp: exp,
 	}
+}
+
+func IsValidToken(payload *TokenPayload) bool {
+	return validator.IsNotExpired(payload.Exp) && validator.IsUserId(payload.Id)
 }

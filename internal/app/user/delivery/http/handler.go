@@ -12,6 +12,7 @@ import (
 	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/tools/authManager"
 	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/tools/servErrors"
 	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/tools/staticManager"
+	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/tools/validator"
 	_ "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/tools/validator"
 	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/user"
 	"github.com/labstack/echo/v4"
@@ -61,8 +62,11 @@ func (h UserHandler) Login(ctx echo.Context) error {
 	if err := ctx.Bind(&loginReq); err != nil {
 		return httpErrDescr.NewHTTPError(ctx, http.StatusBadRequest, httpErrDescr.BAD_REQUEST_BODY)
 	}
-	if _, err := govalidator.ValidateStruct(loginReq); err != nil {
-		return httpErrDescr.NewHTTPError(ctx, http.StatusBadRequest, httpErrDescr.INVALID_DATA)
+	if !validator.IsPhone(loginReq.Phone) {
+		return httpErrDescr.NewHTTPError(ctx, http.StatusBadRequest, httpErrDescr.INVALID_PHONE)
+	}
+	if !validator.IsAuthCode(loginReq.Code) {
+		return httpErrDescr.NewHTTPError(ctx, http.StatusBadRequest, httpErrDescr.INVALID_AUTHCODE)
 	}
 
 	userDataUcase, err := h.Ucase.Login(&models.LoginUcaseReq{Phone: loginReq.Phone, Code: loginReq.Code})
@@ -116,8 +120,18 @@ func (h UserHandler) Register(ctx echo.Context) error {
 	if err := ctx.Bind(&registerReq); err != nil {
 		return httpErrDescr.NewHTTPError(ctx, http.StatusBadRequest, httpErrDescr.BAD_REQUEST_BODY)
 	}
-	if _, err := govalidator.ValidateStruct(registerReq); err != nil {
-		return httpErrDescr.NewHTTPError(ctx, http.StatusBadRequest, httpErrDescr.INVALID_DATA)
+
+	if !validator.IsPhone(registerReq.Phone) {
+		return httpErrDescr.NewHTTPError(ctx, http.StatusBadRequest, httpErrDescr.INVALID_PHONE)
+	}
+	if !validator.IsAuthCode(registerReq.Code) {
+		return httpErrDescr.NewHTTPError(ctx, http.StatusBadRequest, httpErrDescr.INVALID_AUTHCODE)
+	}
+	if !validator.IsName(registerReq.Name) {
+		return httpErrDescr.NewHTTPError(ctx, http.StatusBadRequest, httpErrDescr.INVALID_NAME)
+	}
+	if !validator.IsEmail(registerReq.Email) {
+		return httpErrDescr.NewHTTPError(ctx, http.StatusBadRequest, httpErrDescr.INVALID_EMAIL)
 	}
 
 	userDataUcase, err := h.Ucase.Register(&models.RegisterUcaseReq{Phone: registerReq.Phone, Code: registerReq.Code, Name: registerReq.Name, Email: registerReq.Email})

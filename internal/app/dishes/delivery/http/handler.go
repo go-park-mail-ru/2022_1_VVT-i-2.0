@@ -2,16 +2,18 @@ package restaurantsHandler
 
 import (
 	"encoding/json"
+	"math"
+	"net/http"
+	"strconv"
+
 	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/delivery/http/httpErrDescr"
 	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/delivery/http/middleware"
 	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/dishes"
 	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/models"
 	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/tools/servErrors"
 	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/tools/staticManager"
+	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/tools/validator"
 	"github.com/labstack/echo/v4"
-	"math"
-	"net/http"
-	"strconv"
 )
 
 type DishesHandler struct {
@@ -34,13 +36,13 @@ func NewDishesHandler(ucase dishes.Ucase, staticManager staticManager.FileManage
 // @Produce      json
 // @Success      200  {object}   models.RestaurantsDishesJsonForKirill
 // @Router       /restaurant/:slug [get]
-func (h DishesHandler) GetDishesByRestaurants(ctx echo.Context) error {
+func (h *DishesHandler) GetDishesByRestaurants(ctx echo.Context) error {
 	logger := middleware.GetLoggerFromCtx(ctx)
 	requestId := middleware.GetRequestIdFromCtx(ctx)
 
 	slug := ctx.Param("slug")
-	if slug == "" {
-		return httpErrDescr.NewHTTPError(ctx, http.StatusBadRequest, httpErrDescr.INVALID_DATA)
+	if !validator.IsSlug(slug) {
+		return httpErrDescr.NewHTTPError(ctx, http.StatusBadRequest, httpErrDescr.NO_SUCH_RESTAURANT)
 	}
 
 	restaurantDishes, err := h.Ucase.GetRestaurantDishes(models.GetRestaurantDishesUcaseReq{Slug: slug})
@@ -73,8 +75,8 @@ func (h DishesHandler) GetDishesByRestaurants(ctx echo.Context) error {
 		Rating:         rating,
 		ReviewCount:    restaurantDishes.ReviewCount,
 		TimeToDelivery: strconv.Itoa(restaurantDishes.DownMinutesToDelivery) + "-" + strconv.Itoa(restaurantDishes.UpMinutesToDelivery),
-		Dishes: 		make([]models.DishCategoriesResp, len(restaurantDishes.Dishes)),
-		Categories: 	make([]models.CategoriesDishesDelivery, len(restaurantDishes.Categories)),
+		Dishes:         make([]models.DishCategoriesResp, len(restaurantDishes.Dishes)),
+		Categories:     make([]models.CategoriesDishesDelivery, len(restaurantDishes.Categories)),
 	}
 
 	for i, dish := range restaurantDishes.Dishes {

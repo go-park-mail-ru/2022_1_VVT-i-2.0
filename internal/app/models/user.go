@@ -43,8 +43,8 @@ type UserDataResp struct {
 
 //easyjson:json
 type LoginReq struct {
-	Phone string `json:"phone" valid:"phone, required"`
-	Code  string `json:"code" valid:"code,required"`
+	Phone string `json:"phone"`
+	Code  string `json:"code"`
 }
 
 //easyjson:json
@@ -72,10 +72,10 @@ type LoginUcaseResp struct {
 
 //easyjson:json
 type RegisterReq struct {
-	Phone string `json:"phone" valid:"phone, required"`
-	Code  string `json:"code" valid:"code,required"`
-	Name  string `json:"name" valid:"name,required"`
-	Email string `json:"email" valid:"email,required"`
+	Phone string `json:"phone"`
+	Code  string `json:"code"`
+	Name  string `json:"name"`
+	Email string `json:"email"`
 }
 
 type RegisterUcaseReq struct {
@@ -87,7 +87,7 @@ type RegisterUcaseReq struct {
 
 //easyjson:json
 type SendCodeReq struct {
-	Phone string `json:"phone" valid:"phone, required"`
+	Phone string `json:"phone"`
 }
 
 //easyjson:json
@@ -105,8 +105,8 @@ type SendCodeUcaseResp struct {
 
 //easyjson:json
 type UpdateUserReq struct {
-	Name  string `json:"name" valid:"name"`
-	Email string `json:"email" valid:"email"`
+	Name  string `json:"name"`
+	Email string `json:"email"`
 }
 
 type UpdateUserUcase struct {

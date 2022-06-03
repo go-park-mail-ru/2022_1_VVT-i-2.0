@@ -5,13 +5,13 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/asaskevich/govalidator"
 	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/delivery/http/httpErrDescr"
 	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/delivery/http/middleware"
 	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/models"
 	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/order"
 	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/tools/servErrors"
 	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/tools/staticManager"
+	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/tools/validator"
 	"github.com/labstack/echo/v4"
 )
 
@@ -39,8 +39,29 @@ func (h OrderHandler) CreateOrder(ctx echo.Context) error {
 	if err := ctx.Bind(&orderReq); err != nil {
 		return httpErrDescr.NewHTTPError(ctx, http.StatusBadRequest, httpErrDescr.BAD_REQUEST_BODY)
 	}
-	if _, err := govalidator.ValidateStruct(orderReq); err != nil {
-		return httpErrDescr.NewHTTPError(ctx, http.StatusBadRequest, httpErrDescr.INVALID_DATA)
+	if !validator.IsAddress(orderReq.Address) {
+		return httpErrDescr.NewHTTPError(ctx, http.StatusBadRequest, httpErrDescr.INVALID_ADDRESS)
+	}
+	if len(orderReq.Cart) == 0 {
+		return httpErrDescr.NewHTTPError(ctx, http.StatusBadRequest, httpErrDescr.EMPTY_CART)
+	}
+	if !validator.IsComment(orderReq.Comment) {
+		return httpErrDescr.NewHTTPError(ctx, http.StatusBadRequest, httpErrDescr.INVALID_COMMENT)
+	}
+	if len(orderReq.Promocode) != 0 && !validator.IsPromocode(orderReq.Promocode) {
+		return httpErrDescr.NewHTTPError(ctx, http.StatusBadRequest, httpErrDescr.INVALID_PROMOCODE)
+	}
+	if !validator.IsEntrance(orderReq.Entrance) {
+		return httpErrDescr.NewHTTPError(ctx, http.StatusBadRequest, httpErrDescr.INVALID_ENTRANCE)
+	}
+	if !validator.IsIntercom(orderReq.Intercom) {
+		return httpErrDescr.NewHTTPError(ctx, http.StatusBadRequest, httpErrDescr.INVALID_INTERCOM)
+	}
+	if !validator.IsFloor(orderReq.Floor) {
+		return httpErrDescr.NewHTTPError(ctx, http.StatusBadRequest, httpErrDescr.INVALID_FLOOR)
+	}
+	if !validator.IsFlat(orderReq.Flat) {
+		return httpErrDescr.NewHTTPError(ctx, http.StatusBadRequest, httpErrDescr.INVALID_FLAT)
 	}
 
 	newOrderId, err := h.Ucase.CreateOrder(&models.OrderUcaseReq{
@@ -132,6 +153,9 @@ func (h OrderHandler) GetUserOrder(ctx echo.Context) error {
 
 	orderId, err := strconv.Atoi(ctx.Param("orderId"))
 	if err != nil {
+		return httpErrDescr.NewHTTPError(ctx, http.StatusBadRequest, httpErrDescr.BAD_ORDER_ID)
+	}
+	if !validator.IsOrderId(int64(orderId)) {
 		return httpErrDescr.NewHTTPError(ctx, http.StatusBadRequest, httpErrDescr.BAD_ORDER_ID)
 	}
 
