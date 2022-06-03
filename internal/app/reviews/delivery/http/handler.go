@@ -5,7 +5,6 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/asaskevich/govalidator"
 	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/delivery/http/httpErrDescr"
 	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/delivery/http/middleware"
 	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/models"
@@ -86,8 +85,17 @@ func (h RestaurantReviewsHandler) AddRestaurantReview(ctx echo.Context) error {
 		return httpErrDescr.NewHTTPError(ctx, http.StatusBadRequest, httpErrDescr.BAD_REQUEST_BODY)
 	}
 
-	if _, err := govalidator.ValidateStruct(req); err != nil {
+	if !validator.IsOrderId(req.OrderId) {
+		return httpErrDescr.NewHTTPError(ctx, http.StatusBadRequest, httpErrDescr.BAD_ORDER_ID)
+	}
+	if !validator.IsSlug(req.Slug) {
 		return httpErrDescr.NewHTTPError(ctx, http.StatusBadRequest, httpErrDescr.INVALID_DATA)
+	}
+	if !validator.IsReview(req.Text) {
+		return httpErrDescr.NewHTTPError(ctx, http.StatusBadRequest, httpErrDescr.INVALID_REVIEW)
+	}
+	if !validator.IsStars(req.Rating) {
+		return httpErrDescr.NewHTTPError(ctx, http.StatusBadRequest, httpErrDescr.INVALID_RATING)
 	}
 
 	reviewUcaseResp, err := h.Ucase.AddRestaurantReview(&models.AddRestaurantReviewUcaseReq{

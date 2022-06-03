@@ -1,9 +1,5 @@
 package models
 
-//// Repository
-
-// Repository request
-
 type GetRestaurantByCategoryRepoReq struct {
 	Name string
 }
@@ -11,8 +7,6 @@ type GetRestaurantByCategoryRepoReq struct {
 type GetRestaurantBySearchQueryRepoReq struct {
 	Query string
 }
-
-// Repository models
 
 type RestaurantRepo struct {
 	Id                   int `db:"id"`
@@ -30,10 +24,6 @@ type RestaurantsRepo struct {
 	Restaurants []RestaurantRepo
 }
 
-//// UseCase
-
-// UseCase request
-
 type GetRestaurantByCategoryUcaseReq struct {
 	Name string
 }
@@ -41,8 +31,6 @@ type GetRestaurantByCategoryUcaseReq struct {
 type GetRestaurantBySearchQueryUcaseReq struct {
 	Query string
 }
-
-// UseCase models
 
 type RestaurantUcase struct {
 	Id                   int
@@ -59,8 +47,6 @@ type RestaurantUcase struct {
 type RestaurantsUcase struct {
 	Restaurants []RestaurantUcase
 }
-
-//// Handler
 
 //easyjson:json
 type RestaurantResp struct {

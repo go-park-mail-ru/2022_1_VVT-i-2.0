@@ -11,23 +11,30 @@ var toCutCityRegexp = *regexp.MustCompile(`(?i)^ *гор\.|^ *гор |^ *г |^ *
 
 var regexpStreetType = map[string]regexp.Regexp{
 	"Улица":      *regexp.MustCompile(`(?i) ул\.| ул |ул\.|улица`),
-	"Проспект":   *regexp.MustCompile(`(?i) пр-т|пр-т |проспект`),
+	"Проспект":   *regexp.MustCompile(`(?i)пр-т|проспект`),
 	"Проезд":     *regexp.MustCompile(`(?i)пр-д|проезд`),
-	"Площадь":    *regexp.MustCompile(`(?i)пл\.| пл |пл-дь|площадь`),
-	"Переулок":   *regexp.MustCompile(`(?i)переулок| пер\.|пер |пер-к`),
-	"Шоссе":      *regexp.MustCompile(`(?i)ш\.| ш |шоссе`),
-	"Бульвар":    *regexp.MustCompile(`(?i)бульвар| бул\.|б-р `),
-	"Набережная": *regexp.MustCompile(`(?i)набережная| наб\.| наб |н-я `),
-	"Аллея":      *regexp.MustCompile(`(?i)аллея|а-я `),
-	"Квартал":    *regexp.MustCompile(`(?i)квартал|к-л |кварт\.|кварт `),
-	"Тупик":      *regexp.MustCompile(`(?i)тупик|т-к |туп\.|туп `),
-	"Линия":      *regexp.MustCompile(`(?i)линия|л-я |лин\.`),
-	"Просек":     *regexp.MustCompile(`(?i)просек|пр-к |прос\.|прос `),
-	"Километр":   *regexp.MustCompile(`(?i)километр|км\.|кил\.|кил |км `),
+	"Площадь":    *regexp.MustCompile(`(?i)пл\.|пл-дь|площадь|\sпл\s`),
+	"Переулок":   *regexp.MustCompile(`(?i)переулок|пер\.|пер\s|пер-к`),
+	"Шоссе":      *regexp.MustCompile(`(?i)ш\.|шоссе|\sш\s`),
+	"Бульвар":    *regexp.MustCompile(`(?i)бульвар|бул\.|б-р`),
+	"Набережная": *regexp.MustCompile(`(?i)набережная|наб\.|\sнаб\s|н-я`),
+	"Аллея":      *regexp.MustCompile(`(?i)аллея|а-я`),
+	"Квартал":    *regexp.MustCompile(`(?i)квартал|к-л |кварт\.|\sкварт\s`),
+	"Тупик":      *regexp.MustCompile(`(?i)тупик|т-к |туп\.|\sтуп\s`),
+	"Линия":      *regexp.MustCompile(`(?i)линия|л-я|лин\.`),
+	"Просек":     *regexp.MustCompile(`(?i)просек|пр-к |прос\.|прос\s`),
+	"Километр":   *regexp.MustCompile(`(?i)километр|км\.|кил\.|кил\s|км `),
 }
 
-var toCutDomRegexp = *regexp.MustCompile(`(?i) дом\.| д |д\.|дом `)
+var toCutDomRegexp = *regexp.MustCompile(`(?i)дом\.|дом|\sд\s|д\.`)
+var toReplaceKorpus = *regexp.MustCompile(`(?i)корпус\s*|корп\.\s*|к\.\s*|корп|к\s*`)
+var toReplaceStroenye = *regexp.MustCompile(`(?i)строение\s*|с\.\s*|стр\.\s*|стр\s*|с\s+`)
 var cutExtraSpaceRegexp = regexp.MustCompile(`\s+`)
+
+const (
+	korpusReplace   = " к."
+	stroenyeReplace = " стр."
+)
 
 type StreetT struct {
 	StreetType string
@@ -58,6 +65,8 @@ func GetStreet(streetStr string) *StreetT {
 }
 
 func GetHouse(house string) string {
+	house = toReplaceKorpus.ReplaceAllString(house, korpusReplace)
+	house = toReplaceStroenye.ReplaceAllString(house, stroenyeReplace)
 	house = cutExtraSpaceRegexp.ReplaceAllString(house, " ")
 	return strings.Trim(string(toCutDomRegexp.ReplaceAll([]byte(house), []byte(" "))), " ")
 }

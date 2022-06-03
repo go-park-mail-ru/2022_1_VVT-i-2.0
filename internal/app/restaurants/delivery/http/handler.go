@@ -11,6 +11,7 @@ import (
 	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/models"
 	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/restaurants"
 	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/tools/staticManager"
+	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/tools/validator"
 	"github.com/labstack/echo/v4"
 )
 
@@ -136,6 +137,14 @@ func (h RestaurantsHandler) GetRestaurantsBySeachQuery(ctx echo.Context, query s
 func (h RestaurantsHandler) GetAllRestaurantsMain(ctx echo.Context) error {
 	searhQuery := ctx.QueryParam("q")
 	category := ctx.QueryParam("category")
+
+	if len(category) != 0 && !validator.IsRestaurantCategory(category) {
+		return httpErrDescr.NewHTTPError(ctx, http.StatusBadRequest, httpErrDescr.INVALID_CATEGORY)
+	}
+
+	if !validator.IsRestaurantQuery(searhQuery) {
+		return httpErrDescr.NewHTTPError(ctx, http.StatusBadRequest, httpErrDescr.INVALID_QUERY)
+	}
 
 	if category != "" {
 		return h.GetRestaurantsByCategory(ctx, category)

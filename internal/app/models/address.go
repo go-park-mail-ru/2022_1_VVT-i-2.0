@@ -1,7 +1,7 @@
 package models
 
 type SuggestReq struct {
-	Address string `json:"address" valid:"address"`
+	Address string `json:"address"`
 }
 
 //easyjson:json

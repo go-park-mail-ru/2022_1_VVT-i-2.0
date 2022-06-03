@@ -8,14 +8,14 @@ type OrderPosition struct {
 
 //easyjson:json
 type OrderReq struct {
-	Address   string          `json:"address" valid:"address,required"`
-	Entrance  string          `json:"entrance" valid:"utfletternum"`
-	Intercom  string          `json:"intercom" valid:"utfletternum"`
-	Floor     string          `json:"floor" valid:"utfletternum"`
-	Flat      string          `json:"flat" valid:"utfletternum"`
-	Comment   string          `json:"comment" valid:"comment"`
-	Cart      []OrderPosition `json:"cart" valid:"required"`
-	Promocode string          `json:"promocode" valid:"promocode"`
+	Address   string          `json:"address"`
+	Entrance  string          `json:"entrance"`
+	Intercom  string          `json:"intercom"`
+	Floor     string          `json:"floor"`
+	Flat      string          `json:"flat"`
+	Comment   string          `json:"comment"`
+	Cart      []OrderPosition `json:"cart"`
+	Promocode string          `json:"promocode"`
 }
 
 type OrderUcaseReq struct {

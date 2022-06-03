@@ -1,7 +1,7 @@
 package middleware
 
 import (
-	"github.com/asaskevich/govalidator"
+	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/tools/authManager"
 	_ "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/tools/validator"
 	"github.com/labstack/echo/v4"
 )
@@ -26,7 +26,7 @@ func (mw *CommonMiddleware) AuthMiddleware(next echo.HandlerFunc) echo.HandlerFu
 			return next(ctx)
 		}
 
-		if _, err = govalidator.ValidateStruct(payload); err != nil {
+		if !authManager.IsValidToken(payload) {
 			return next(ctx)
 		}
 
