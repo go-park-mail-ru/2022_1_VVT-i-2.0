@@ -6,7 +6,7 @@ bindAddr = ":8080"
 readTimeout = 10
 writeTimeout= 10
 staticPath="static/"
-staticUrl="https://95.163.180.8/static/"
+staticUrl="http://95.163.180.8/static/"
 #staticUrl="https://tavide.xyz/static/"
 
 
