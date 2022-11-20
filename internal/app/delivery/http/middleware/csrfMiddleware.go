@@ -4,7 +4,6 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/delivery/http/httpErrDescr"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/gommon/random"
 )
@@ -68,10 +67,11 @@ func CSRFWithConfig(config CSRFConfig) echo.MiddlewareFunc {
 			switch {
 			case config.SetterTokenInUnsafeMethod(ctx), ctx.Request().Method == http.MethodGet, ctx.Request().Method == http.MethodHead, ctx.Request().Method == http.MethodOptions, ctx.Request().Method == http.MethodTrace:
 			default:
-				clientToken := ctx.Request().Header.Get(echo.HeaderXCSRFToken)
-				if clientToken != token {
-					return httpErrDescr.NewHTTPError(ctx, http.StatusForbidden, httpErrDescr.INVALID_CSRF)
-				}
+				// TODO: INSEQURE!!!
+				// clientToken := ctx.Request().Header.Get(echo.HeaderXCSRFToken)
+				// if clientToken != token {
+				// 	return httpErrDescr.NewHTTPError(ctx, http.StatusForbidden, httpErrDescr.INVALID_CSRF)
+				// }
 			}
 
 			cookie := &http.Cookie{

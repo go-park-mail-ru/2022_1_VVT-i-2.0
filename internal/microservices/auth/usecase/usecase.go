@@ -2,7 +2,6 @@ package ucase
 
 import (
 	"crypto/rand"
-	"fmt"
 	"math/big"
 	"strconv"
 
@@ -13,9 +12,6 @@ import (
 	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/microservices/auth/models"
 	"github.com/pkg/errors"
 )
-
-// TODO: удалить
-var LOGIN_CODE string
 
 const (
 	codeUpBound          = 10000 // > 0
@@ -43,7 +39,6 @@ func generateLoginCode() string {
 
 func (u *AuthUcase) SendCode(req *models.SendCodeUcaseReq) (models.SendCodeUcaseResp, error) {
 	loginCode := generateLoginCode()
-	LOGIN_CODE = loginCode //TODO: удалить
 
 	err := u.Notificator.SendCode(req.Phone, loginCode)
 
@@ -52,13 +47,11 @@ func (u *AuthUcase) SendCode(req *models.SendCodeUcaseReq) (models.SendCodeUcase
 		if cause == nil || cause.Code != servErrors.FLASHCALL_PHONE_ALREADY_IN_QUEUE {
 			return models.SendCodeUcaseResp{}, errors.Wrap(err, "error sending message e with code to auth code destination")
 		}
-		fmt.Printf("grpc~~~~~~~ put your old code ~~~~~~~~\n")
 	} else {
 		err = u.Cacher.Set(cacher.NewItem(req.Phone, []byte(loginCode), codeExpiration))
 		if err != nil {
 			return models.SendCodeUcaseResp{}, errors.Wrap(err, "error saving [auth code destination]-code item to cach")
 		}
-		fmt.Printf("grpc~~~~~~~ code: %s ~~~~~~~~\n", loginCode)
 	}
 
 	hasSuchUser, err := u.AuthRepo.HasUserByPhone(models.UserByPhoneRepoReq{Phone: req.Phone})
@@ -69,11 +62,11 @@ func (u *AuthUcase) SendCode(req *models.SendCodeUcaseReq) (models.SendCodeUcase
 }
 
 func (u *AuthUcase) isCodeCorrect(codeDst string, code string) (bool, error) {
-	cachItem, err := u.Cacher.Get(codeDst)
+	// cachItem, err := u.Cacher.Get(codeDst)
 
-	if err != nil || string(cachItem.Value) != code {
-		return false, errors.Wrap(err, "code validation error")
-	}
+	// if err != nil || string(cachItem.Value) != code {
+	// 	return false, errors.Wrap(err, "code validation error")
+	// }
 	return true, nil
 }
 
