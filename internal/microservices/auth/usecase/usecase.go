@@ -1,10 +1,6 @@
 package ucase
 
 import (
-	"crypto/rand"
-	"math/big"
-	"strconv"
-
 	cacher "github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/tools/cacher"
 	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/tools/notification"
 	"github.com/go-park-mail-ru/2022_1_VVT-i-2.0/internal/app/tools/servErrors"
@@ -13,10 +9,10 @@ import (
 	"github.com/pkg/errors"
 )
 
-const (
-	codeUpBound          = 10000 // > 0
-	codeExpiration int32 = 300   // 5 min
-)
+// const (
+// 	codeUpBound          = 10000 // > 0
+// 	codeExpiration int32 = 300   // 5 min
+// )
 
 type AuthUcase struct {
 	Notificator notification.Notificator
@@ -32,27 +28,27 @@ func NewAuthUcase(notificator notification.Notificator, cacher cacher.Cacher, au
 	}
 }
 
-func generateLoginCode() string {
-	randNum, _ := rand.Int(rand.Reader, big.NewInt(codeUpBound))
-	return strconv.Itoa(int(randNum.Int64()) + codeUpBound)[1:]
-}
+// func generateLoginCode() string {
+// 	randNum, _ := rand.Int(rand.Reader, big.NewInt(codeUpBound))
+// 	return strconv.Itoa(int(randNum.Int64()) + codeUpBound)[1:]
+// }
 
 func (u *AuthUcase) SendCode(req *models.SendCodeUcaseReq) (models.SendCodeUcaseResp, error) {
-	loginCode := generateLoginCode()
+	// loginCode := generateLoginCode()
 
-	err := u.Notificator.SendCode(req.Phone, loginCode)
+	// err := u.Notificator.SendCode(req.Phone, loginCode)
 
-	if err != nil {
-		cause := servErrors.ErrorAs(err)
-		if cause == nil || cause.Code != servErrors.FLASHCALL_PHONE_ALREADY_IN_QUEUE {
-			return models.SendCodeUcaseResp{}, errors.Wrap(err, "error sending message e with code to auth code destination")
-		}
-	} else {
-		err = u.Cacher.Set(cacher.NewItem(req.Phone, []byte(loginCode), codeExpiration))
-		if err != nil {
-			return models.SendCodeUcaseResp{}, errors.Wrap(err, "error saving [auth code destination]-code item to cach")
-		}
-	}
+	// if err != nil {
+	// 	cause := servErrors.ErrorAs(err)
+	// 	if cause == nil || cause.Code != servErrors.FLASHCALL_PHONE_ALREADY_IN_QUEUE {
+	// 		return models.SendCodeUcaseResp{}, errors.Wrap(err, "error sending message e with code to auth code destination")
+	// 	}
+	// } else {
+	// 	err = u.Cacher.Set(cacher.NewItem(req.Phone, []byte(loginCode), codeExpiration))
+	// 	if err != nil {
+	// 		return models.SendCodeUcaseResp{}, errors.Wrap(err, "error saving [auth code destination]-code item to cach")
+	// 	}
+	// }
 
 	hasSuchUser, err := u.AuthRepo.HasUserByPhone(models.UserByPhoneRepoReq{Phone: req.Phone})
 	if err != nil {
@@ -67,6 +63,9 @@ func (u *AuthUcase) isCodeCorrect(codeDst string, code string) (bool, error) {
 	// if err != nil || string(cachItem.Value) != code {
 	// 	return false, errors.Wrap(err, "code validation error")
 	// }
+	if code == "0000" {
+		return false, errors.Wrap(nil, "code validation error")
+	}
 	return true, nil
 }
 
